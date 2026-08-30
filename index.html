@@ -899,8 +899,7 @@ function calculateTeamStandings(){
   return stats.sort((a,b)=>b.points-a.points||b.pinfall-a.pinfall||b.highest-a.highest||a.name.localeCompare(b.name));
 }
 
-function calculatePlayerStandings(){
-  const map=teamMap(), players=[];
+function const map=teamMap(), players=[];
   state.teams.forEach(t=>t.bowlers.forEach(b=>players.push({
     id: t.id+'|'+b.name,
     name: b.name,
@@ -908,8 +907,9 @@ function calculatePlayerStandings(){
     gender: b.gender,
     handicap: b.handicap,
     points: 0,
-    pinfall: 0,
-    highest: 0,
+    scratchPinfall: 0,
+    netPinfall: 0,
+    highestNet: 0,
     games: 0,
     gameScores: {}
   })));
@@ -920,24 +920,29 @@ function calculatePlayerStandings(){
     m.bowlers.forEach((o,pos)=>{
       const pa=sm[m.aId+'|'+A.bowlers[pos].name], pb=sm[m.bId+'|'+B.bowlers[pos].name];
       if(pa){
-        const aa=o.a+A.bowlers[pos].handicap, bb=o.b+B.bowlers[pos].handicap;
-        pa.points += aa>bb?2:aa===bb?1:0;
-        pa.pinfall+=o.a;
-        pa.highest=Math.max(pa.highest,o.a);
+        const netA = o.a + A.bowlers[pos].handicap;
+        const netB = o.b + B.bowlers[pos].handicap;
+        pa.points += netA>netB?2:netA===netB?1:0;
+        pa.scratchPinfall += o.a;
+        pa.netPinfall += netA;
+        pa.highestNet = Math.max(pa.highestNet, netA);
         pa.games++;
-        pa.gameScores[g.number] = o.a;
+        pa.gameScores[g.number] = netA; // Stores net score for game breakdown
       }
       if(pb){
-        const aa=o.a+A.bowlers[pos].handicap, bb=o.b+B.bowlers[pos].handicap;
-        pb.points += bb>aa?2:bb===aa?1:0;
-        pb.pinfall+=o.b;
-        pb.highest=Math.max(pb.highest,o.b);
+        const netA = o.a + A.bowlers[pos].handicap;
+        const netB = o.b + B.bowlers[pos].handicap;
+        pb.points += netB>netA?2:netB===netA?1:0;
+        pb.scratchPinfall += o.b;
+        pb.netPinfall += netB;
+        pb.highestNet = Math.max(pb.highestNet, netB);
         pb.games++;
-        pb.gameScores[g.number] = o.b;
+        pb.gameScores[g.number] = netB; // Stores net score for game breakdown
       }
     });
   }
-  return players.sort((a,b)=>b.points-a.points||b.pinfall-a.pinfall||b.highest-a.highest||a.name.localeCompare(b.name));
+  // Sort by Total Net Pinfall (descending), then Highest Net Game, then Player Name
+  return players.sort((a,b)=>b.netPinfall - a.netPinfall || b.highestNet - a.highestNet || a.name.localeCompare(b.name));
 }
 
 function renderStandings(){
@@ -951,15 +956,14 @@ function renderStandings(){
     <p class="small muted" style="margin-top:10px">Standings combine all shifts automatically.</p>`;
 }
 
-function renderPlayerStandings(){
-  if(!state.teams.length){document.getElementById('standingsContent').innerHTML='<div class="empty">No registered teams.</div>';return}
+function if(!state.teams.length){document.getElementById('standingsContent').innerHTML='<div class="empty">No registered teams.</div>';return}
   const groups=[['Male','Men'],['Female','Women'],['Male Senior','Senior Men'],['Female Senior','Senior Women']];
   const p=calculatePlayerStandings();
   const totalGamesCount = state.games.length;
   
   document.getElementById('standingsContent').innerHTML=groups.map(([g,label])=>{
     const rows=p.filter(x=>x.gender===g);
-    const gameHeaders = Array.from({length: totalGamesCount}, (_, i) => `<th>G${i+1}</th>`).join('');
+    const gameHeaders = Array.from({length: totalGamesCount}, (_, i) => `<th>G${i+1} Net</th>`).join('');
     
     return `<div class="card" style="box-shadow:none;margin-bottom:12px">
       <h3>${label}</h3>
@@ -972,10 +976,10 @@ function renderPlayerStandings(){
                 <th>Player</th>
                 <th>Team</th>
                 ${gameHeaders}
-                <th>Points</th>
-                <th>Total HDCP</th>
-                <th>Pinfall</th>
-                <th>Highest Game</th>
+                <th>Scratch</th>
+                <th>HDCP Total</th>
+                <th>Net Pinfall</th>
+                <th>Highest Net</th>
               </tr>
             </thead>
             <tbody>
@@ -987,14 +991,14 @@ function renderPlayerStandings(){
                 }).join('');
                 const totalHdcp = x.games * x.handicap;
                 return `<tr>
-                  <td>${i+1}</td>
+                  <td><b>${i+1}</b></td>
                   <td><b>${esc(x.name)}</b></td>
                   <td>${esc(x.team)}</td>
                   ${gameCells}
-                  <td><b>${x.points}</b></td>
+                  <td>${x.scratchPinfall}</td>
                   <td>${totalHdcp}</td>
-                  <td>${x.pinfall}</td>
-                  <td>${x.highest}</td>
+                  <td><b>${x.netPinfall}</b></td>
+                  <td>${x.highestNet}</td>
                 </tr>`;
               }).join('')}
             </tbody>
