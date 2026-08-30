@@ -957,7 +957,8 @@ function renderStandings(){
     <p class="small muted" style="margin-top:10px">Standings combine all shifts automatically.</p>`;
 }
 
-function if(!state.teams.length){document.getElementById('standingsContent').innerHTML='<div class="empty">No registered teams.</div>';return}
+function renderPlayerStandings() {
+  if(!state.teams.length){document.getElementById('standingsContent').innerHTML='<div class="empty">No registered teams.</div>';return}
   const groups=[['Male','Men'],['Female','Women'],['Male Senior','Senior Men'],['Female Senior','Senior Women']];
   const p=calculatePlayerStandings();
   const totalGamesCount = state.games.length;
@@ -1035,4 +1036,3 @@ initBowlerForm();
 </script>
 </body>
 </html>
-```[cite: 5]
