@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>De La Rosa Masters - Bowling Tournament Manager</title>
+<style>
+:root{
+  --bg-gradient: radial-gradient(circle at center, #ff2a1a 0%, #b80000 65%, #6e0000 100%);
+  --card-bg: rgba(18, 18, 20, 0.95);
+  --card-border: #ffd700;
+  --ink: #ffffff;
+  --muted: #d0d7de;
+  --line: #3d3d45;
+  --accent: #ff2a1a;
+  --accent-hover: #d61100;
+  --gold: #ffd700;
+  --danger: #ff4d4d;
+  --dangerbg: #4a0d0d;
+  --ok: #20e070;
+  --okbg: #0d381e;
+  --warn: #ffcc00;
+  --warnbg: #423500;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  --radius: 14px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  color:var(--ink);
+  min-height: 100vh;
+}
+header{
+  background: #000000;
+  color:#fff;
+  padding:18px 24px;
+  position:sticky;
+  top:0;
+  z-index:20;
+  box-shadow:0 4px 20px rgba(0,0,0,.6);
+  border-bottom: 3px solid var(--gold);
+}
+.header-inner{max-width:1400px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand-wrapper{display:flex;align-items:center;gap:14px}
+.brand-logo{height:54px;width:auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))}
+.brand{font-size:1.4rem;font-weight:900;letter-spacing:0.04em;color:#fff;text-transform:uppercase}
+.brand span{color:var(--gold)}
+.subtitle{font-size:.88rem;color:var(--muted);margin-top:2px}
+
+main{max-width:1400px;margin:22px auto;padding:0 18px 50px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.tab{
+  border:2px solid var(--gold);
+  background:#111;
+  color:#fff;
+  padding:10px 18px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  transition: all 0.2s ease;
+}
+.tab:hover{background:var(--gold);color:#000}
+.tab.active{background:var(--accent);border-color:#fff;color:#fff;box-shadow:0 0 12px rgba(255,42,26,0.6)}
+.panel{display:none}
+.panel.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+.card{
+  background:var(--card-bg);
+  border:1.5px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:20px;
+  backdrop-filter: blur(8px);
+}
+.span12{grid-column:span 12}.span8{grid-column:span 8}.span6{grid-column:span 6}.span4{grid-column:span 4}
+h2,h3{margin:0 0 12px;color:var(--gold);text-transform:uppercase;letter-spacing:0.02em}
+.muted{color:var(--muted)}
+label{display:block;font-size:.86rem;font-weight:700;margin:0 0 6px;color:var(--gold)}
+input,select,button{font:inherit}
+input,select{
+  width:100%;
+  padding:10px 11px;
+  border:1px solid #444;
+  border-radius:99px;
+  background:#222;
+  color:#fff;
+}
+input:focus, select:focus{outline:2px solid var(--gold);border-color:transparent}
+button{border:0;border-radius:9px;padding:10px 16px;font-weight:800;cursor:pointer;text-transform:uppercase}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 10px rgba(255,42,26,0.4)}.btn-primary:hover{background:var(--accent-hover)}
+.btn-secondary{background:#333;color:#fff;border:1px solid #555}.btn-secondary:hover{background:#444}
+.btn-danger{background:var(--danger);color:#fff}.btn-ghost{background:transparent;border:1px solid var(--line);color:#fff}
+.actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+.row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.row>*{flex:1 1 150px}
+.bowler-row{display:grid;grid-template-columns:1.6fr .6fr 1fr .55fr .55fr 1.1fr;gap:10px;align-items:end;padding:12px;border:1px solid var(--line);border-radius:10px;background:#18181c;margin:9px 0}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:6px 10px;border-radius:999px;background:#222;color:var(--gold);border:1px solid var(--gold);font-size:.76rem;font-weight:800}
+.alert{padding:12px 14px;border-radius:10px;margin:10px 0;font-weight:700}
+.alert-danger{background:var(--dangerbg);color:var(--danger);border:1px solid var(--danger)}
+.alert-ok{background:var(--okbg);color:var(--ok);border:1px solid var(--ok)}
+.alert-warn{background:var(--warnbg);color:var(--warn);border:1px solid var(--warn)}
+table{width:100%;border-collapse:collapse;font-size:.93rem}th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}th{font-size:.78rem;text-transform:uppercase;color:var(--gold);letter-spacing:.04em}
+.right{text-align:right}.center{text-align:center}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:#18181c;border:1px solid var(--gold);border-radius:11px;padding:12px;text-align:center}
+.kpi .big{font-size:1.65rem;font-weight:900;color:#fff}.kpi .small{font-size:.76rem;color:var(--gold);text-transform:uppercase}
+.match-card{border:1px solid var(--gold);border-radius:12px;margin:12px 0;overflow:hidden;background:#141416}
+.match-head{background:#000;padding:11px 13px;display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid var(--line)}
+.match-body{padding:12px}
+.score-grid{display:grid;grid-template-columns:1.2fr repeat(4, minmax(65px,1fr)) 1.2fr;gap:8px;align-items:center}
+.score-grid input{padding:8px;text-align:center}
+.small{font-size:.8rem}
+.empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}
+.pair-box{padding:10px;border:1px dashed var(--gold);border-radius:10px;margin-top:9px;background:#18181c}
+footer{color:#fff;font-size:.8rem;text-align:center;margin-top:18px;text-shadow:0 1px 2px #000}
+
+#authModal{
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.85);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  backdrop-filter: blur(10px);
+}
+.auth-card{
+  background:#141416;
+  border:2px solid var(--gold);
+  border-radius:16px;
+  padding:32px;
+  width:90%;
+  max-width:420px;
+  text-align:center;
+  box-shadow:0 10px 40px rgba(0,0,0,0.8);
+}
+.role-btn{
+  width:100%;
+  margin:8px 0;
+  padding:14px;
+  font-size:1rem;
+}
+
+.admin-only{display:none !important}
+body.is-admin .admin-only{display:block !important}
+body.is-admin button.admin-only{display:inline-block !important}
+body.is-admin div.admin-only{display:flex !important}
+
+.fab-container {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1000;
+}
+.fab {
+  border: 2px solid var(--gold);
+  border-radius: 99px;
+  padding: 14px 20px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+  transition: transform 0.2s ease, background 0.2s ease;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.fab:hover {
+  transform: translateY(-3px);
+}
+.fab-random {
+  background: var(--okbg);
+  color: var(--ok);
+  border-color: var(--ok);
+}
+.fab-save {
+  background: var(--accent);
+  color: #fff;
+}
+
+@media(max-width:900px){.span8,.span6,.span4{grid-column:span 12}.bowler-row{grid-template-columns:1fr 1fr 1fr}.kpis{grid-template-columns:repeat(2,1fr)}.score-grid{grid-template-columns:1fr repeat(4, 1fr) 1fr}}
+</style>
+</head>
+<body>
+
+<div id="authModal">
+  <div class="auth-card">
+    <h2 style="font-size:1.5rem;margin-bottom:8px">DE LA ROSA MASTERS</h2>
+    <p class="muted" style="margin-bottom:20px">Select access mode to continue</p>
+    
+    <button class="role-btn btn-primary" onclick="selectUserRole()">User Access (View / Audit)</button>
+    <button class="role-btn btn-secondary" onclick="showAdminPrompt()">Admin Access</button>
+    
+    <div id="adminForm" style="display:none;margin-top:16px">
+      <label for="adminPass">Enter Password</label>
+      <input type="password" id="adminPass" placeholder="••••••••" style="margin-bottom:10px">
+      <div id="authAlert"></div>
+      <button class="btn-primary" style="width:100%" onclick="loginAdmin()">Login as Admin</button>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="header-inner">
+    <div class="brand-wrapper">
+      <svg class="brand-logo" viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 120 180 C 120 70, 380 70, 380 180 C 380 340, 120 340, 120 180 Z" fill="#000" stroke="#ffd700" stroke-width="8"/>
+        <path d="M 80 100 Q 250 40 420 100 Q 450 200 420 280 Q 250 380 80 280 Q 50 200 80 100 Z" fill="none" stroke="#ff2a1a" stroke-width="14"/>
+        <path d="M 100 80 Q 250 30 400 80 L 380 120 Q 250 80 120 120 Z" fill="#ff2a1a" stroke="#ffd700" stroke-width="3"/>
+        <text x="250" y="70" font-family="Arial Black, sans-serif" font-size="24" fill="#ffd700" text-anchor="middle" font-style="italic">DE LA ROSA</text>
+        <circle cx="250" cy="100" r="14" fill="#ff2a1a"/>
+        <path d="M 245 100 Q 250 90 255 100 Q 250 110 245 100" fill="#ffd700"/>
+        <rect x="70" y="140" width="360" height="90" rx="15" fill="#e6e6e6" stroke="#000" stroke-width="8"/>
+        <text x="250" y="210" font-family="Impact, Arial Black" font-size="70" fill="#000" text-anchor="middle" font-weight="bold">MASTERS</text>
+        <circle cx="250" cy="270" r="45" fill="#ff2a1a"/>
+        <circle cx="240" cy="260" r="5" fill="#fff"/>
+        <circle cx="260" cy="260" r="5" fill="#fff"/>
+        <circle cx="250" cy="275" r="5" fill="#fff"/>
+        <text x="250" y="335" font-family="Brush Script MT, cursive, sans-serif" font-size="22" fill="#fff" text-anchor="middle">ilusión Bowl</text>
+        <polygon points="250,345 255,360 270,360 257,370 262,385 250,375 238,385 243,370 230,360 245,360" fill="#ff2a1a"/>
+      </svg>
+      <div>
+        <div class="brand">DE LA ROSA <span>MASTERS</span></div>
+        <div class="subtitle">ILUSIÓN BOWL • Registration & Shifts Manager</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div id="roleBadge" class="badge" style="background:#000">Mode: User</div>
+      <div id="headerStatus" class="badge">7 games • Shifts 1, 2, 3</div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="tabs">
+    <button class="tab admin-only" data-tab="registration">Team Registration</button>
+    <button class="tab admin-only" data-tab="setup">Tournament Setup</button>
+    <button class="tab active" data-tab="game">Current Game</button>
+    <button class="tab" data-tab="standings">Standings</button>
+  </div>
+
+  <!-- SECTION 1: TEAM REGISTRATION -->
+  <section id="registration" class="panel admin-only">
+    <div class="grid">
+      <div class="card span8">
+        <h2>Team Registration & Lane Settings</h2>
+        <p class="muted">Configure available lanes (1–100), assign each team to a shift (1, 2, or 3), and register teams (max 3 bowlers per team, total avg ≤ 630).</p>
+        
+        <div class="row" style="margin-bottom: 16px;">
+          <div>
+            <label for="totalLanesInput">Lane Quantity (Available Lanes 1-100)</label>
+            <input id="totalLanesInput" type="number" min="1" max="100" value="30">
+          </div>
+          <div>
+            <label for="teamShiftSelect">Shift Selection</label>
+            <select id="teamShiftSelect">
+              <option value="1">Shift 1</option>
+              <option value="2">Shift 2</option>
+              <option value="3">Shift 3</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div><label for="teamName">Team name</label><input id="teamName" placeholder="Example: Strike Force"></div>
+          <div style="flex:0 0 180px"><label for="teamCaptain">Optional contact</label><input id="teamCaptain" placeholder="Captain / contact"></div>
+        </div>
+        <div id="teamAlert"></div>
+        <div id="bowlerInputs"></div>
+        <div class="actions" style="margin-top:12px">
+          <button class="btn-primary" id="addTeamBtn">Register Team</button>
+          <button class="btn-secondary" id="clearFormBtn">Clear Form</button>
+        </div>
+      </div>
+      
+      <div class="card span4">
+        <h3>Shift Capacity Rules</h3>
+        <div class="pair-box"><b>Lane Limit & Teams</b><br><span class="muted">Each shift respects the quantity of teams based on the designated quantity of lanes (e.g., 30 lanes = max 30 teams per shift).</span></div>
+        <div class="pair-box"><b>Team Average</b><br><span class="muted">Sum of 3 averages must be ≤ 630.</span></div>
+        <div class="pair-box"><b>Handicap Caps</b><br><span class="muted">210 − average, minimum 0.<br>Max 40 (Female/Senior), 35 (Male).</span></div>
+      </div>
+
+      <div class="card span12 admin-only" style="border-color: var(--ok); background: rgba(32, 224, 112, 0.05);">
+        <h3 style="color: var(--ok)">🧪 Testing Environment</h3>
+        <div class="row" style="align-items:end;">
+          <div>
+            <label for="dummyCount" style="color:var(--ok)">Generate Random Teams</label>
+            <input id="dummyCount" type="number" min="1" max="90" value="30" style="border-color:var(--ok);">
+          </div>
+          <div>
+            <button class="btn-primary" style="background:var(--ok);color:#000;width:100%" onclick="generateDummyTeams()">Generate Dummy Teams</button>
+          </div>
+          <div class="muted small" style="flex: 2 1 300px;">
+            Automatically fills available shifts up to lane capacity constraints.
+          </div>
+        </div>
+      </div>
+
+      <div class="card span12">
+        <div class="actions" style="justify-content:space-between"><h3 style="margin:0">Registered Teams</h3><span id="teamCountBadge" class="badge">0 teams</span></div>
+        <div id="teamsTable"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: TOURNAMENT SETUP -->
+  <section id="setup" class="panel admin-only">
+    <div class="grid">
+      <div class="card span12">
+        <h2>Tournament Setup & Initial Assignments</h2>
+        <p class="muted">View registered teams and generate the first randomized lane/team assignment per shift with the Randomize button.</p>
+        <div class="actions" style="margin-top:12px; margin-bottom:16px;">
+          <button class="btn-primary" id="startTournamentBtn">Randomize & Start Tournament</button>
+          <button class="btn-danger" id="resetTournamentBtn">Reset Tournament Games</button>
+        </div>
+      </div>
+      <div class="card span12">
+        <h3>Registered Teams Overview</h3>
+        <div id="setupTeamsTable"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: CURRENT GAME -->
+  <section id="game" class="panel active">
+    <div class="card" style="margin-bottom:14px;">
+      <div class="row" style="align-items:center;">
+        <div>
+          <label for="auditGameSelect">Select Game to Audit</label>
+          <select id="auditGameSelect"></select>
+        </div>
+        <div>
+          <label for="auditShiftFilter">Filter by Shift</label>
+          <select id="auditShiftFilter">
+            <option value="all">All Shifts</option>
+            <option value="1">Shift 1</option>
+            <option value="2">Shift 2</option>
+            <option value="3">Shift 3</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div id="gameContent"></div>
+  </section>
+
+  <!-- SECTION 4: STANDINGS -->
+  <section id="standings" class="panel">
+    <div class="grid">
+      <div class="card span12">
+        <div class="actions" style="justify-content:space-between">
+          <div><h2 style="margin-bottom:4px">Standings</h2><div id="standingsSubtitle" class="muted"></div></div>
+          <div class="actions">
+            <button class="btn-secondary view-team-btn">Team Standings</button>
+            <button class="btn-secondary view-player-btn">Player Standings</button>
+          </div>
+        </div>
+        <div id="standingsContent" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </section>
+  <footer>Data is stored locally in browser storage. De La Rosa Masters • Ilusión Bowl Edition</footer>
+</main>
+
+<script>
+const STORAGE_KEY = 'bowlingTournamentManager_v5';
+let isAdmin = false;
+
+function showAdminPrompt(){
+  document.getElementById('adminForm').style.display = 'block';
+}
+
+function selectUserRole(){
+  isAdmin = false;
+  document.body.classList.remove('is-admin');
+  document.getElementById('roleBadge').textContent = 'Mode: User (Audit View)';
+  document.getElementById('authModal').style.display = 'none';
+  activateTab('game');
+  renderAll();
+}
+
+function loginAdmin(){
+  const pass = document.getElementById('adminPass').value;
+  if(pass === 'B0l1ch3b1ll4r'){
+    isAdmin = true;
+    document.body.classList.add('is-admin');
+    document.getElementById('roleBadge').textContent = 'Mode: Admin';
+    document.getElementById('authModal').style.display = 'none';
+    activateTab('registration');
+    renderAll();
+  } else {
+    document.getElementById('authAlert').innerHTML = '<div class="alert alert-danger">Incorrect password</div>';
+  }
+}
+
+let state = loadState();
+
+function defaultState(){
+  return {
+    teams: [],
+    settings: { totalLanes: 30, satGames: 4, sunGames: 3 },
+    games: [],
+    currentGame: 1,
+    started: false
+  };
+}
+
+function loadState(){
+  try { 
+    const s = JSON.parse(localStorage.getItem(STORAGE_KEY)); 
+    if(s) {
+      if(!s.settings.totalLanes) s.settings.totalLanes = 30;
+      if(!s.currentGame) s.currentGame = 1;
+      return s;
+    }
+    return defaultState();
+  } catch(e){ return defaultState(); }
+}
+
+function save(){ 
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); 
+  renderAll(); 
+}
+
+function esc(s){ return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+function handicap(avg, gender){
+  const cap = (gender==='Female'||gender==='Female Senior') ? 40 : 35;
+  return Math.max(0, Math.min(cap, 210 - avg));
+}
+
+function totalAvg(team){ return team.bowlers.reduce((a,b)=>a+b.average,0); }
+function playerOrder(team){ return [...team.bowlers].sort((a,b)=>a.average-b.average || a.name.localeCompare(b.name)); }
+function teamMap(){ return Object.fromEntries(state.teams.map(t=>[t.id,t])); }
+
+function initBowlerForm(){
+  const genders=['Male','Female','Male Senior','Female Senior'];
+  document.getElementById('bowlerInputs').innerHTML=[0,1,2].map(i=>`
+    <div class="bowler-row">
+      <div><label>Bowler ${i+1} name</label><input class="bn" data-i="${i}" placeholder="Name"></div>
+      <div><label>Average</label><input class="ba" data-i="${i}" type="number" min="0" step="1" placeholder="0"></div>
+      <div><label>Gender</label><select class="bg" data-i="${i}">${genders.map(g=>`<option>${g}</option>`).join('')}</select></div>
+      <div><label>Handicap</label><input class="bh" data-i="${i}" readonly value="0"></div>
+      <div><label>Order</label><input class="bo" data-i="${i}" readonly value="${i+1}"></div>
+      <div><label>Preview</label><div class="small muted" id="prev${i}">Enter average and gender</div></div>
+    </div>`).join('');
+  document.querySelectorAll('.ba,.bg').forEach(el=>el.addEventListener('input', updateFormPreview));
+  updateFormPreview();
+}
+
+function updateFormPreview(){
+  const bs=[0,1,2].map(i=>{
+    const avg=Number(document.querySelector(`.ba[data-i="${i}"]`).value)||0;
+    const g=document.querySelector(`.bg[data-i="${i}"]`).value;
+    return {i,avg,g,h:handicap(avg,g)};
+  });
+  const sorted=[...bs].sort((a,b)=>a.avg-b.avg||a.i-b.i);
+  sorted.forEach((b,idx)=>{
+    document.querySelector(`.bh[data-i="${b.i}"]`).value=b.h;
+    document.querySelector(`.bo[data-i="${b.i}"]`).value=idx+1;
+    document.getElementById(`prev${b.i}`).textContent=`Handicap ${b.h} • Position ${idx+1}`;
+  });
+  const sum=bs.reduce((a,b)=>a+b.avg,0);
+  const box=document.getElementById('teamAlert');
+  box.innerHTML=sum>630?`<div class="alert alert-danger">ERROR: Team average is <b>${sum}</b>. Maximum allowed is <b>630</b>.</div>`:(sum>0?`<div class="alert alert-ok">Team average total: <b>${sum}</b> / 630</div>`:'');
+}
+
+function clearForm(){
+  document.getElementById('teamName').value=''; document.getElementById('teamCaptain').value='';
+  document.querySelectorAll('.bn,.ba').forEach(x=>x.value=''); initBowlerForm();
+}
+
+function registerTeam(){
+  if(!isAdmin) return;
+  const totalLanes = Number(document.getElementById('totalLanesInput').value) || 30;
+  state.settings.totalLanes = totalLanes;
+  
+  const shift = Number(document.getElementById('teamShiftSelect').value);
+  const shiftCount = state.teams.filter(t => (t.shift || 1) === shift).length;
+  if(shiftCount >= totalLanes) {
+    alert(`Shift ${shift} has reached the maximum capacity of ${totalLanes} teams based on available lanes.`);
+    return;
+  }
+
+  const name=document.getElementById('teamName').value.trim();
+  const contact=document.getElementById('teamCaptain').value.trim();
+  const bowlers=[0,1,2].map(i=>({
+    name:document.querySelector(`.bn[data-i="${i}"]`).value.trim(),
+    average:Number(document.querySelector(`.ba[data-i="${i}"]`).value),
+    gender:document.querySelector(`.bg[data-i="${i}"]`).value
+  }));
+  if(!name){return showTeamAlert('Please enter a team name.','danger')}
+  if(bowlers.some(b=>!b.name || !Number.isFinite(b.average))){return showTeamAlert('Please enter all 3 bowler names and averages.','danger')}
+  if(bowlers.some(b=>b.average<0)){return showTeamAlert('Average cannot be negative.','danger')}
+  const sum=bowlers.reduce((a,b)=>a+b.average,0);
+  if(sum>630){return showTeamAlert(`ERROR: Team average is ${sum}. Maximum is 630.`,'danger')}
+  const sorted=bowlers.sort((a,b)=>a.average-b.average);
+  sorted.forEach((b,idx)=>b.handicap=handicap(b.average,b.gender));
+  
+  state.teams.push({id:crypto.randomUUID(), name, contact, shift, bowlers:sorted});
+  save(); clearForm();
+}
+
+function showTeamAlert(msg,type){document.getElementById('teamAlert').innerHTML=`<div class="alert alert-${type==='danger'?'danger':'ok'}">${esc(msg)}</div>`}
+
+function generateDummyTeams(){
+  if(!isAdmin) return;
+  const count = parseInt(document.getElementById('dummyCount').value);
+  const totalLanes = Number(document.getElementById('totalLanesInput').value) || 30;
+  state.settings.totalLanes = totalLanes;
+
+  if(isNaN(count) || count < 1 || count > 90) { alert('Please select a number of teams between 1 and 90.'); return; }
+  
+  let tCounter = state.teams.length + 1;
+  let pCounter = (state.teams.length * 3) + 1;
+
+  for(let i=0; i<count; i++){
+    let currentShift = ((i % 3) + 1);
+    let shiftTeamsCount = state.teams.filter(t => t.shift === currentShift).length;
+    if(shiftTeamsCount >= totalLanes) continue;
+
+    let teamName = `Team${tCounter++}`;
+    let bowlers = [];
+    
+    for(let b=0; b<3; b++){
+      let playerName = `Player${pCounter++}`;
+      let avg = Math.floor(Math.random() * (210 - 175 + 1)) + 175;
+      let rand = Math.random();
+      let gender = 'Male';
+      if(rand >= 0.95) gender = 'Female';
+      else if (rand >= 0.80) gender = 'Male Senior';
+      bowlers.push({ name: playerName, average: avg, gender: gender });
+    }
+    
+    let sorted = bowlers.sort((a,b) => a.average - b.average);
+    sorted.forEach((bowler, idx) => bowler.handicap = handicap(bowler.average, bowler.gender));
+    
+    state.teams.push({id: crypto.randomUUID(), name: teamName, contact: 'Auto-Gen', shift: currentShift, bowlers: sorted});
+  }
+  
+  save();
+  alert(`Successfully generated dummy teams up to shift limits!`);
+}
+
+function renderTeams(){
+  const holder=document.getElementById('teamsTable');
+  const setupHolder=document.getElementById('setupTeamsTable');
+  document.getElementById('teamCountBadge').textContent=`${state.teams.length} team${state.teams.length===1?'':'s'}`;
+  
+  const tableHtml = !state.teams.length ? '<div class="empty">No teams registered yet.</div>' : `<table><thead><tr><th>#</th><th>Team</th><th>Shift</th><th>Bowler 1</th><th>Bowler 2</th><th>Bowler 3</th><th>Avg Total</th><th>HDCP Total</th><th></th></tr></thead><tbody>${
+    state.teams.map((t,i)=>`<tr><td>${i+1}</td><td><b>${esc(t.name)}</b><div class="small muted">${esc(t.contact||'')}</div></td><td>Shift ${t.shift||1}</td>${
+      t.bowlers.map(b=>`<td>${esc(b.name)}<br><span class="small muted">${b.average} avg • ${b.handicap} hdcp</span></td>`).join('')
+    }<td>${totalAvg(t)}</td><td>${t.bowlers.reduce((a,b)=>a+b.handicap,0)}</td><td><button class="btn-ghost" onclick="removeTeam('${t.id}')">Remove</button></td></tr>`).join('')
+  }</tbody></table>`;
+  
+  holder.innerHTML = tableHtml;
+  if(setupHolder) setupHolder.innerHTML = tableHtml;
+}
+
+function removeTeam(id){
+  if(!isAdmin) return;
+  if(state.started){alert('Cannot remove teams after tournament start.');return}
+  state.teams=state.teams.filter(t=>t.id!==id); save();
+}
+
+function randomizeTeamsForShift(shiftTeams){
+  const ids = shiftTeams.map(t=>t.id);
+  for(let i=ids.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [ids[i], ids[j]] = [ids[j], ids[i]];
+  }
+  return ids;
+}
+
+function createGameFromShifts(gameNo){
+  const totalLanes = state.settings.totalLanes;
+  let allMatches = [];
+  
+  for(let shift = 1; shift <= 3; shift++) {
+    const shiftTeams = state.teams.filter(t => (t.shift || 1) === shift);
+    if(shiftTeams.length === 0) continue;
+    
+    let randomizedIds = randomizeTeamsForShift(shiftTeams);
+    if(randomizedIds.length % 2 !== 0) {
+      randomizedIds.push(null);
+    }
+    
+    const shiftLaneOffset = (shift - 1) * totalLanes;
+    
+    for(let i=0; i<randomizedIds.length; i+=2){
+      const a = randomizedIds[i];
+      const b = randomizedIds[i+1];
+      if(!a) continue;
+      
+      const laneIndex = (i / 2) % totalLanes;
+      const laneA = shiftLaneOffset + (laneIndex * 2) + 1;
+      const laneB = shiftLaneOffset + (laneIndex * 2) + 2;
+      
+      allMatches.push({
+        id: crypto.randomUUID(),
+        shift: shift,
+        aId: a,
+        bId: b,
+        laneA: laneA,
+        laneB: laneB,
+        completed: false,
+        teamScoreA: null,
+        teamScoreB: null,
+        bowlers: []
+      });
+    }
+  }
+  
+  return { number: gameNo, day: gameNo <= state.settings.satGames ? 'Saturday' : 'Sunday', matches: allMatches };
+}
+
+function startTournament(){
+  if(!isAdmin) return;
+  if(state.teams.length < 2){ alert('Register at least 2 teams first.'); return; }
+  
+  state.games = [];
+  const totalGames = state.settings.satGames + state.settings.sunGames;
+  for(let g=1; g<=totalGames; g++){
+    state.games.push(createGameFromShifts(g));
+  }
+  
+  state.currentGame = 1; 
+  state.started = true; 
+  save(); 
+  activateTab('game');
+}
+
+function resetGames(){
+  if(!isAdmin) return;
+  state.games=[]; state.currentGame=1; state.started=false; save();
+}
+
+function teamTotals(t){return t.bowlers.reduce((o,b)=>({avg:o.avg+b.average,hdcp:o.hdcp+b.handicap}),{avg:0,hdcp:0})}
+
+function renderGame(){
+  const el=document.getElementById('gameContent');
+  if(!state.started || !state.games.length){ el.innerHTML=`<div class="card"><div class="empty">Tournament has not started. Use Tournament Setup to randomize and start.</div></div>`; return }
+  
+  const totalGames = state.settings.satGames + state.settings.sunGames;
+  const gameSelect = document.getElementById('auditGameSelect');
+  gameSelect.innerHTML = Array.from({length: totalGames}, (_, i) => `<option value="${i+1}">Game ${i+1} (${i+1 <= state.settings.satGames ? 'Saturday' : 'Sunday'})</option>`).join('');
+  gameSelect.value = state.currentGame;
+  
+  gameSelect.onchange = (e) => {
+    state.currentGame = Number(e.target.value);
+    renderGame();
+  };
+  
+  const shiftFilter = document.getElementById('auditShiftFilter').value;
+  const game = state.games.find(g => g.number === state.currentGame);
+  if(!game){ el.innerHTML=`<div class="card"><div class="empty">No active game data.</div></div>`; return; }
+  
+  const map = teamMap();
+  const filteredMatches = game.matches.filter(m => shiftFilter === 'all' || String(m.shift) === shiftFilter);
+  
+  let html = `<div class="card" style="margin-bottom:14px;"><div class="actions" style="justify-content:space-between">
+      <div><h2>Game ${game.number} — ${game.day}</h2><div class="muted">Quantity of Lanes: <b>${state.settings.totalLanes}</b> • Showing ${filteredMatches.length} match${filteredMatches.length===1?'':'es'}</div></div>
+      <div class="actions">
+        <div class="badge">${game.matches.filter(m=>m.completed).length}/${game.matches.length} matches complete</div>
+      </div>
+    </div></div>`;
+    
+  if(filteredMatches.length === 0){
+    html += `<div class="card"><div class="empty">No matches found for the selected shift in this game round.</div></div>`;
+  } else {
+    html += filteredMatches.map((m)=>renderMatch(m,map)).join('');
+  }
+  
+  if (isAdmin && game.matches.some(m => !m.completed)) {
+      html += `
+      <div class="fab-container">
+        <button class="fab fab-random" onclick="generateRandomScores()">🎲 Randomize (145-258)</button>
+        <button class="fab fab-save" onclick="saveAllMatches()">💾 Save All Matches</button>
+      </div>`;
+  }
+
+  el.innerHTML = html;
+  
+  document.querySelectorAll('.match-card input[type=number]').forEach(inp=>{
+    if(inp.id.startsWith('s_')) inp.addEventListener('input',()=>refreshMatchPreview(inp.id.split('_')[1]));
+  });
+  game.matches.forEach(m=>refreshMatchPreview(m.id));
+}
+
+function renderMatch(m,map){
+  const A=map[m.aId], B=map[m.bId]; if(!A||!B)return '';
+  const as=playerOrder(A), bs=playerOrder(B);
+  const canEdit = isAdmin && !m.completed;
+  
+  return `<div class="card match-card" data-match-id="${m.id}"><div class="match-head"><div><b>Shift ${m.shift} • Lanes ${m.laneA} & ${m.laneB}</b><div class="small muted">${esc(A.name)} vs ${esc(B.name)}</div></div><span class="badge">${m.completed?'Complete':'In progress'}</span></div><div class="match-body">
+    <div class="score-grid" style="font-weight:800;margin-bottom:8px">
+      <div>Bowler / Position</div>
+      <div class="center">${esc(A.name)}<br><span class="small muted">Scratch</span></div>
+      <div class="center">HDCP Total</div>
+      <div class="center">${esc(B.name)}<br><span class="small muted">Scratch</span></div>
+      <div class="center">HDCP Total</div>
+      <div class="center">Status</div>
+    </div>
+    ${[0,1,2].map(pos=>`
+    <div class="score-grid" style="margin-bottom:6px">
+      <div><b>P${pos+1}</b><br><span class="small muted">${esc(as[pos].name)} (${as[pos].handicap}) vs ${esc(bs[pos].name)} (${bs[pos].handicap})</span></div>
+      <div><input type="number" min="0" max="300" id="s_${m.id}_a_${pos}" value="${getBowlerScore(m,pos,'a')}" ${canEdit?'':'disabled'}></div>
+      <div class="center" id="thdcp_${m.id}_a_${pos}" style="font-weight:700; font-size:0.9rem; display:flex; align-items:center; justify-content:center; gap:6px;">
+        <span id="thdcp_val_${m.id}_a_${pos}">—</span><span id="p_a_${m.id}_${pos}" style="font-size:1.1rem;"></span>
+      </div>
+      <div><input type="number" min="0" max="300" id="s_${m.id}_b_${pos}" value="${getBowlerScore(m,pos,'b')}" ${canEdit?'':'disabled'}></div>
+      <div class="center" id="thdcp_${m.id}_b_${pos}" style="font-weight:700; font-size:0.9rem; display:flex; align-items:center; justify-content:center; gap:6px;">
+        <span id="thdcp_val_${m.id}_b_${pos}">—</span><span id="p_b_${m.id}_${pos}" style="font-size:1.1rem;"></span>
+      </div>
+      <div class="center" id="p_${m.id}_${pos}" style="font-size:1.1rem;"></div>
+    </div>`).join('')}
+    
+    <div class="pair-box">
+      <div class="score-grid">
+        <div><b>Team Total Scratch & HDCP</b></div>
+        <div><input type="number" id="ts_${m.id}_a" value="${m.teamScoreA??''}" readonly placeholder="Scratch"></div>
+        <div class="center" id="tots_${m.id}_a" style="font-weight:800; color:var(--gold); display:flex; align-items:center; justify-content:center; gap:6px;">
+          <span id="tots_val_${m.id}_a">—</span><span id="tp_a_${m.id}" style="font-size:1.2rem;"></span>
+        </div>
+        <div><input type="number" id="ts_${m.id}_b" value="${m.teamScoreB??''}" readonly placeholder="Scratch"></div>
+        <div class="center" id="tots_${m.id}_b" style="font-weight:800; color:var(--gold); display:flex; align-items:center; justify-content:center; gap:6px;">
+          <span id="tots_val_${m.id}_b">—</span><span id="tp_b_${m.id}" style="font-size:1.2rem;"></span>
+        </div>
+        <div class="center" id="tp_${m.id}" style="font-size:1.2rem;"></div>
+      </div>
+    </div>
+    <div class="actions" style="justify-content:flex-end;margin-top:10px">${canEdit?`<button class="btn-primary" onclick="saveMatch('${m.id}')">Save Match</button>`:''}</div>
+  </div></div>`;
+}
+
+function generateRandomScores() {
+  if(!isAdmin) return;
+  const scoreInputs = document.querySelectorAll('.match-card input[type=number][id^="s_"]');
+  scoreInputs.forEach(input => {
+    if(!input.disabled) {
+      input.value = Math.floor(Math.random() * (258 - 145 + 1)) + 145;
+      input.dispatchEvent(new Event('input'));
+    }
+  });
+}
+
+function saveAllMatches() {
+  if(!isAdmin) return;
+  const game = state.games.find(g => g.number === state.currentGame);
+  if(!game) return;
+
+  let hasError = false;
+  game.matches.forEach(m => {
+    if (m.completed) return; 
+    const bowlers = [];
+    for(let pos=0; pos<3; pos++){
+      const aVal = document.getElementById(`s_${m.id}_a_${pos}`).value;
+      const bVal = document.getElementById(`s_${m.id}_b_${pos}`).value;
+      if(aVal === '' || bVal === '') { hasError = true; return; }
+      const a = Number(aVal), b = Number(bVal);
+      if(!Number.isFinite(a) || !Number.isFinite(b) || a < 0 || b < 0 || a > 300 || b > 300){ hasError = true; return; }
+      bowlers.push({pos,a,b});
+    }
+    if(!hasError) {
+      const ta = bowlers.reduce((sum,o)=>sum+o.a,0);
+      const tb = bowlers.reduce((sum,o)=>sum+o.b,0);
+      m.bowlers = bowlers;
+      m.teamScoreA = ta;
+      m.teamScoreB = tb;
+      m.completed = true;
+    }
+  });
+
+  if(hasError) {
+    alert('Could not save all matches. Please ensure all bowler scores are entered correctly (0–300).');
+  } else {
+    save();
+  }
+}
+
+function getBowlerScore(m,pos,side){
+  const o=m.bowlers.find(x=>x.pos===pos); return o ? (side==='a'?o.a:o.b) : '';
+}
+
+function refreshMatchPreview(id){
+  const game=state.games.find(g=>g.number===state.currentGame), m=game?.matches.find(x=>x.id===id); if(!m)return;
+  const map=teamMap(), A=map[m.aId], B=map[m.bId];
+  if(!A || !B) return;
+  const as=playerOrder(A), bs=playerOrder(B);
+  let ta=0, tb=0;
+  
+  for(let pos=0; pos<3; pos++){
+    const aInp = document.getElementById(`s_${id}_a_${pos}`);
+    const bInp = document.getElementById(`s_${id}_b_${pos}`);
+    const a = Number(aInp?.value)||0;
+    const b = Number(bInp?.value)||0;
+    ta+=a; tb+=b;
+    
+    const haTotal = a + as[pos].handicap;
+    const hbTotal = b + bs[pos].handicap;
+    
+    const elAVal = document.getElementById(`thdcp_val_${id}_a_${pos}`);
+    const elBVal = document.getElementById(`thdcp_val_${id}_b_${pos}`);
+    if(elAVal) elAVal.textContent = aInp?.value!=='' ? haTotal : '—';
+    if(elBVal) elBVal.textContent = bInp?.value!=='' ? hbTotal : '—';
+    
+    const pA = document.getElementById(`p_a_${id}_${pos}`);
+    const pB = document.getElementById(`p_b_${id}_${pos}`);
+    
+    if(aInp?.value!=='' && bInp?.value!==''){
+      if(haTotal === hbTotal){
+        if(pA) pA.textContent = '🤝';
+        if(pB) pB.textContent = '🤝';
+      } else if(haTotal > hbTotal){
+        if(pA) pA.textContent = '🟢';
+        if(pB) pB.textContent = '❌';
+      } else {
+        if(pA) pA.textContent = '❌';
+        if(pB) pB.textContent = '🟢';
+      }
+    } else {
+      if(pA) pA.textContent = '';
+      if(pB) pB.textContent = '';
+    }
+  }
+  
+  const ea=document.getElementById(`ts_${id}_a`), eb=document.getElementById(`ts_${id}_b`);
+  const totsAVal = document.getElementById(`tots_val_${id}_a`), totsBVal = document.getElementById(`tots_val_${id}_b`);
+  const tpA = document.getElementById(`tp_a_${id}`), tpB = document.getElementById(`tp_b_${id}`);
+  
+  if(ea) ea.value=ta; 
+  if(eb) eb.value=tb;
+  
+  const teamHdcpA = teamTotals(A).hdcp;
+  const teamHdcpB = teamTotals(B).hdcp;
+  const teamSumA = ta + teamHdcpA;
+  const teamSumB = tb + teamHdcpB;
+  
+  if(totsAVal) totsAVal.textContent = ea?.value!=='' ? teamSumA : '—';
+  if(totsBVal) totsBVal.textContent = eb?.value!=='' ? teamSumB : '—';
+  
+  if(ea?.value!=='' && eb?.value!==''){
+    if(teamSumA === teamSumB){
+      if(tpA) tpA.textContent = '🤝';
+      if(tpB) tpB.textContent = '🤝';
+    } else if(teamSumA > teamSumB){
+      if(tpA) tpA.textContent = '🟢🟢';
+      if(tpB) tpB.textContent = '❌❌';
+    } else {
+      if(tpA) tpA.textContent = '❌❌';
+      if(tpB) tpB.textContent = '🟢🟢';
+    }
+  } else {
+    if(tpA) tpA.textContent = '';
+    if(tpB) tpB.textContent = '';
+  }
+}
+
+function saveMatch(id){
+  if(!isAdmin) return;
+  const game=state.games.find(g=>g.number===state.currentGame), m=game.matches.find(x=>x.id===id);
+  const bowlers=[];
+  for(let pos=0;pos<3;pos++){
+    const a=Number(document.getElementById(`s_${id}_a_${pos}`).value), b=Number(document.getElementById(`s_${id}_b_${pos}`).value);
+    if(!Number.isFinite(a)||!Number.isFinite(b)||a<0||b<0||a>300||b>300){alert('Please enter valid bowler scores (0–300).');return}
+    bowlers.push({pos,a,b});
+  }
+  const ta=bowlers.reduce((sum,o)=>sum+o.a,0), tb=bowlers.reduce((sum,o)=>sum+o.b,0);
+  m.bowlers=bowlers; m.teamScoreA=ta; m.teamScoreB=tb; m.completed=true; save();
+}
+
+function calculateTeamStandings(){
+  const map=teamMap(), stats=state.teams.map(t=>({id:t.id,name:t.name,shift:t.shift||1,points:0,pinfall:0,highest:0,games:0}));
+  const sm=Object.fromEntries(stats.map(s=>[s.id,s]));
+  for(const g of state.games){
+    for(const m of g.matches){
+      if(!m.completed)continue;
+      const A=map[m.aId], B=map[m.bId], sa=sm[m.aId], sb=sm[m.bId];
+      if(!sa || !sb) continue;
+      let ap=0, bp=0;
+      m.bowlers.forEach((o,pos)=>{
+        const aa=o.a+A.bowlers[pos].handicap, bb=o.b+B.bowlers[pos].handicap;
+        if(aa>bb)ap+=2; else if(aa<bb)bp+=2; else {ap+=1;bp+=1;}
+        sa.pinfall+=o.a; sb.pinfall+=o.b;
+      });
+      sa.highest=Math.max(sa.highest,m.teamScoreA); sb.highest=Math.max(sb.highest,m.teamScoreB);
+      const ha=m.teamScoreA+teamTotals(A).hdcp, hb=m.teamScoreB+teamTotals(B).hdcp;
+      if(ha>hb)ap+=4; else if(ha<hb)bp+=4; else {ap+=2;bp+=2;}
+      sa.points+=ap; sb.points+=bp; sa.games++; sb.games++;
+    }
+  }
+  return stats.sort((a,b)=>b.points-a.points||b.pinfall-a.pinfall||b.highest-a.highest||a.name.localeCompare(b.name));
+}
+
+function calculatePlayerStandings(){
+  const map=teamMap(), players=[];
+  state.teams.forEach(t=>t.bowlers.forEach(b=>players.push({
+    id: t.id+'|'+b.name,
+    name: b.name,
+    team: t.name,
+    gender: b.gender,
+    handicap: b.handicap,
+    points: 0,
+    pinfall: 0,
+    highest: 0,
+    games: 0,
+    gameScores: {}
+  })));
+  const sm=Object.fromEntries(players.map(p=>[p.id,p]));
+  for(const g of state.games) for(const m of g.matches){
+    if(!m.completed)continue; const A=map[m.aId], B=map[m.bId];
+    if(!A || !B) continue;
+    m.bowlers.forEach((o,pos)=>{
+      const pa=sm[m.aId+'|'+A.bowlers[pos].name], pb=sm[m.bId+'|'+B.bowlers[pos].name];
+      if(pa){
+        const aa=o.a+A.bowlers[pos].handicap, bb=o.b+B.bowlers[pos].handicap;
+        pa.points += aa>bb?2:aa===bb?1:0;
+        pa.pinfall+=o.a;
+        pa.highest=Math.max(pa.highest,o.a);
+        pa.games++;
+        pa.gameScores[g.number] = o.a;
+      }
+      if(pb){
+        const aa=o.a+A.bowlers[pos].handicap, bb=o.b+B.bowlers[pos].handicap;
+        pb.points += bb>aa?2:bb===aa?1:0;
+        pb.pinfall+=o.b;
+        pb.highest=Math.max(pb.highest,o.b);
+        pb.games++;
+        pb.gameScores[g.number] = o.b;
+      }
+    });
+  }
+  return players.sort((a,b)=>b.points-a.points||b.pinfall-a.pinfall||b.highest-a.highest||a.name.localeCompare(b.name));
+}
+
+function renderStandings(){
+  const t=calculateTeamStandings();
+  document.getElementById('standingsSubtitle').textContent=state.started?`Displaying all teams and bowlers across all shifts.`:'Tournament not started.';
+  if(!state.teams.length){document.getElementById('standingsContent').innerHTML='<div class="empty">No registered teams.</div>';return}
+  const latestCompleted=state.games.filter(g=>g.matches.every(m=>m.completed)).length;
+  document.getElementById('standingsContent').innerHTML=`
+    <div class="kpis"><div class="kpi"><div class="small">Total Teams</div><div class="big">${state.teams.length}</div></div><div class="kpi"><div class="small">Completed games</div><div class="big">${latestCompleted}</div></div><div class="kpi"><div class="small">Points leader</div><div class="big">${t[0]?.points??0}</div></div><div class="kpi"><div class="small">Top pinfall</div><div class="big">${t[0]?.pinfall??0}</div></div></div>
+    <table><thead><tr><th>Pos</th><th>Team</th><th>Shift</th><th>Points</th><th>Pinfall</th><th>Highest Game</th><th>Games</th></tr></thead><tbody>${t.map((x,i)=>`<tr><td><b>${i+1}</b></td><td>${esc(x.name)}</td><td>Shift ${x.shift}</td><td><b>${x.points}</b></td><td>${x.pinfall}</td><td>${x.highest}</td><td>${x.games}</td></tr>`).join('')}</tbody></table>
+    <p class="small muted" style="margin-top:10px">Standings combine all shifts automatically.</p>`;
+}
+
+function renderPlayerStandings(){
+  if(!state.teams.length){document.getElementById('standingsContent').innerHTML='<div class="empty">No registered teams.</div>';return}
+  const groups=[['Male','Men'],['Female','Women'],['Male Senior','Senior Men'],['Female Senior','Senior Women']];
+  const p=calculatePlayerStandings();
+  const totalGamesCount = state.games.length;
+  
+  document.getElementById('standingsContent').innerHTML=groups.map(([g,label])=>{
+    const rows=p.filter(x=>x.gender===g);
+    const gameHeaders = Array.from({length: totalGamesCount}, (_, i) => `<th>G${i+1}</th>`).join('');
+    
+    return `<div class="card" style="box-shadow:none;margin-bottom:12px">
+      <h3>${label}</h3>
+      ${rows.length ? `
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Pos</th>
+                <th>Player</th>
+                <th>Team</th>
+                ${gameHeaders}
+                <th>Points</th>
+                <th>Total HDCP</th>
+                <th>Pinfall</th>
+                <th>Highest Game</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map((x,i)=>{
+                const gameCells = Array.from({length: totalGamesCount}, (_, gIdx) => {
+                  const gNum = gIdx + 1;
+                  const sc = x.gameScores[gNum];
+                  return `<td>${sc !== undefined ? sc : '—'}</td>`;
+                }).join('');
+                const totalHdcp = x.games * x.handicap;
+                return `<tr>
+                  <td>${i+1}</td>
+                  <td><b>${esc(x.name)}</b></td>
+                  <td>${esc(x.team)}</td>
+                  ${gameCells}
+                  <td><b>${x.points}</b></td>
+                  <td>${totalHdcp}</td>
+                  <td>${x.pinfall}</td>
+                  <td>${x.highest}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      ` : '<div class="empty">No players in this category.</div>'}
+    </div>`;
+  }).join('');
+}
+
+function activateTab(id){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+}
+
+function renderAll(){
+  renderTeams();
+  renderGame();
+  renderStandings();
+  document.getElementById('headerStatus').textContent=`${state.settings.satGames+state.settings.sunGames} games • Lanes: ${state.settings.totalLanes}`;
+}
+
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{activateTab(b.dataset.tab); if(b.dataset.tab==='standings')renderStandings();});
+document.querySelectorAll('.view-team-btn').forEach(b=>b.onclick=renderStandings);
+document.querySelectorAll('.view-player-btn').forEach(b=>b.onclick=renderPlayerStandings);
+document.getElementById('addTeamBtn').onclick=registerTeam;
+document.getElementById('clearFormBtn').onclick=clearForm;
+document.getElementById('startTournamentBtn').onclick=()=>startTournament();
+document.getElementById('resetTournamentBtn').onclick=()=>{if(isAdmin && confirm('Reset all game pairings and scores?'))resetGames();};
+document.getElementById('auditShiftFilter').onchange=()=>renderGame();
+
+initBowlerForm();
+</script>
+</body>
+</html>
+```[cite: 5]
