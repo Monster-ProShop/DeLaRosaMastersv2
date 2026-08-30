@@ -230,7 +230,7 @@ body.is-admin div.admin-only{display:flex !important}
       </svg>
       <div>
         <div class="brand">DE LA ROSA <span>MASTERS</span></div>
-        <div class="subtitle">ILUSIÓN BOWL • Registration & Shifts Manager[cite: 7]</div>
+        <div class="subtitle">ILUSIÓN BOWL • Registration & Shifts Manager[cite: 7, 8]</div>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
@@ -253,7 +253,7 @@ body.is-admin div.admin-only{display:flex !important}
     <div class="grid">
       <div class="card span8">
         <h2>Team Registration & Lane Settings</h2>
-        <p class="muted">Configure available lanes (1–100), assign each team to a shift (1, 2, or 3), and register teams (max 3 bowlers per team, total avg ≤ 630).</p>
+        <p class="muted">Configure available lanes (1–100), assign each team to a shift (1, 2, or 3), and register teams (max 3 bowlers per team, total avg ≤ 630)[cite: 8].</p>
         
         <div class="row" style="margin-bottom: 16px;">
           <div>
@@ -284,9 +284,9 @@ body.is-admin div.admin-only{display:flex !important}
       
       <div class="card span4">
         <h3>Shift Capacity Rules</h3>
-        <div class="pair-box"><b>Lane Limit & Teams</b><br><span class="muted">Each shift respects the quantity of teams based on the designated quantity of lanes (e.g., 30 lanes = max 30 teams per shift).</span></div>
-        <div class="pair-box"><b>Team Average</b><br><span class="muted">Sum of 3 averages must be ≤ 630.</span></div>
-        <div class="pair-box"><b>Handicap Caps</b><br><span class="muted">210 − average, minimum 0.<br>Max 40 (Female/Senior), 35 (Male).</span></div>
+        <div class="pair-box"><b>Lane Limit & Teams</b><br><span class="muted">Each shift respects the quantity of teams based on the designated quantity of lanes (e.g., 30 lanes = max 30 teams per shift)[cite: 8].</span></div>
+        <div class="pair-box"><b>Team Average</b><br><span class="muted">Sum of 3 averages must be ≤ 630[cite: 8].</span></div>
+        <div class="pair-box"><b>Handicap Caps</b><br><span class="muted">210 − average, minimum 0.<br>Max 40 (Female/Senior), 35 (Male)[cite: 8].</span></div>
       </div>
 
       <div class="card span12 admin-only" style="border-color: var(--ok); background: rgba(32, 224, 112, 0.05);">
@@ -300,7 +300,7 @@ body.is-admin div.admin-only{display:flex !important}
             <button class="btn-primary" style="background:var(--ok);color:#000;width:100%" onclick="generateDummyTeams()">Generate Dummy Teams</button>
           </div>
           <div class="muted small" style="flex: 2 1 300px;">
-            Automatically fills available shifts up to lane capacity constraints.
+            Automatically fills available shifts up to lane capacity constraints[cite: 8].
           </div>
         </div>
       </div>
@@ -317,7 +317,7 @@ body.is-admin div.admin-only{display:flex !important}
     <div class="grid">
       <div class="card span12">
         <h2>Tournament Setup & Initial Assignments</h2>
-        <p class="muted">View registered teams and generate the first randomized lane/team assignment per shift with the Randomize button.</p>
+        <p class="muted">View registered teams and generate the first randomized lane/team assignment per shift with the Randomize button[cite: 8].</p>
         <div class="actions" style="margin-top:12px; margin-bottom:16px;">
           <button class="btn-primary" id="startTournamentBtn">Randomize & Start Tournament</button>
           <button class="btn-danger" id="resetTournamentBtn">Reset Tournament Games</button>
@@ -373,7 +373,7 @@ body.is-admin div.admin-only{display:flex !important}
     <div class="grid">
       <div class="card span12">
         <h2>Export Tournament Data (.xls)</h2>
-        <p class="muted">Generate and download Excel reports for standings and specific game/shift combinations.</p>
+        <p class="muted">Generate and download Excel reports for standings and specific game/shift combinations[cite: 8].</p>
         
         <h3 style="margin-top:20px;">Overall & Day Standings</h3>
         <div class="actions" style="gap:10px; margin-bottom: 20px;">
@@ -386,7 +386,7 @@ body.is-admin div.admin-only{display:flex !important}
         </div>
 
         <h3 style="margin-top:30px;">Specific Shift & Game Extractions</h3>
-        <div class="row" style="align-items:end; margin-bottom:10px; max-width: 800px;">
+        <div class="row" style="align-items:end; margin-bottom:20px; max-width: 800px;">
           <div>
             <label for="exportGameSelect">Select Game</label>
             <select id="exportGameSelect"></select>
@@ -403,11 +403,20 @@ body.is-admin div.admin-only{display:flex !important}
             <button class="btn-primary" style="width:100%" onclick="exportGameShift()">Download XLS</button>
           </div>
         </div>
+
+        <h3 style="margin-top:30px; border-top: 1px solid var(--line); padding-top: 20px;">Tournament State Backup (JSON)</h3>
+        <p class="muted">Export the full tournament state to transfer data between computers, or upload a previously saved backup file to restore or reuse.</p>
+        <div class="actions" style="gap:10px; margin-top: 12px; align-items: center;">
+          <button class="btn-primary" onclick="exportTournamentJSON()">📥 Export Tournament (.json)</button>
+          <label class="btn-secondary" style="display: inline-flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 99px; cursor: pointer; text-transform: uppercase; font-weight: 800; font-size: inherit; text-align: center; margin: 0; background: #333; color: #fff; border: 1px solid #555;">
+            📤 Upload Tournament (.json) <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importTournamentJSON(event)">
+          </label>
+        </div>
       </div>
     </div>
   </section>
 
-  <footer>Data is stored locally in browser storage. De La Rosa Masters • Ilusión Bowl Edition[cite: 7]</footer>
+  <footer>Data is stored locally in browser storage. De La Rosa Masters • Ilusión Bowl Edition[cite: 7, 8]</footer>
 </main>
 
 <script>
@@ -510,7 +519,7 @@ function updateFormPreview(){
   });
   const sum=bs.reduce((a,b)=>a+b.avg,0);
   const box=document.getElementById('teamAlert');
-  box.innerHTML=sum>630?`<div class="alert alert-danger">ERROR: Team average is <b>${sum}</b>. Maximum allowed is <b>630</b>.</div>`:(sum>0?`<div class="alert alert-ok">Team average total: <b>${sum}</b> / 630</div>`:'');
+  box.innerHTML=sum>630?`<div class="alert alert-danger">ERROR: Team average is <b>${sum}</b>. Maximum allowed is <b>630</b>[cite: 8].</div>`:(sum>0?`<div class="alert alert-ok">Team average total: <b>${sum}</b> / 630[cite: 8]</div>`:'');
 }
 
 function clearForm(){
@@ -526,7 +535,7 @@ function registerTeam(){
   const shift = Number(document.getElementById('teamShiftSelect').value);
   const shiftCount = state.teams.filter(t => (t.shift || 1) === shift).length;
   if(shiftCount >= totalLanes) {
-    alert(`Shift ${shift} has reached the maximum capacity of ${totalLanes} teams based on available lanes.`);
+    alert(`Shift ${shift} has reached the maximum capacity of ${totalLanes} teams based on available lanes[cite: 8].`);
     return;
   }
 
@@ -538,10 +547,10 @@ function registerTeam(){
     gender:document.querySelector(`.bg[data-i="${i}"]`).value
   }));
   if(!name){return showTeamAlert('Please enter a team name.','danger')}
-  if(bowlers.some(b=>!b.name || !Number.isFinite(b.average))){return showTeamAlert('Please enter all 3 bowler names and averages.','danger')}
+  if(bowlers.some(b=>!b.name || !Number.isFinite(b.average))){return showTeamAlert('Please enter all 3 bowler names and averages[cite: 8].','danger')}
   if(bowlers.some(b=>b.average<0)){return showTeamAlert('Average cannot be negative.','danger')}
   const sum=bowlers.reduce((a,b)=>a+b.average,0);
-  if(sum>630){return showTeamAlert(`ERROR: Team average is ${sum}. Maximum is 630.`,'danger')}
+  if(sum>630){return showTeamAlert(`ERROR: Team average is ${sum}. Maximum is 630[cite: 8].`,'danger')}
   const sorted=bowlers.sort((a,b)=>a.average-b.average);
   sorted.forEach((b,idx)=>b.handicap=handicap(b.average,b.gender));
   
@@ -690,7 +699,7 @@ function teamTotals(t){return t.bowlers.reduce((o,b)=>({avg:o.avg+b.average,hdcp
 
 function renderGame(){
   const el=document.getElementById('gameContent');
-  if(!state.started || !state.games.length){ el.innerHTML=`<div class="card"><div class="empty">Tournament has not started. Use Tournament Setup to randomize and start.</div></div>`; return }
+  if(!state.started || !state.games.length){ el.innerHTML=`<div class="card"><div class="empty">Tournament has not started. Use Tournament Setup to randomize and start[cite: 8].</div></div>`; return }
   
   const totalGames = state.settings.satGames + state.settings.sunGames;
   const gameSelect = document.getElementById('auditGameSelect');
@@ -710,7 +719,7 @@ function renderGame(){
   const filteredMatches = game.matches.filter(m => shiftFilter === 'all' || String(m.shift) === shiftFilter);
   
   let html = `<div class="card" style="margin-bottom:14px;"><div class="actions" style="justify-content:space-between">
-      <div><h2>Game ${game.number} — ${game.day}</h2><div class="muted">Quantity of Lanes: <b>${state.settings.totalLanes}</b> • Showing ${filteredMatches.length} match${filteredMatches.length===1?'':'es'}</div></div>
+      <div><h2>Game ${game.number} — ${game.day}</h2><div class="muted">Quantity of Lanes: <b>${state.settings.totalLanes}</b> • Showing ${filteredMatches.length} match${filteredMatches.length===1?'':'es'}[cite: 8]</div></div>
       <div class="actions">
         <div class="badge">${game.matches.filter(m=>m.completed).length}/${game.matches.length} matches complete</div>
       </div>
@@ -1102,7 +1111,7 @@ function renderPlayerStandings() {
   }).join('');
 }
 
-// ---------------- EXPORT XLS FUNCTIONS ----------------
+// ---------------- EXPORT & IMPORT FUNCTIONS ----------------
 
 function downloadExcel(htmlContent, filename) {
   const tableHtml = `
@@ -1195,6 +1204,40 @@ function getTeamMatchRowHTML(m, team, side, lane) {
   let net = m.completed ? (ts + th) : '';
   
   return `<tr><td>${lane}</td><td>${esc(team.name)}</td><td>${b1}</td><td>${b2}</td><td>${b3}</td><td>${ts}</td><td>${th}</td><td>${net}</td></tr>`;
+}
+
+function exportTournamentJSON() {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+  const dlAnchorElem = document.createElement('a');
+  dlAnchorElem.setAttribute("href", dataStr);
+  dlAnchorElem.setAttribute("download", `delarosa_masters_backup_${new Date().toISOString().slice(0,10)}.json`);
+  document.body.appendChild(dlAnchorElem);
+  dlAnchorElem.click();
+  dlAnchorElem.remove();
+}
+
+function importTournamentJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const importedState = JSON.parse(e.target.result);
+      if (importedState && importedState.teams && importedState.settings) {
+        state = importedState;
+        save();
+        alert('Tournament data imported and loaded successfully!');
+        renderAll();
+      } else {
+        alert('Invalid tournament file structure.');
+      }
+    } catch (err) {
+      alert('Error parsing JSON file: ' + err.message);
+    }
+    // Reset file input value so same file can be re-uploaded if needed
+    event.target.value = '';
+  };
+  reader.readAsText(file);
 }
 
 function updateExportOptions() {
