@@ -899,7 +899,8 @@ function calculateTeamStandings(){
   return stats.sort((a,b)=>b.points-a.points||b.pinfall-a.pinfall||b.highest-a.highest||a.name.localeCompare(b.name));
 }
 
-function const map=teamMap(), players=[];
+function calculatePlayerStandings() {
+  const map=teamMap(), players=[];
   state.teams.forEach(t=>t.bowlers.forEach(b=>players.push({
     id: t.id+'|'+b.name,
     name: b.name,
