@@ -239,8 +239,9 @@ body.is-admin div.admin-only{display:flex !important}
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
+      <button class="btn-danger admin-only" onclick="hardResetTournament()" style="padding: 6px 12px; font-size: 0.75rem; border-radius: 999px;">Reset All Data</button>
       <div id="roleBadge" class="badge" style="background:#000">Mode: User</div>
-      <div id="headerStatus" class="badge">7 games • Shifts 1, 2, 3</div>
+      <div id="headerStatus" class="badge">7 games • 7-Game Masters Format</div>
     </div>
   </div>
 </header>
@@ -371,9 +372,6 @@ body.is-admin div.admin-only{display:flex !important}
             <button class="btn-primary" style="width:100%" onclick="generateSpecificGame()">Generate Matchups</button>
           </div>
         </div>
-        <div class="actions" style="margin-top: 20px;">
-          <button class="btn-danger" id="resetTournamentBtn" onclick="resetGames()">Reset All Tournament Games</button>
-        </div>
       </div>
     </div>
   </section>
@@ -468,7 +466,7 @@ body.is-admin div.admin-only{display:flex !important}
 </main>
 
 <script>
-const STORAGE_KEY = 'bowlingTournamentManager_v9';
+const STORAGE_KEY = 'bowlingTournamentManager_v10';
 let isAdmin = false;
 let editingTeamId = null;
 
@@ -517,6 +515,17 @@ function handicap(avg, gender){ const cap = (gender==='Female'||gender==='Female
 function totalAvg(team){ return team.bowlers.reduce((a,b)=>a+b.average,0); }
 function playerOrder(team){ return [...team.bowlers].sort((a,b)=>a.average-b.average || a.name.localeCompare(b.name)); }
 function teamMap(){ return Object.fromEntries(state.teams.map(t=>[t.id,t])); }
+
+function hardResetTournament() {
+  if(!isAdmin) return;
+  if(confirm('WARNING: This will completely delete ALL registered teams, games, and standings. This action cannot be undone. Are you absolutely sure?')) {
+    state = defaultState();
+    save();
+    updateExportOptions();
+    clearForm();
+    alert('Tournament has been completely reset.');
+  }
+}
 
 function initBowlerForm(){
   const genders=['Male','Female','Male Senior','Female Senior'];
