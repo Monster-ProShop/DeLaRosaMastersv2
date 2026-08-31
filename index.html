@@ -10,7 +10,7 @@
   --card-bg: rgba(18, 18, 20, 0.95);
   --card-border: #ffd700;
   --ink: #ffffff;
-  --muted: #d0d7de;	
+  --muted: #d0d7de;
   --line: #3d3d45;
   --accent: #ff2a1a;
   --accent-hover: #d61100;
@@ -186,6 +186,11 @@ body.is-admin div.admin-only{display:flex !important}
   background: var(--accent);
   color: #fff;
 }
+.fab-generate {
+  background: #333;
+  color: #fff;
+  border-color: #555;
+}
 
 @media(max-width:900px){.span8,.span6,.span4{grid-column:span 12}.bowler-row{grid-template-columns:1fr 1fr 1fr}.kpis{grid-template-columns:repeat(2,1fr)}.score-grid{grid-template-columns:1fr repeat(4, 1fr) 1fr}}
 </style>
@@ -230,7 +235,7 @@ body.is-admin div.admin-only{display:flex !important}
       </svg>
       <div>
         <div class="brand">DE LA ROSA <span>MASTERS</span></div>
-        <div class="subtitle">ILUSIÓN BOWL • Registration & Shifts Manager[cite: 7, 8]</div>
+        <div class="subtitle">ILUSIÓN BOWL • Dynamic Position Rounds Engine</div>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
@@ -253,7 +258,7 @@ body.is-admin div.admin-only{display:flex !important}
     <div class="grid">
       <div class="card span8">
         <h2>Team Registration & Lane Settings</h2>
-        <p class="muted">Configure available lanes (1–100), assign each team to a shift (1, 2, or 3), and register teams (max 3 bowlers per team, total avg ≤ 630)[cite: 8].</p>
+        <p class="muted">Configure available lanes (1–100), assign each team to a shift (1, 2, or 3), and register teams (max 3 bowlers per team, total avg ≤ 630).</p>
         
         <div class="row" style="margin-bottom: 16px;">
           <div>
@@ -284,9 +289,9 @@ body.is-admin div.admin-only{display:flex !important}
       
       <div class="card span4">
         <h3>Shift Capacity Rules</h3>
-        <div class="pair-box"><b>Lane Limit & Teams</b><br><span class="muted">Each shift respects the quantity of teams based on the designated quantity of lanes (e.g., 30 lanes = max 30 teams per shift)[cite: 8].</span></div>
-        <div class="pair-box"><b>Team Average</b><br><span class="muted">Sum of 3 averages must be ≤ 630[cite: 8].</span></div>
-        <div class="pair-box"><b>Handicap Caps</b><br><span class="muted">210 − average, minimum 0.<br>Max 40 (Female/Senior), 35 (Male)[cite: 8].</span></div>
+        <div class="pair-box"><b>Lane Limit & Teams</b><br><span class="muted">Each shift respects the quantity of teams based on the designated quantity of lanes (e.g., 30 lanes = max 30 teams per shift).</span></div>
+        <div class="pair-box"><b>Team Average</b><br><span class="muted">Sum of 3 averages must be ≤ 630.</span></div>
+        <div class="pair-box"><b>Handicap Caps</b><br><span class="muted">210 − average, minimum 0.<br>Max 40 (Female/Senior), 35 (Male).</span></div>
       </div>
 
       <div class="card span12 admin-only" style="border-color: var(--ok); background: rgba(32, 224, 112, 0.05);">
@@ -300,7 +305,7 @@ body.is-admin div.admin-only{display:flex !important}
             <button class="btn-primary" style="background:var(--ok);color:#000;width:100%" onclick="generateDummyTeams()">Generate Dummy Teams</button>
           </div>
           <div class="muted small" style="flex: 2 1 300px;">
-            Automatically fills available shifts up to lane capacity constraints[cite: 8].
+            Automatically fills available shifts up to lane capacity constraints.
           </div>
         </div>
       </div>
@@ -317,10 +322,10 @@ body.is-admin div.admin-only{display:flex !important}
     <div class="grid">
       <div class="card span12">
         <h2>Tournament Setup & Initial Assignments</h2>
-        <p class="muted">View registered teams and generate the first randomized lane/team assignment per shift with the Randomize button[cite: 8].</p>
+        <p class="muted">View registered teams and generate the very first randomized game. Games 2, 3, and 4 will automatically become positional rounds within shifts, and Game 5 will be an overall positional split.</p>
         <div class="actions" style="margin-top:12px; margin-bottom:16px;">
-          <button class="btn-primary" id="startTournamentBtn">Randomize & Start Tournament</button>
-          <button class="btn-danger" id="resetTournamentBtn">Reset Tournament Games</button>
+          <button class="btn-primary" id="startTournamentBtn">Start Tournament (Generate Game 1)</button>
+          <button class="btn-danger" id="resetTournamentBtn">Reset Tournament</button>
         </div>
       </div>
       <div class="card span12">
@@ -335,7 +340,7 @@ body.is-admin div.admin-only{display:flex !important}
     <div class="card" style="margin-bottom:14px;">
       <div class="row" style="align-items:center;">
         <div>
-          <label for="auditGameSelect">Select Game to Audit</label>
+          <label for="auditGameSelect">Select Generated Game</label>
           <select id="auditGameSelect"></select>
         </div>
         <div>
@@ -373,7 +378,7 @@ body.is-admin div.admin-only{display:flex !important}
     <div class="grid">
       <div class="card span12">
         <h2>Export Tournament Data (.xls)</h2>
-        <p class="muted">Generate and download Excel reports for standings and specific game/shift combinations[cite: 8].</p>
+        <p class="muted">Generate and download Excel reports for standings and specific game/shift combinations.</p>
         
         <h3 style="margin-top:20px;">Overall & Day Standings</h3>
         <div class="actions" style="gap:10px; margin-bottom: 20px;">
@@ -416,24 +421,20 @@ body.is-admin div.admin-only{display:flex !important}
     </div>
   </section>
 
-  <footer>Data is stored locally in browser storage. De La Rosa Masters • Ilusión Bowl Edition[cite: 7, 8]</footer>
+  <footer>Data is stored locally in browser storage. De La Rosa Masters • Ilusión Bowl Edition</footer>
 </main>
 
 <script>
-const STORAGE_KEY = 'bowlingTournamentManager_v5';
+const STORAGE_KEY = 'bowlingTournamentManager_v6';
 let isAdmin = false;
 
-function showAdminPrompt(){
-  document.getElementById('adminForm').style.display = 'block';
-}
-
+function showAdminPrompt(){ document.getElementById('adminForm').style.display = 'block'; }
 function selectUserRole(){
   isAdmin = false;
   document.body.classList.remove('is-admin');
   document.getElementById('roleBadge').textContent = 'Mode: User (Audit View)';
   document.getElementById('authModal').style.display = 'none';
-  activateTab('game');
-  renderAll();
+  activateTab('game'); renderAll();
 }
 
 function loginAdmin(){
@@ -443,8 +444,7 @@ function loginAdmin(){
     document.body.classList.add('is-admin');
     document.getElementById('roleBadge').textContent = 'Mode: Admin';
     document.getElementById('authModal').style.display = 'none';
-    activateTab('registration');
-    renderAll();
+    activateTab('registration'); renderAll();
   } else {
     document.getElementById('authAlert').innerHTML = '<div class="alert alert-danger">Incorrect password</div>';
   }
@@ -453,13 +453,7 @@ function loginAdmin(){
 let state = loadState();
 
 function defaultState(){
-  return {
-    teams: [],
-    settings: { totalLanes: 30, satGames: 4, sunGames: 3 },
-    games: [],
-    currentGame: 1,
-    started: false
-  };
+  return { teams: [], settings: { totalLanes: 30, satGames: 4, sunGames: 3 }, games: [], currentGame: 1, started: false };
 }
 
 function loadState(){
@@ -474,18 +468,9 @@ function loadState(){
   } catch(e){ return defaultState(); }
 }
 
-function save(){ 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); 
-  renderAll(); 
-}
-
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); renderAll(); }
 function esc(s){ return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-
-function handicap(avg, gender){
-  const cap = (gender==='Female'||gender==='Female Senior') ? 40 : 35;
-  return Math.max(0, Math.min(cap, 210 - avg));
-}
-
+function handicap(avg, gender){ const cap = (gender==='Female'||gender==='Female Senior') ? 40 : 35; return Math.max(0, Math.min(cap, 210 - avg)); }
 function totalAvg(team){ return team.bowlers.reduce((a,b)=>a+b.average,0); }
 function playerOrder(team){ return [...team.bowlers].sort((a,b)=>a.average-b.average || a.name.localeCompare(b.name)); }
 function teamMap(){ return Object.fromEntries(state.teams.map(t=>[t.id,t])); }
@@ -519,7 +504,7 @@ function updateFormPreview(){
   });
   const sum=bs.reduce((a,b)=>a+b.avg,0);
   const box=document.getElementById('teamAlert');
-  box.innerHTML=sum>630?`<div class="alert alert-danger">ERROR: Team average is <b>${sum}</b>. Maximum allowed is <b>630</b>[cite: 8].</div>`:(sum>0?`<div class="alert alert-ok">Team average total: <b>${sum}</b> / 630[cite: 8]</div>`:'');
+  box.innerHTML=sum>630?`<div class="alert alert-danger">ERROR: Team average is <b>${sum}</b>. Maximum allowed is <b>630</b>.</div>`:(sum>0?`<div class="alert alert-ok">Team average total: <b>${sum}</b> / 630</div>`:'');
 }
 
 function clearForm(){
@@ -531,14 +516,9 @@ function registerTeam(){
   if(!isAdmin) return;
   const totalLanes = Number(document.getElementById('totalLanesInput').value) || 30;
   state.settings.totalLanes = totalLanes;
-  
   const shift = Number(document.getElementById('teamShiftSelect').value);
   const shiftCount = state.teams.filter(t => (t.shift || 1) === shift).length;
-  if(shiftCount >= totalLanes) {
-    alert(`Shift ${shift} has reached the maximum capacity of ${totalLanes} teams based on available lanes[cite: 8].`);
-    return;
-  }
-
+  if(shiftCount >= totalLanes) { alert(`Shift ${shift} has reached the maximum capacity of ${totalLanes} teams.`); return; }
   const name=document.getElementById('teamName').value.trim();
   const contact=document.getElementById('teamCaptain').value.trim();
   const bowlers=[0,1,2].map(i=>({
@@ -547,10 +527,10 @@ function registerTeam(){
     gender:document.querySelector(`.bg[data-i="${i}"]`).value
   }));
   if(!name){return showTeamAlert('Please enter a team name.','danger')}
-  if(bowlers.some(b=>!b.name || !Number.isFinite(b.average))){return showTeamAlert('Please enter all 3 bowler names and averages[cite: 8].','danger')}
+  if(bowlers.some(b=>!b.name || !Number.isFinite(b.average))){return showTeamAlert('Please enter all 3 bowler names and averages.','danger')}
   if(bowlers.some(b=>b.average<0)){return showTeamAlert('Average cannot be negative.','danger')}
   const sum=bowlers.reduce((a,b)=>a+b.average,0);
-  if(sum>630){return showTeamAlert(`ERROR: Team average is ${sum}. Maximum is 630[cite: 8].`,'danger')}
+  if(sum>630){return showTeamAlert(`ERROR: Team average is ${sum}. Maximum is 630.`,'danger')}
   const sorted=bowlers.sort((a,b)=>a.average-b.average);
   sorted.forEach((b,idx)=>b.handicap=handicap(b.average,b.gender));
   
@@ -565,9 +545,7 @@ function generateDummyTeams(){
   const count = parseInt(document.getElementById('dummyCount').value);
   const totalLanes = Number(document.getElementById('totalLanesInput').value) || 30;
   state.settings.totalLanes = totalLanes;
-
   if(isNaN(count) || count < 1 || count > 90) { alert('Please select a number of teams between 1 and 90.'); return; }
-  
   let tCounter = state.teams.length + 1;
   let pCounter = (state.teams.length * 3) + 1;
 
@@ -575,44 +553,32 @@ function generateDummyTeams(){
     let currentShift = ((i % 3) + 1);
     let shiftTeamsCount = state.teams.filter(t => t.shift === currentShift).length;
     if(shiftTeamsCount >= totalLanes) continue;
-
     let teamName = `Team${tCounter++}`;
     let bowlers = [];
-    
     for(let b=0; b<3; b++){
       let playerName = `Player${pCounter++}`;
       let avg = Math.floor(Math.random() * (210 - 175 + 1)) + 175;
       let rand = Math.random();
-      let gender = 'Male';
-      if(rand >= 0.95) gender = 'Female';
-      else if (rand >= 0.80) gender = 'Male Senior';
-      else if (rand >= 0.75) gender = 'Female Senior';
+      let gender = rand >= 0.95 ? 'Female' : (rand >= 0.80 ? 'Male Senior' : (rand >= 0.75 ? 'Female Senior' : 'Male'));
       bowlers.push({ name: playerName, average: avg, gender: gender });
     }
-    
     let sorted = bowlers.sort((a,b) => a.average - b.average);
-    sorted.forEach((bowler, idx) => bowler.handicap = handicap(bowler.average, bowler.gender));
-    
+    sorted.forEach((bowler) => bowler.handicap = handicap(bowler.average, bowler.gender));
     state.teams.push({id: crypto.randomUUID(), name: teamName, contact: 'Auto-Gen', shift: currentShift, bowlers: sorted});
   }
-  
-  save();
-  alert(`Successfully generated dummy teams up to shift limits!`);
+  save(); alert(`Successfully generated dummy teams up to shift limits!`);
 }
 
 function renderTeams(){
   const holder=document.getElementById('teamsTable');
   const setupHolder=document.getElementById('setupTeamsTable');
   document.getElementById('teamCountBadge').textContent=`${state.teams.length} team${state.teams.length===1?'':'s'}`;
-  
   const tableHtml = !state.teams.length ? '<div class="empty">No teams registered yet.</div>' : `<table><thead><tr><th>#</th><th>Team</th><th>Shift</th><th>Bowler 1</th><th>Bowler 2</th><th>Bowler 3</th><th>Avg Total</th><th>HDCP Total</th><th></th></tr></thead><tbody>${
     state.teams.map((t,i)=>`<tr><td>${i+1}</td><td><b>${esc(t.name)}</b><div class="small muted">${esc(t.contact||'')}</div></td><td>Shift ${t.shift||1}</td>${
       t.bowlers.map(b=>`<td>${esc(b.name)}<br><span class="small muted">${b.average} avg • ${b.handicap} hdcp</span></td>`).join('')
     }<td>${totalAvg(t)}</td><td>${t.bowlers.reduce((a,b)=>a+b.handicap,0)}</td><td><button class="btn-ghost" onclick="removeTeam('${t.id}')">Remove</button></td></tr>`).join('')
   }</tbody></table>`;
-  
-  holder.innerHTML = tableHtml;
-  if(setupHolder) setupHolder.innerHTML = tableHtml;
+  holder.innerHTML = tableHtml; if(setupHolder) setupHolder.innerHTML = tableHtml;
 }
 
 function removeTeam(id){
@@ -623,69 +589,113 @@ function removeTeam(id){
 
 function randomizeTeamsForShift(shiftTeams){
   const ids = shiftTeams.map(t=>t.id);
-  for(let i=ids.length-1; i>0; i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [ids[i], ids[j]] = [ids[j], ids[i]];
-  }
+  for(let i=ids.length-1; i>0; i--){ const j = Math.floor(Math.random()*(i+1)); [ids[i], ids[j]] = [ids[j], ids[i]]; }
   return ids;
 }
 
-function createGameFromShifts(gameNo){
+function buildMatch(gameNo, shift, aId, bId, pairIndexRaw, numPairs) {
+  let pairIndex = pairIndexRaw % numPairs;
+  let laneA = (pairIndex * 2) + 1;
+  let laneB = laneA + 1;
+  return { id: crypto.randomUUID(), shift: shift, aId: aId, bId: bId, laneA: laneA, laneB: laneB, completed: false, teamScoreA: null, teamScoreB: null, bowlers: [] };
+}
+
+function createGame(gameNo) {
   const totalLanes = state.settings.totalLanes;
+  const numPairs = Math.floor(totalLanes / 2);
   let allMatches = [];
-  
-  for(let shift = 1; shift <= 3; shift++) {
-    const shiftTeams = state.teams.filter(t => (t.shift || 1) === shift);
-    if(shiftTeams.length === 0) continue;
-    
-    let randomizedIds = randomizeTeamsForShift(shiftTeams);
-    if(randomizedIds.length % 2 !== 0) {
-      randomizedIds.push(null);
+  const day = gameNo <= state.settings.satGames ? 'Saturday' : 'Sunday';
+
+  if (gameNo === 1) {
+    for(let shift = 1; shift <= 3; shift++) {
+      const shiftTeams = state.teams.filter(t => (t.shift || 1) === shift);
+      if(shiftTeams.length === 0) continue;
+      let ids = randomizeTeamsForShift(shiftTeams);
+      if(ids.length % 2 !== 0) ids.push(null);
+      for(let i=0; i<ids.length; i+=2){
+        if(!ids[i]) continue;
+        const pairIndex = i / 2;
+        allMatches.push(buildMatch(gameNo, shift, ids[i], ids[i+1], pairIndex, numPairs));
+      }
     }
+  } else if (gameNo >= 2 && gameNo <= 4) {
+    for(let shift = 1; shift <= 3; shift++) {
+      let standings = calculateTeamStandings('all', gameNo - 1, shift);
+      if(standings.length === 0) continue;
+      let ids = standings.map(s => s.id);
+      if(ids.length % 2 !== 0) ids.push(null);
+      for(let i=0; i<ids.length; i+=2){
+        if(!ids[i]) continue;
+        const pairIndex = i / 2;
+        allMatches.push(buildMatch(gameNo, shift, ids[i], ids[i+1], pairIndex, numPairs));
+      }
+    }
+  } else if (gameNo === 5) {
+    let standings = calculateTeamStandings('all', gameNo - 1, 'all');
+    let ids = standings.map(s => s.id);
+    if(ids.length % 2 !== 0) ids.push(null);
+
+    let activeShifts = [...new Set(state.teams.map(t=>t.shift))].sort((a,b)=>b-a);
+    if(activeShifts.length === 0) activeShifts = [1];
     
-    const shiftLaneOffset = (shift - 1) * totalLanes;
-    
-    for(let i=0; i<randomizedIds.length; i+=2){
-      const a = randomizedIds[i];
-      const b = randomizedIds[i+1];
-      if(!a) continue;
-      
-      const laneIndex = (i / 2) % totalLanes;
-      const laneA = shiftLaneOffset + (laneIndex * 2) + 1;
-      const laneB = shiftLaneOffset + (laneIndex * 2) + 2;
-      
-      allMatches.push({
-        id: crypto.randomUUID(),
-        shift: shift,
-        aId: a,
-        bId: b,
-        laneA: laneA,
-        laneB: laneB,
-        completed: false,
-        teamScoreA: null,
-        teamScoreB: null,
-        bowlers: []
-      });
+    let totalPairsCount = Math.ceil(ids.length / 2);
+    let pairsForTopShift = Math.ceil(totalPairsCount / activeShifts.length);
+    let shiftCapacities = [];
+    let remainingPairs = totalPairsCount;
+    for(let i=0; i<activeShifts.length; i++){
+        let cap = (i === activeShifts.length - 1) ? remainingPairs : pairsForTopShift;
+        shiftCapacities.push(cap);
+        remainingPairs -= cap;
+    }
+
+    let currentShiftIdx = 0;
+    let pairsInCurrentShift = 0;
+
+    for(let i=0; i<ids.length; i+=2){
+      if(pairsInCurrentShift >= shiftCapacities[currentShiftIdx] && currentShiftIdx < activeShifts.length - 1) {
+          currentShiftIdx++;
+          pairsInCurrentShift = 0;
+      }
+      let shift = activeShifts[currentShiftIdx];
+      let startPairOffset = 3; // Start pair 7-8
+      let pairIndex = pairsInCurrentShift + startPairOffset;
+
+      if (ids[i] && ids[i+1]) {
+          allMatches.push(buildMatch(gameNo, shift, ids[i], ids[i+1], pairIndex, numPairs));
+          let tA = state.teams.find(t=>t.id === ids[i]); if(tA) tA.shift = shift;
+          let tB = state.teams.find(t=>t.id === ids[i+1]); if(tB) tB.shift = shift;
+      }
+      pairsInCurrentShift++;
+    }
+  } else if (gameNo > 5) {
+    const prevGame = state.games.find(g => g.number === gameNo - 1);
+    for(const prevM of prevGame.matches) {
+      let oldPairIdx = Math.floor((prevM.laneA - 1) / 2);
+      let newPairIdx = oldPairIdx + 2; 
+      allMatches.push(buildMatch(gameNo, prevM.shift, prevM.aId, prevM.bId, newPairIdx, numPairs));
     }
   }
-  
-  return { number: gameNo, day: gameNo <= state.settings.satGames ? 'Saturday' : 'Sunday', matches: allMatches };
+
+  return { number: gameNo, day: day, matches: allMatches };
 }
 
 function startTournament(){
   if(!isAdmin) return;
   if(state.teams.length < 2){ alert('Register at least 2 teams first.'); return; }
-  
-  state.games = [];
-  const totalGames = state.settings.satGames + state.settings.sunGames;
-  for(let g=1; g<=totalGames; g++){
-    state.games.push(createGameFromShifts(g));
-  }
-  
+  state.games = [createGame(1)];
   state.currentGame = 1; 
   state.started = true; 
   save(); 
   activateTab('game');
+  updateExportOptions();
+}
+
+function generateNextGame() {
+  if(!isAdmin) return;
+  const nextGameNo = state.games.length + 1;
+  state.games.push(createGame(nextGameNo));
+  state.currentGame = nextGameNo;
+  save();
   updateExportOptions();
 }
 
@@ -699,17 +709,16 @@ function teamTotals(t){return t.bowlers.reduce((o,b)=>({avg:o.avg+b.average,hdcp
 
 function renderGame(){
   const el=document.getElementById('gameContent');
-  if(!state.started || !state.games.length){ el.innerHTML=`<div class="card"><div class="empty">Tournament has not started. Use Tournament Setup to randomize and start[cite: 8].</div></div>`; return }
+  if(!state.started || !state.games.length){ el.innerHTML=`<div class="card"><div class="empty">Tournament has not started. Use Tournament Setup to generate Game 1.</div></div>`; return }
   
   const totalGames = state.settings.satGames + state.settings.sunGames;
+  const generatedCount = state.games.length;
   const gameSelect = document.getElementById('auditGameSelect');
-  gameSelect.innerHTML = Array.from({length: totalGames}, (_, i) => `<option value="${i+1}">Game ${i+1} (${i+1 <= state.settings.satGames ? 'Saturday' : 'Sunday'})</option>`).join('');
+  
+  gameSelect.innerHTML = state.games.map(g => `<option value="${g.number}">Game ${g.number} (${g.day})</option>`).join('');
   gameSelect.value = state.currentGame;
   
-  gameSelect.onchange = (e) => {
-    state.currentGame = Number(e.target.value);
-    renderGame();
-  };
+  gameSelect.onchange = (e) => { state.currentGame = Number(e.target.value); renderGame(); };
   
   const shiftFilter = document.getElementById('auditShiftFilter').value;
   const game = state.games.find(g => g.number === state.currentGame);
@@ -719,7 +728,7 @@ function renderGame(){
   const filteredMatches = game.matches.filter(m => shiftFilter === 'all' || String(m.shift) === shiftFilter);
   
   let html = `<div class="card" style="margin-bottom:14px;"><div class="actions" style="justify-content:space-between">
-      <div><h2>Game ${game.number} — ${game.day}</h2><div class="muted">Quantity of Lanes: <b>${state.settings.totalLanes}</b> • Showing ${filteredMatches.length} match${filteredMatches.length===1?'':'es'}[cite: 8]</div></div>
+      <div><h2>Game ${game.number} — ${game.day}</h2><div class="muted">Quantity of Lanes: <b>${state.settings.totalLanes}</b> • Showing ${filteredMatches.length} match${filteredMatches.length===1?'':'es'}</div></div>
       <div class="actions">
         <div class="badge">${game.matches.filter(m=>m.completed).length}/${game.matches.length} matches complete</div>
       </div>
@@ -731,12 +740,20 @@ function renderGame(){
     html += filteredMatches.map((m)=>renderMatch(m,map)).join('');
   }
   
-  if (isAdmin && game.matches.some(m => !m.completed)) {
-      html += `
-      <div class="fab-container">
-        <button class="fab fab-random" onclick="generateRandomScores()">🎲 Randomize (145-258)</button>
-        <button class="fab fab-save" onclick="saveAllMatches()">💾 Save All Matches</button>
-      </div>`;
+  if (isAdmin) {
+      const allCompleted = game.matches.every(m => m.completed);
+      if (!allCompleted) {
+          html += `
+          <div class="fab-container">
+            <button class="fab fab-random" onclick="generateRandomScores()">🎲 Randomize (145-258)</button>
+            <button class="fab fab-save" onclick="saveAllMatches()">💾 Save All Matches</button>
+          </div>`;
+      } else if (generatedCount < totalGames && generatedCount === state.currentGame) {
+          html += `
+          <div class="fab-container">
+            <button class="fab fab-generate" onclick="generateNextGame()">⚙️ Generate Game ${generatedCount + 1}</button>
+          </div>`;
+      }
   }
 
   el.innerHTML = html;
@@ -808,7 +825,6 @@ function saveAllMatches() {
   if(!isAdmin) return;
   const game = state.games.find(g => g.number === state.currentGame);
   if(!game) return;
-
   let hasError = false;
   game.matches.forEach(m => {
     if (m.completed) return; 
@@ -824,23 +840,13 @@ function saveAllMatches() {
     if(!hasError) {
       const ta = bowlers.reduce((sum,o)=>sum+o.a,0);
       const tb = bowlers.reduce((sum,o)=>sum+o.b,0);
-      m.bowlers = bowlers;
-      m.teamScoreA = ta;
-      m.teamScoreB = tb;
-      m.completed = true;
+      m.bowlers = bowlers; m.teamScoreA = ta; m.teamScoreB = tb; m.completed = true;
     }
   });
-
-  if(hasError) {
-    alert('Could not save all matches. Please ensure all bowler scores are entered correctly (0–300).');
-  } else {
-    save();
-  }
+  if(hasError) { alert('Could not save all matches. Please ensure all bowler scores are entered correctly (0–300).'); } else { save(); }
 }
 
-function getBowlerScore(m,pos,side){
-  const o=m.bowlers.find(x=>x.pos===pos); return o ? (side==='a'?o.a:o.b) : '';
-}
+function getBowlerScore(m,pos,side){ const o=m.bowlers.find(x=>x.pos===pos); return o ? (side==='a'?o.a:o.b) : ''; }
 
 function refreshMatchPreview(id){
   const game=state.games.find(g=>g.number===state.currentGame), m=game?.matches.find(x=>x.id===id); if(!m)return;
@@ -852,44 +858,28 @@ function refreshMatchPreview(id){
   for(let pos=0; pos<3; pos++){
     const aInp = document.getElementById(`s_${id}_a_${pos}`);
     const bInp = document.getElementById(`s_${id}_b_${pos}`);
-    const a = Number(aInp?.value)||0;
-    const b = Number(bInp?.value)||0;
+    const a = Number(aInp?.value)||0; const b = Number(bInp?.value)||0;
     ta+=a; tb+=b;
-    
     const haTotal = a + as[pos].handicap;
     const hbTotal = b + bs[pos].handicap;
-    
     const elAVal = document.getElementById(`thdcp_val_${id}_a_${pos}`);
     const elBVal = document.getElementById(`thdcp_val_${id}_b_${pos}`);
     if(elAVal) elAVal.textContent = aInp?.value!=='' ? haTotal : '—';
     if(elBVal) elBVal.textContent = bInp?.value!=='' ? hbTotal : '—';
-    
     const pA = document.getElementById(`p_a_${id}_${pos}`);
     const pB = document.getElementById(`p_b_${id}_${pos}`);
-    
     if(aInp?.value!=='' && bInp?.value!==''){
-      if(haTotal === hbTotal){
-        if(pA) pA.textContent = '🤝';
-        if(pB) pB.textContent = '🤝';
-      } else if(haTotal > hbTotal){
-        if(pA) pA.textContent = '🟢';
-        if(pB) pB.textContent = '❌';
-      } else {
-        if(pA) pA.textContent = '❌';
-        if(pB) pB.textContent = '🟢';
-      }
-    } else {
-      if(pA) pA.textContent = '';
-      if(pB) pB.textContent = '';
-    }
+      if(haTotal === hbTotal){ if(pA) pA.textContent = '🤝'; if(pB) pB.textContent = '🤝'; } 
+      else if(haTotal > hbTotal){ if(pA) pA.textContent = '🟢'; if(pB) pB.textContent = '❌'; } 
+      else { if(pA) pA.textContent = '❌'; if(pB) pB.textContent = '🟢'; }
+    } else { if(pA) pA.textContent = ''; if(pB) pB.textContent = ''; }
   }
   
   const ea=document.getElementById(`ts_${id}_a`), eb=document.getElementById(`ts_${id}_b`);
   const totsAVal = document.getElementById(`tots_val_${id}_a`), totsBVal = document.getElementById(`tots_val_${id}_b`);
   const tpA = document.getElementById(`tp_a_${id}`), tpB = document.getElementById(`tp_b_${id}`);
   
-  if(ea) ea.value=ta; 
-  if(eb) eb.value=tb;
+  if(ea) ea.value=ta; if(eb) eb.value=tb;
   
   const teamHdcpA = teamTotals(A).hdcp;
   const teamHdcpB = teamTotals(B).hdcp;
@@ -900,20 +890,10 @@ function refreshMatchPreview(id){
   if(totsBVal) totsBVal.textContent = eb?.value!=='' ? teamSumB : '—';
   
   if(ea?.value!=='' && eb?.value!==''){
-    if(teamSumA === teamSumB){
-      if(tpA) tpA.textContent = '🤝';
-      if(tpB) tpB.textContent = '🤝';
-    } else if(teamSumA > teamSumB){
-      if(tpA) tpA.textContent = '🟢🟢';
-      if(tpB) tpB.textContent = '❌❌';
-    } else {
-      if(tpA) tpA.textContent = '❌❌';
-      if(tpB) tpB.textContent = '🟢🟢';
-    }
-  } else {
-    if(tpA) tpA.textContent = '';
-    if(tpB) tpB.textContent = '';
-  }
+    if(teamSumA === teamSumB){ if(tpA) tpA.textContent = '🤝'; if(tpB) tpB.textContent = '🤝'; } 
+    else if(teamSumA > teamSumB){ if(tpA) tpA.textContent = '🟢🟢'; if(tpB) tpB.textContent = '❌❌'; } 
+    else { if(tpA) tpA.textContent = '❌❌'; if(tpB) tpB.textContent = '🟢🟢'; }
+  } else { if(tpA) tpA.textContent = ''; if(tpB) tpB.textContent = ''; }
 }
 
 function saveMatch(id){
@@ -929,10 +909,11 @@ function saveMatch(id){
   m.bowlers=bowlers; m.teamScoreA=ta; m.teamScoreB=tb; m.completed=true; save();
 }
 
-function calculateTeamStandings(dayFilter = 'all'){
+function calculateTeamStandings(dayFilter = 'all', upToGameNo = 999, shiftFilter = 'all'){
   const map=teamMap(), stats=state.teams.map(t=>({id:t.id,name:t.name,shift:t.shift||1,points:0,pinfall:0,highest:0,games:0}));
   const sm=Object.fromEntries(stats.map(s=>[s.id,s]));
   for(const g of state.games){
+    if(g.number > upToGameNo) continue;
     if(dayFilter === 'sat' && g.number > state.settings.satGames) continue;
     if(dayFilter === 'sun' && g.number <= state.settings.satGames) continue;
     
@@ -953,29 +934,19 @@ function calculateTeamStandings(dayFilter = 'all'){
       sa.points+=ap; sb.points+=bp; sa.games++; sb.games++;
     }
   }
-  return stats.sort((a,b)=>b.points-a.points||b.pinfall-a.pinfall||b.highest-a.highest||a.name.localeCompare(b.name));
+  let res = stats;
+  if(shiftFilter !== 'all') res = res.filter(s => String(s.shift) === String(shiftFilter));
+  return res.sort((a,b)=>b.points-a.points||b.pinfall-a.pinfall||b.highest-a.highest||a.name.localeCompare(b.name));
 }
 
-function calculatePlayerStandings(dayFilter = 'all') {
+function calculatePlayerStandings(dayFilter = 'all', upToGameNo = 999) {
   const map=teamMap(), players=[];
   state.teams.forEach(t=>t.bowlers.forEach(b=>players.push({
-    id: t.id+'|'+b.name,
-    name: b.name,
-    team: t.name,
-    gender: b.gender,
-    handicap: b.handicap,
-    average: b.average,
-    points: 0,
-    scratchPinfall: 0,
-    netPinfall: 0,
-    highScratch: 0,
-    highNet: 0,
-    games: 0,
-    scratchGames: {},
-    netGames: {}
+    id: t.id+'|'+b.name, name: b.name, team: t.name, gender: b.gender, handicap: b.handicap, average: b.average, points: 0, scratchPinfall: 0, netPinfall: 0, highScratch: 0, highNet: 0, games: 0, scratchGames: {}, netGames: {}
   })));
   const sm=Object.fromEntries(players.map(p=>[p.id,p]));
   for(const g of state.games) {
+    if(g.number > upToGameNo) continue;
     if(dayFilter === 'sat' && g.number > state.settings.satGames) continue;
     if(dayFilter === 'sun' && g.number <= state.settings.satGames) continue;
 
@@ -990,26 +961,14 @@ function calculatePlayerStandings(dayFilter = 'all') {
         if(pa){
           const netA = o.a + bowlerA.handicap;
           const netB = o.b + bowlerB.handicap;
-          pa.points += netA>netB?2:netA===netB?1:0;
-          pa.scratchPinfall += o.a;
-          pa.netPinfall += netA;
-          pa.highScratch = Math.max(pa.highScratch, o.a);
-          pa.highNet = Math.max(pa.highNet, netA);
-          pa.games++;
-          pa.scratchGames[g.number] = o.a;
-          pa.netGames[g.number] = netA;
+          pa.points += netA>netB?2:netA===netB?1:0; pa.scratchPinfall += o.a; pa.netPinfall += netA;
+          pa.highScratch = Math.max(pa.highScratch, o.a); pa.highNet = Math.max(pa.highNet, netA); pa.games++; pa.scratchGames[g.number] = o.a; pa.netGames[g.number] = netA;
         }
         if(pb){
           const netA = o.a + bowlerA.handicap;
           const netB = o.b + bowlerB.handicap;
-          pb.points += netB>netA?2:netB===netA?1:0;
-          pb.scratchPinfall += o.b;
-          pb.netPinfall += netB;
-          pb.highScratch = Math.max(pb.highScratch, o.b);
-          pb.highNet = Math.max(pb.highNet, netB);
-          pb.games++;
-          pb.scratchGames[g.number] = o.b;
-          pb.netGames[g.number] = netB;
+          pb.points += netB>netA?2:netB===netA?1:0; pb.scratchPinfall += o.b; pb.netPinfall += netB;
+          pb.highScratch = Math.max(pb.highScratch, o.b); pb.highNet = Math.max(pb.highNet, netB); pb.games++; pb.scratchGames[g.number] = o.b; pb.netGames[g.number] = netB;
         }
       });
     }
@@ -1020,7 +979,6 @@ function calculatePlayerStandings(dayFilter = 'all') {
 function renderStandings(){
   document.querySelectorAll('.view-team-btn').forEach(b => { b.classList.add('btn-primary'); b.classList.remove('btn-secondary'); });
   document.querySelectorAll('.view-player-btn').forEach(b => { b.classList.add('btn-secondary'); b.classList.remove('btn-primary'); });
-
   const t=calculateTeamStandings('all');
   document.getElementById('standingsSubtitle').textContent=state.started?`Displaying overall team standings across all shifts.`:'Tournament not started.';
   if(!state.teams.length){document.getElementById('standingsContent').innerHTML='<div class="empty">No registered teams.</div>';return}
@@ -1046,19 +1004,16 @@ function renderStandings(){
 function renderPlayerStandings() {
   document.querySelectorAll('.view-player-btn').forEach(b => { b.classList.add('btn-primary'); b.classList.remove('btn-secondary'); });
   document.querySelectorAll('.view-team-btn').forEach(b => { b.classList.add('btn-secondary'); b.classList.remove('btn-primary'); });
-
   if(!state.teams.length){document.getElementById('standingsContent').innerHTML='<div class="empty">No registered teams.</div>';return}
   
   const groups=[['Male','Men'],['Female','Women'],['Male Senior','Senior Men'],['Female Senior','Senior Women']];
   const players=calculatePlayerStandings('all');
   const totalGamesCount = state.games.length || (state.settings.satGames + state.settings.sunGames);
-  
   document.getElementById('standingsSubtitle').textContent = state.started ? `Individual player performance broken down by game & net totals.` : 'Tournament not started.';
 
   document.getElementById('standingsContent').innerHTML=groups.map(([g,label])=>{
     const rows=players.filter(x=>x.gender===g);
     const gameHeaders = Array.from({length: totalGamesCount}, (_, i) => `<th class="center">G${i+1}</th>`).join('');
-    
     return `<div class="card" style="box-shadow:none;margin-bottom:16px">
       <h3>${label} Division</h3>
       ${rows.length ? `
@@ -1066,42 +1021,16 @@ function renderPlayerStandings() {
           <table>
             <thead>
               <tr>
-                <th>Pos</th>
-                <th>Player</th>
-                <th>Team</th>
-                <th class="center">HDCP</th>
-                ${gameHeaders}
-                <th class="center">Scratch Total</th>
-                <th class="center">HDCP Total</th>
-                <th class="center">Net Pinfall</th>
-                <th class="center">Scr. Avg</th>
-                <th class="center">High Game (Scr/Net)</th>
+                <th>Pos</th><th>Player</th><th>Team</th><th class="center">HDCP</th>${gameHeaders}<th class="center">Scratch Total</th><th class="center">HDCP Total</th><th class="center">Net Pinfall</th><th class="center">Scr. Avg</th><th class="center">High Game (Scr/Net)</th>
               </tr>
             </thead>
             <tbody>
               ${rows.map((x,i)=>{
-                const gameCells = Array.from({length: totalGamesCount}, (_, gIdx) => {
-                  const gNum = gIdx + 1;
-                  const sc = x.scratchGames[gNum];
-                  return `<td class="center">${sc !== undefined ? sc : '—'}</td>`;
-                }).join('');
-                
+                const gameCells = Array.from({length: totalGamesCount}, (_, gIdx) => { const sc = x.scratchGames[gIdx + 1]; return `<td class="center">${sc !== undefined ? sc : '—'}</td>`; }).join('');
                 const totalHdcp = x.games * x.handicap;
                 const scrAvg = x.games > 0 ? (x.scratchPinfall / x.games).toFixed(1) : '0.0';
                 const posBadge = i === 0 ? '🥇 1' : i === 1 ? '🥈 2' : i === 2 ? '🥉 3' : (i + 1);
-
-                return `<tr>
-                  <td><b>${posBadge}</b></td>
-                  <td><b>${esc(x.name)}</b></td>
-                  <td>${esc(x.team)}</td>
-                  <td class="center"><span class="badge" style="border-color:var(--line);color:#fff">${x.handicap}</span></td>
-                  ${gameCells}
-                  <td class="center"><b>${x.scratchPinfall}</b></td>
-                  <td class="center">${totalHdcp}</td>
-                  <td class="center" style="color:var(--gold);font-weight:900;font-size:1.05rem;">${x.netPinfall}</td>
-                  <td class="center">${scrAvg}</td>
-                  <td class="center">${x.highScratch} / <span style="color:var(--gold);font-weight:700;">${x.highNet}</span></td>
-                </tr>`;
+                return `<tr><td><b>${posBadge}</b></td><td><b>${esc(x.name)}</b></td><td>${esc(x.team)}</td><td class="center"><span class="badge" style="border-color:var(--line);color:#fff">${x.handicap}</span></td>${gameCells}<td class="center"><b>${x.scratchPinfall}</b></td><td class="center">${totalHdcp}</td><td class="center" style="color:var(--gold);font-weight:900;font-size:1.05rem;">${x.netPinfall}</td><td class="center">${scrAvg}</td><td class="center">${x.highScratch} / <span style="color:var(--gold);font-weight:700;">${x.highNet}</span></td></tr>`;
               }).join('')}
             </tbody>
           </table>
@@ -1111,141 +1040,72 @@ function renderPlayerStandings() {
   }).join('');
 }
 
-// ---------------- EXPORT & IMPORT FUNCTIONS ----------------
-
 function downloadExcel(htmlContent, filename) {
   const tableHtml = `
     <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-    <head>
-      <meta charset="utf-8">
-      <style>
-        table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; }
-        th, td { border: 1px solid black; padding: 5px; text-align: left; }
-        th { background-color: #e0e0e0; font-weight: bold; }
-        .hdr { background-color: #b0c4de; font-weight: bold; font-size: 1.1em; text-align: center; }
-      </style>
-    </head>
-    <body>${htmlContent}</body>
-    </html>
+    <head><meta charset="utf-8"><style>table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; } th, td { border: 1px solid black; padding: 5px; text-align: left; } th { background-color: #e0e0e0; font-weight: bold; } .hdr { background-color: #b0c4de; font-weight: bold; font-size: 1.1em; text-align: center; }</style></head>
+    <body>${htmlContent}</body></html>
   `;
-  const blob = new Blob([tableHtml], { type: 'application/vnd.ms-excel' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename + '.xls';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  const blob = new Blob([tableHtml], { type: 'application/vnd.ms-excel' }); const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename + '.xls';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
 }
 
 function exportStandings(type, dayFilter) {
   if(!state.started) { alert('Tournament not started.'); return; }
-  
-  let html = '<table>';
-  let title = type === 'team' ? 'Team Standings' : 'Individual Standings';
-  let period = dayFilter === 'all' ? '(Sat+Sun)' : (dayFilter === 'sat' ? '(Saturday)' : '(Sunday)');
-  let filename = `${type}_standings_${dayFilter}`;
-  
+  let html = '<table>'; let title = type === 'team' ? 'Team Standings' : 'Individual Standings'; let period = dayFilter === 'all' ? '(Sat+Sun)' : (dayFilter === 'sat' ? '(Saturday)' : '(Sunday)'); let filename = `${type}_standings_${dayFilter}`;
   html += `<tr><td colspan="${type === 'team' ? 7 : 10}" class="hdr">${title} ${period}</td></tr>`;
-  
   if (type === 'team') {
     const data = calculateTeamStandings(dayFilter);
     html += '<tr><th>Pos</th><th>Team</th><th>Shift</th><th>Points</th><th>Pinfall</th><th>Highest Game</th><th>Games Played</th></tr>';
-    data.forEach((x, i) => {
-      html += `<tr><td>${i+1}</td><td>${esc(x.name)}</td><td>${x.shift}</td><td>${x.points}</td><td>${x.pinfall}</td><td>${x.highest}</td><td>${x.games}</td></tr>`;
-    });
+    data.forEach((x, i) => { html += `<tr><td>${i+1}</td><td>${esc(x.name)}</td><td>${x.shift}</td><td>${x.points}</td><td>${x.pinfall}</td><td>${x.highest}</td><td>${x.games}</td></tr>`; });
   } else {
     const data = calculatePlayerStandings(dayFilter);
     html += '<tr><th>Pos</th><th>Player</th><th>Team</th><th>Gender</th><th>HDCP</th><th>Scratch Total</th><th>HDCP Total</th><th>Net Pinfall</th><th>High Scratch</th><th>High Net</th></tr>';
-    data.forEach((x, i) => {
-      const hdcpTotal = x.games * x.handicap;
-      html += `<tr><td>${i+1}</td><td>${esc(x.name)}</td><td>${esc(x.team)}</td><td>${x.gender}</td><td>${x.handicap}</td><td>${x.scratchPinfall}</td><td>${hdcpTotal}</td><td>${x.netPinfall}</td><td>${x.highScratch}</td><td>${x.highNet}</td></tr>`;
-    });
+    data.forEach((x, i) => { html += `<tr><td>${i+1}</td><td>${esc(x.name)}</td><td>${esc(x.team)}</td><td>${x.gender}</td><td>${x.handicap}</td><td>${x.scratchPinfall}</td><td>${x.games * x.handicap}</td><td>${x.netPinfall}</td><td>${x.highScratch}</td><td>${x.highNet}</td></tr>`; });
   }
-  
-  html += '</table>';
-  downloadExcel(html, filename);
+  html += '</table>'; downloadExcel(html, filename);
 }
 
 function exportGameShift() {
   if(!state.started) { alert('Tournament not started.'); return; }
-  
-  const gNum = Number(document.getElementById('exportGameSelect').value);
-  const shiftNum = document.getElementById('exportShiftSelect').value;
-  const game = state.games.find(g => g.number === gNum);
-  
-  if(!game) return;
-  
+  const gNum = Number(document.getElementById('exportGameSelect').value); const shiftNum = document.getElementById('exportShiftSelect').value;
+  const game = state.games.find(g => g.number === gNum); if(!game) return;
   const matches = game.matches.filter(m => String(m.shift) === shiftNum);
   if(matches.length === 0) { alert(`No matches found for Game ${gNum} in Shift ${shiftNum}.`); return; }
-  
-  let html = '<table>';
-  html += `<tr><td colspan="8" class="hdr">Game ${gNum} - Shift ${shiftNum}</td></tr>`;
+  let html = '<table>'; html += `<tr><td colspan="8" class="hdr">Game ${gNum} - Shift ${shiftNum}</td></tr>`;
   html += '<tr><th>Lane</th><th>Team</th><th>Bowler 1</th><th>Bowler 2</th><th>Bowler 3</th><th>Team Scratch</th><th>Team HDCP</th><th>Team Total (Net)</th></tr>';
-  
   const map = teamMap();
   matches.sort((m1, m2) => m1.laneA - m2.laneA).forEach(m => {
      const A = map[m.aId], B = map[m.bId];
      if(A) html += getTeamMatchRowHTML(m, A, 'a', m.laneA);
      if(B) html += getTeamMatchRowHTML(m, B, 'b', m.laneB);
   });
-  
-  html += '</table>';
-  downloadExcel(html, `Game_${gNum}_Shift_${shiftNum}_Scores`);
+  html += '</table>'; downloadExcel(html, `Game_${gNum}_Shift_${shiftNum}_Scores`);
 }
 
 function getTeamMatchRowHTML(m, team, side, lane) {
-  let b1 = m.completed ? (side==='a' ? m.bowlers[0].a : m.bowlers[0].b) : '';
-  let b2 = m.completed ? (side==='a' ? m.bowlers[1].a : m.bowlers[1].b) : '';
-  let b3 = m.completed ? (side==='a' ? m.bowlers[2].a : m.bowlers[2].b) : '';
-  let ts = m.completed ? (side==='a' ? m.teamScoreA : m.teamScoreB) : '';
-  let th = teamTotals(team).hdcp;
-  let net = m.completed ? (ts + th) : '';
-  
+  let b1 = m.completed ? (side==='a' ? m.bowlers[0].a : m.bowlers[0].b) : ''; let b2 = m.completed ? (side==='a' ? m.bowlers[1].a : m.bowlers[1].b) : ''; let b3 = m.completed ? (side==='a' ? m.bowlers[2].a : m.bowlers[2].b) : '';
+  let ts = m.completed ? (side==='a' ? m.teamScoreA : m.teamScoreB) : ''; let th = teamTotals(team).hdcp; let net = m.completed ? (ts + th) : '';
   return `<tr><td>${lane}</td><td>${esc(team.name)}</td><td>${b1}</td><td>${b2}</td><td>${b3}</td><td>${ts}</td><td>${th}</td><td>${net}</td></tr>`;
 }
 
 function exportTournamentJSON() {
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
-  const dlAnchorElem = document.createElement('a');
-  dlAnchorElem.setAttribute("href", dataStr);
-  dlAnchorElem.setAttribute("download", `delarosa_masters_backup_${new Date().toISOString().slice(0,10)}.json`);
-  document.body.appendChild(dlAnchorElem);
-  dlAnchorElem.click();
-  dlAnchorElem.remove();
+  const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", `delarosa_masters_backup_${new Date().toISOString().slice(0,10)}.json`);
+  document.body.appendChild(dlAnchorElem); dlAnchorElem.click(); dlAnchorElem.remove();
 }
 
 function importTournamentJSON(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
+  const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
   reader.onload = function(e) {
-    try {
-      const importedState = JSON.parse(e.target.result);
-      if (importedState && importedState.teams && importedState.settings) {
-        state = importedState;
-        save();
-        alert('Tournament data imported and loaded successfully!');
-        renderAll();
-      } else {
-        alert('Invalid tournament file structure.');
-      }
-    } catch (err) {
-      alert('Error parsing JSON file: ' + err.message);
-    }
-    // Reset file input value so same file can be re-uploaded if needed
-    event.target.value = '';
-  };
-  reader.readAsText(file);
+    try { const importedState = JSON.parse(e.target.result); if (importedState && importedState.teams && importedState.settings) { state = importedState; save(); alert('Tournament data imported and loaded successfully!'); renderAll(); } else { alert('Invalid tournament file structure.'); } } catch (err) { alert('Error parsing JSON file: ' + err.message); } event.target.value = '';
+  }; reader.readAsText(file);
 }
 
 function updateExportOptions() {
   const gameSelect = document.getElementById('exportGameSelect');
-  if(gameSelect && state.started) {
-      const totalGames = state.settings.satGames + state.settings.sunGames;
-      gameSelect.innerHTML = Array.from({length: totalGames}, (_, i) => `<option value="${i+1}">Game ${i+1}</option>`).join('');
-  }
+  if(gameSelect && state.started) { gameSelect.innerHTML = state.games.map(g => `<option value="${g.number}">Game ${g.number}</option>`).join(''); }
 }
 
 function activateTab(id){
@@ -1254,25 +1114,17 @@ function activateTab(id){
 }
 
 function renderAll(){
-  renderTeams();
-  renderGame();
-  renderStandings();
-  updateExportOptions();
+  renderTeams(); renderGame(); renderStandings(); updateExportOptions();
   document.getElementById('headerStatus').textContent=`${state.settings.satGames+state.settings.sunGames} games • Lanes: ${state.settings.totalLanes}`;
 }
 
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
-  activateTab(b.dataset.tab); 
-  if(b.dataset.tab==='standings') renderStandings();
-  if(b.dataset.tab==='export') updateExportOptions();
-});
-
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{ activateTab(b.dataset.tab); if(b.dataset.tab==='standings') renderStandings(); if(b.dataset.tab==='export') updateExportOptions(); });
 document.querySelectorAll('.view-team-btn').forEach(b=>b.onclick=renderStandings);
 document.querySelectorAll('.view-player-btn').forEach(b=>b.onclick=renderPlayerStandings);
 document.getElementById('addTeamBtn').onclick=registerTeam;
 document.getElementById('clearFormBtn').onclick=clearForm;
 document.getElementById('startTournamentBtn').onclick=()=>startTournament();
-document.getElementById('resetTournamentBtn').onclick=()=>{if(isAdmin && confirm('Reset all game pairings and scores?'))resetGames();};
+document.getElementById('resetTournamentBtn').onclick=()=>{if(isAdmin && confirm('Reset tournament to a blank state?'))resetGames();};
 document.getElementById('auditShiftFilter').onchange=()=>renderGame();
 
 initBowlerForm();
