@@ -334,13 +334,43 @@ body.is-admin div.admin-only{display:flex !important}
   <section id="setup" class="panel admin-only">
     <div class="grid">
       <div class="card span12">
-        <h2>Tournament Setup & Initial Assignments</h2>
-        <p class="muted">View registered teams and generate the very first randomized game. Games 2, 3, and 4 will automatically become positional rounds within shifts, and Game 5 will be an overall positional split.</p>
-        <div class="actions" style="margin-top:12px; margin-bottom:16px;">
-          <button class="btn-primary" id="startTournamentBtn">Start Tournament (Generate Game 1)</button>
-          <button class="btn-danger" id="resetTournamentBtn">Reset Tournament</button>
+        <h2>Tournament Setup & Assignment Engine</h2>
+        <p class="muted">Generate matchups shift-by-shift to accommodate different play times. Specify the starting lane to control where the shift bowls. Game 1 is random. Games 2-4 are positional. Game 5 merges all shifts into an overall position round. Games 6-7 maintain the Game 5 matchup and move 2 pairs to the right.</p>
+        
+        <div class="row" style="align-items:end; margin-bottom:16px; margin-top:16px;">
+          <div>
+            <label for="genGameSelect">Target Game</label>
+            <select id="genGameSelect">
+              <option value="1">Game 1</option>
+              <option value="2">Game 2 (Positional)</option>
+              <option value="3">Game 3 (Positional)</option>
+              <option value="4">Game 4 (Positional)</option>
+              <option value="5">Game 5 (Overall Positional)</option>
+              <option value="6">Game 6 (+2 Pairs Right)</option>
+              <option value="7">Game 7 (+2 Pairs Right)</option>
+            </select>
+          </div>
+          <div>
+            <label for="genShiftSelect">Target Shift</label>
+            <select id="genShiftSelect">
+              <option value="1">Shift 1</option>
+              <option value="2">Shift 2</option>
+              <option value="3">Shift 3</option>
+            </select>
+          </div>
+          <div>
+            <label for="genStartLane">Starting Lane (e.g. 8)</label>
+            <input type="number" id="genStartLane" value="1" min="1" max="100">
+          </div>
+          <div>
+            <button class="btn-primary" style="width:100%" onclick="generateSpecificGame()">Generate Matchups</button>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-danger" id="resetTournamentBtn" onclick="resetGames()">Reset All Tournament Games</button>
         </div>
       </div>
+      
       <div class="card span12">
         <h3>Registered Teams Overview</h3>
         <div id="setupTeamsTable"></div>
@@ -438,7 +468,7 @@ body.is-admin div.admin-only{display:flex !important}
 </main>
 
 <script>
-const STORAGE_KEY = 'bowlingTournamentManager_v6';
+const STORAGE_KEY = 'bowlingTournamentManager_v7';
 let isAdmin = false;
 
 function showAdminPrompt(){ document.getElementById('adminForm').style.display = 'block'; }
@@ -575,11 +605,7 @@ function generateDummyTeams(){
 
     let shiftTeamsCount = state.teams.filter(t => t.shift === currentShift).length;
     if(shiftTeamsCount >= dummyLanesLimit) {
-      if (targetShift !== 'all') {
-         break; // Stop adding if the specific targeted shift hits the custom cap
-      } else {
-         continue; // If spreading evenly, skip to next shift
-      }
+      if (targetShift !== 'all') { break; } else { continue; }
     }
 
     let teamName = `Team${tCounter++}`;
@@ -629,110 +655,102 @@ function randomizeTeamsForShift(shiftTeams){
   return ids;
 }
 
-function buildMatch(gameNo, shift, aId, bId, pairIndexRaw, numPairs) {
-  let pairIndex = pairIndexRaw % numPairs;
-  let laneA = (pairIndex * 2) + 1;
-  let laneB = laneA + 1;
-  return { id: crypto.randomUUID(), shift: shift, aId: aId, bId: bId, laneA: laneA, laneB: laneB, completed: false, teamScoreA: null, teamScoreB: null, bowlers: [] };
+function buildMatchObj(gameNo, shift, aId, bId, laneA) {
+  return {
+    id: crypto.randomUUID(), shift: shift, aId: aId, bId: bId,
+    laneA: laneA, laneB: laneA + 1, completed: false,
+    teamScoreA: null, teamScoreB: null, bowlers: []
+  };
 }
 
-function createGame(gameNo) {
-  const totalLanes = state.settings.totalLanes;
-  const numPairs = Math.floor(totalLanes / 2);
-  let allMatches = [];
-  const day = gameNo <= state.settings.satGames ? 'Saturday' : 'Sunday';
-
-  if (gameNo === 1) {
-    for(let shift = 1; shift <= 3; shift++) {
-      const shiftTeams = state.teams.filter(t => (t.shift || 1) === shift);
-      if(shiftTeams.length === 0) continue;
-      let ids = randomizeTeamsForShift(shiftTeams);
-      if(ids.length % 2 !== 0) ids.push(null);
-      for(let i=0; i<ids.length; i+=2){
-        if(!ids[i]) continue;
-        const pairIndex = i / 2;
-        allMatches.push(buildMatch(gameNo, shift, ids[i], ids[i+1], pairIndex, numPairs));
-      }
+function generateSpecificGame() {
+  if(!isAdmin) return;
+  const gameNo = Number(document.getElementById('genGameSelect').value);
+  const shift = Number(document.getElementById('genShiftSelect').value);
+  const startLane = Number(document.getElementById('genStartLane').value) || 1;
+  
+  if(gameNo === 5) {
+    if(state.games[4]) { 
+       if(!confirm('Game 5 is already generated. This will overwrite existing Game 5 data. Continue?')) return; 
+       state.games[4].matches = [];
     }
-  } else if (gameNo >= 2 && gameNo <= 4) {
-    for(let shift = 1; shift <= 3; shift++) {
-      let standings = calculateTeamStandings('all', gameNo - 1, shift);
-      if(standings.length === 0) continue;
-      let ids = standings.map(s => s.id);
-      if(ids.length % 2 !== 0) ids.push(null);
-      for(let i=0; i<ids.length; i+=2){
-        if(!ids[i]) continue;
-        const pairIndex = i / 2;
-        allMatches.push(buildMatch(gameNo, shift, ids[i], ids[i+1], pairIndex, numPairs));
-      }
-    }
-  } else if (gameNo === 5) {
-    let standings = calculateTeamStandings('all', gameNo - 1, 'all');
+    let standings = calculateTeamStandings('all', 4, 'all');
+    if(standings.length < 2) { alert('Not enough team data from Games 1-4.'); return; }
+    
     let ids = standings.map(s => s.id);
     if(ids.length % 2 !== 0) ids.push(null);
-
-    let activeShifts = [...new Set(state.teams.map(t=>t.shift))].sort((a,b)=>b-a);
-    if(activeShifts.length === 0) activeShifts = [1];
     
-    let totalPairsCount = Math.ceil(ids.length / 2);
-    let pairsForTopShift = Math.ceil(totalPairsCount / activeShifts.length);
-    let shiftCapacities = [];
-    let remainingPairs = totalPairsCount;
-    for(let i=0; i<activeShifts.length; i++){
-        let cap = (i === activeShifts.length - 1) ? remainingPairs : pairsForTopShift;
-        shiftCapacities.push(cap);
-        remainingPairs -= cap;
+    const pairsCount = ids.length / 2;
+    const shift2Pairs = Math.ceil(pairsCount / 2); 
+    
+    const shift2Ids = ids.slice(0, shift2Pairs * 2); 
+    const shift1Ids = ids.slice(shift2Pairs * 2);    
+    
+    let matches = [];
+    for(let i=0; i<shift1Ids.length; i+=2) {
+       if(!shift1Ids[i]) continue;
+       matches.push(buildMatchObj(5, 1, shift1Ids[i], shift1Ids[i+1], startLane + i));
+       let tA = state.teams.find(t=>t.id===shift1Ids[i]); if(tA) tA.shift = 1;
+       let tB = state.teams.find(t=>t.id===shift1Ids[i+1]); if(tB) tB.shift = 1;
     }
-
-    let currentShiftIdx = 0;
-    let pairsInCurrentShift = 0;
-
-    for(let i=0; i<ids.length; i+=2){
-      if(pairsInCurrentShift >= shiftCapacities[currentShiftIdx] && currentShiftIdx < activeShifts.length - 1) {
-          currentShiftIdx++;
-          pairsInCurrentShift = 0;
+    for(let i=0; i<shift2Ids.length; i+=2) {
+       if(!shift2Ids[i]) continue;
+       matches.push(buildMatchObj(5, 2, shift2Ids[i], shift2Ids[i+1], startLane + i));
+       let tA = state.teams.find(t=>t.id===shift2Ids[i]); if(tA) tA.shift = 2;
+       let tB = state.teams.find(t=>t.id===shift2Ids[i+1]); if(tB) tB.shift = 2;
+    }
+    state.games[4] = { number: 5, day: 'Sunday', matches: matches };
+    state.currentGame = 5;
+    
+  } else {
+    if(!state.games[gameNo-1]) {
+       state.games[gameNo-1] = { number: gameNo, day: gameNo <= state.settings.satGames ? 'Saturday' : 'Sunday', matches: [] };
+    } else if (state.games[gameNo-1].matches.some(m => m.shift === shift)) {
+       if(!confirm(`Game ${gameNo} already generated for Shift ${shift}. This will overwrite it. Continue?`)) return;
+       state.games[gameNo-1].matches = state.games[gameNo-1].matches.filter(m => m.shift !== shift);
+    }
+    
+    let matches = [];
+    if (gameNo === 1) {
+      const shiftTeams = state.teams.filter(t => (t.shift || 1) === shift);
+      if(shiftTeams.length < 2) { alert(`Not enough teams in Shift ${shift}.`); return; }
+      let ids = randomizeTeamsForShift(shiftTeams);
+      if(ids.length % 2 !== 0) ids.push(null);
+      for(let i=0; i<ids.length; i+=2) {
+         if(!ids[i]) continue;
+         matches.push(buildMatchObj(gameNo, shift, ids[i], ids[i+1], startLane + i));
       }
-      let shift = activeShifts[currentShiftIdx];
-      let startPairOffset = 3; // Start pair 7-8
-      let pairIndex = pairsInCurrentShift + startPairOffset;
-
-      if (ids[i] && ids[i+1]) {
-          allMatches.push(buildMatch(gameNo, shift, ids[i], ids[i+1], pairIndex, numPairs));
-          let tA = state.teams.find(t=>t.id === ids[i]); if(tA) tA.shift = shift;
-          let tB = state.teams.find(t=>t.id === ids[i+1]); if(tB) tB.shift = shift;
+    } else if (gameNo >= 2 && gameNo <= 4) {
+      let standings = calculateTeamStandings('all', gameNo - 1, shift);
+      if(standings.length < 2) { alert(`Not enough data from previous games for Shift ${shift}.`); return; }
+      let ids = standings.map(s => s.id);
+      if(ids.length % 2 !== 0) ids.push(null);
+      for(let i=0; i<ids.length; i+=2) {
+         if(!ids[i]) continue;
+         matches.push(buildMatchObj(gameNo, shift, ids[i], ids[i+1], startLane + i));
       }
-      pairsInCurrentShift++;
+    } else if (gameNo > 5) {
+      const prevGame = state.games[gameNo - 2];
+      if(!prevGame) { alert(`Game ${gameNo-1} is missing.`); return; }
+      const prevMatches = prevGame.matches.filter(m => m.shift === shift);
+      if(prevMatches.length === 0) { alert(`No previous matches found for Shift ${shift}.`); return; }
+      
+      prevMatches.sort((a,b) => a.laneA - b.laneA).forEach(prevM => {
+         matches.push(buildMatchObj(gameNo, shift, prevM.aId, prevM.bId, prevM.laneA + 4));
+      });
     }
-  } else if (gameNo > 5) {
-    const prevGame = state.games.find(g => g.number === gameNo - 1);
-    for(const prevM of prevGame.matches) {
-      let oldPairIdx = Math.floor((prevM.laneA - 1) / 2);
-      let newPairIdx = oldPairIdx + 2; 
-      allMatches.push(buildMatch(gameNo, prevM.shift, prevM.aId, prevM.bId, newPairIdx, numPairs));
-    }
+    
+    state.games[gameNo-1].matches.push(...matches);
+    state.currentGame = gameNo;
   }
-
-  return { number: gameNo, day: day, matches: allMatches };
-}
-
-function startTournament(){
-  if(!isAdmin) return;
-  if(state.teams.length < 2){ alert('Register at least 2 teams first.'); return; }
-  state.games = [createGame(1)];
-  state.currentGame = 1; 
-  state.started = true; 
-  save(); 
-  activateTab('game');
-  updateExportOptions();
-}
-
-function generateNextGame() {
-  if(!isAdmin) return;
-  const nextGameNo = state.games.length + 1;
-  state.games.push(createGame(nextGameNo));
-  state.currentGame = nextGameNo;
+  
+  state.started = true;
   save();
-  updateExportOptions();
+  alert(`Game ${gameNo} generated for ${gameNo === 5 ? 'All Shifts' : 'Shift ' + shift}.`);
+  activateTab('game');
+  document.getElementById('auditGameSelect').value = gameNo;
+  document.getElementById('auditShiftFilter').value = gameNo === 5 ? 'all' : shift;
+  renderGame();
 }
 
 function resetGames(){
@@ -745,20 +763,20 @@ function teamTotals(t){return t.bowlers.reduce((o,b)=>({avg:o.avg+b.average,hdcp
 
 function renderGame(){
   const el=document.getElementById('gameContent');
-  if(!state.started || !state.games.length){ el.innerHTML=`<div class="card"><div class="empty">Tournament has not started. Use Tournament Setup to generate Game 1.</div></div>`; return }
+  if(!state.started || !state.games.length){ el.innerHTML=`<div class="card"><div class="empty">Tournament has not started. Use Tournament Setup to generate matchups.</div></div>`; return }
   
   const totalGames = state.settings.satGames + state.settings.sunGames;
-  const generatedCount = state.games.length;
   const gameSelect = document.getElementById('auditGameSelect');
   
-  gameSelect.innerHTML = state.games.map(g => `<option value="${g.number}">Game ${g.number} (${g.day})</option>`).join('');
+  gameSelect.innerHTML = Array.from({length: totalGames}, (_, i) => `<option value="${i+1}">Game ${i+1}</option>`).join('');
   gameSelect.value = state.currentGame;
   
   gameSelect.onchange = (e) => { state.currentGame = Number(e.target.value); renderGame(); };
   
   const shiftFilter = document.getElementById('auditShiftFilter').value;
-  const game = state.games.find(g => g.number === state.currentGame);
-  if(!game){ el.innerHTML=`<div class="card"><div class="empty">No active game data.</div></div>`; return; }
+  const game = state.games[state.currentGame - 1];
+  
+  if(!game || !game.matches.length){ el.innerHTML=`<div class="card"><div class="empty">No matches generated for this game yet.</div></div>`; return; }
   
   const map = teamMap();
   const filteredMatches = game.matches.filter(m => shiftFilter === 'all' || String(m.shift) === shiftFilter);
@@ -783,11 +801,6 @@ function renderGame(){
           <div class="fab-container">
             <button class="fab fab-random" onclick="generateRandomScores()">🎲 Randomize (145-258)</button>
             <button class="fab fab-save" onclick="saveAllMatches()">💾 Save All Matches</button>
-          </div>`;
-      } else if (generatedCount < totalGames && generatedCount === state.currentGame) {
-          html += `
-          <div class="fab-container">
-            <button class="fab fab-generate" onclick="generateNextGame()">⚙️ Generate Game ${generatedCount + 1}</button>
           </div>`;
       }
   }
@@ -1159,7 +1172,6 @@ document.querySelectorAll('.view-team-btn').forEach(b=>b.onclick=renderStandings
 document.querySelectorAll('.view-player-btn').forEach(b=>b.onclick=renderPlayerStandings);
 document.getElementById('addTeamBtn').onclick=registerTeam;
 document.getElementById('clearFormBtn').onclick=clearForm;
-document.getElementById('startTournamentBtn').onclick=()=>startTournament();
 document.getElementById('resetTournamentBtn').onclick=()=>{if(isAdmin && confirm('Reset tournament to a blank state?'))resetGames();};
 document.getElementById('auditShiftFilter').onchange=()=>renderGame();
 
