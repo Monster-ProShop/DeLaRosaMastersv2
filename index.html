@@ -257,15 +257,11 @@ body.is-admin div.admin-only{display:flex !important}
   <section id="registration" class="panel admin-only">
     <div class="grid">
       <div class="card span8">
-        <h2>Team Registration & Lane Settings</h2>
-        <p class="muted">Configure available lanes (1–100), assign each team to a shift (1, 2, or 3), and register teams (max 3 bowlers per team, total avg ≤ 630).</p>
+        <h2>Team Registration</h2>
+        <p class="muted">Assign each team to a shift (1, 2, or 3), and register teams (max 3 bowlers per team, total avg ≤ 630). Lanes limits are now fully dynamic and handled during match generation.</p>
         
         <div class="row" style="margin-bottom: 16px;">
-          <div>
-            <label for="totalLanesInput">Lane Quantity (Available Lanes 1-100)</label>
-            <input id="totalLanesInput" type="number" min="1" max="100" value="30">
-          </div>
-          <div>
+          <div style="flex:1">
             <label for="teamShiftSelect">Shift Selection</label>
             <select id="teamShiftSelect">
               <option value="1">Shift 1</option>
@@ -273,12 +269,10 @@ body.is-admin div.admin-only{display:flex !important}
               <option value="3">Shift 3</option>
             </select>
           </div>
+          <div style="flex:2"><label for="teamName">Team name</label><input id="teamName" placeholder="Example: Strike Force"></div>
+          <div style="flex:1"><label for="teamCaptain">Optional contact</label><input id="teamCaptain" placeholder="Captain / contact"></div>
         </div>
-
-        <div class="row">
-          <div><label for="teamName">Team name</label><input id="teamName" placeholder="Example: Strike Force"></div>
-          <div style="flex:0 0 180px"><label for="teamCaptain">Optional contact</label><input id="teamCaptain" placeholder="Captain / contact"></div>
-        </div>
+        
         <div id="teamAlert"></div>
         <div id="bowlerInputs"></div>
         <div class="actions" style="margin-top:12px">
@@ -289,7 +283,7 @@ body.is-admin div.admin-only{display:flex !important}
       
       <div class="card span4">
         <h3>Shift Capacity Rules</h3>
-        <div class="pair-box"><b>Lane Limit & Teams</b><br><span class="muted">Each shift respects the quantity of teams based on the designated quantity of lanes (e.g., 30 lanes = max 30 teams per shift).</span></div>
+        <div class="pair-box"><b>Lane Assignments</b><br><span class="muted">Shift limits are based on your manual pool assignments during Matchup Generation.</span></div>
         <div class="pair-box"><b>Team Average</b><br><span class="muted">Sum of 3 averages must be ≤ 630.</span></div>
         <div class="pair-box"><b>Handicap Caps</b><br><span class="muted">210 − average, minimum 0.<br>Max 40 (Female/Senior), 35 (Male).</span></div>
       </div>
@@ -299,7 +293,7 @@ body.is-admin div.admin-only{display:flex !important}
         <div class="row" style="align-items:end;">
           <div>
             <label for="dummyCount" style="color:var(--ok)">Generate Random Teams</label>
-            <input id="dummyCount" type="number" min="1" max="90" value="30" style="border-color:var(--ok);">
+            <input id="dummyCount" type="number" min="1" max="90" value="16" style="border-color:var(--ok);">
           </div>
           <div>
             <label for="dummyShift" style="color:var(--ok)">Target Shift</label>
@@ -311,14 +305,11 @@ body.is-admin div.admin-only{display:flex !important}
             </select>
           </div>
           <div>
-            <label for="dummyLanes" style="color:var(--ok)">Available Lanes</label>
-            <input id="dummyLanes" type="number" min="1" max="100" value="30" style="border-color:var(--ok);">
+            <label for="dummyMaxTeams" style="color:var(--ok)">Max Teams Limit</label>
+            <input id="dummyMaxTeams" type="number" min="1" max="100" value="90" style="border-color:var(--ok);">
           </div>
           <div>
             <button class="btn-primary" style="background:var(--ok);color:#000;width:100%" onclick="generateDummyTeams()">Generate Dummy Teams</button>
-          </div>
-          <div class="muted small" style="flex: 2 1 100%;">
-            Automatically fills the specified shift up to the custom lane capacity limit.
           </div>
         </div>
       </div>
@@ -335,7 +326,7 @@ body.is-admin div.admin-only{display:flex !important}
     <div class="grid">
       <div class="card span12">
         <h2>Tournament Setup & Assignment Engine</h2>
-        <p class="muted">Generate matchups shift-by-shift to accommodate different play times. Specify the starting lane to control where the shift bowls. Game 1 is random. Games 2-4 are positional. Game 5 merges all shifts into an overall position round. Games 6-7 maintain the Game 5 matchup and move 2 pairs to the right.</p>
+        <p class="muted">Generate matchups shift-by-shift to accommodate different play times. Specify the lane boundaries (Pool Start/End) to control where the shift bowls, and designate which lane the 1st place team starts on. Game 1 is random. Games 2-4 are positional. Game 5 merges shifts into an overall position round. Games 6-7 maintain the Game 5 matchup and move 2 pairs to the right.</p>
         
         <div class="row" style="align-items:end; margin-bottom:16px; margin-top:16px;">
           <div>
@@ -359,14 +350,22 @@ body.is-admin div.admin-only{display:flex !important}
             </select>
           </div>
           <div>
-            <label for="genStartLane">Starting Lane (e.g. 8)</label>
-            <input type="number" id="genStartLane" value="1" min="1" max="100">
+            <label for="genPoolStart">Pool Start Lane (e.g. 4)</label>
+            <input type="number" id="genPoolStart" value="1" min="1" max="100">
+          </div>
+          <div>
+            <label for="genPoolEnd">Pool End Lane (e.g. 26)</label>
+            <input type="number" id="genPoolEnd" value="30" min="1" max="100">
+          </div>
+          <div>
+            <label for="genTopSeedLane">1st Place Lane (e.g. 12)</label>
+            <input type="number" id="genTopSeedLane" value="1" min="1" max="100">
           </div>
           <div>
             <button class="btn-primary" style="width:100%" onclick="generateSpecificGame()">Generate Matchups</button>
           </div>
         </div>
-        <div class="actions">
+        <div class="actions" style="margin-top: 20px;">
           <button class="btn-danger" id="resetTournamentBtn" onclick="resetGames()">Reset All Tournament Games</button>
         </div>
       </div>
@@ -468,7 +467,7 @@ body.is-admin div.admin-only{display:flex !important}
 </main>
 
 <script>
-const STORAGE_KEY = 'bowlingTournamentManager_v7';
+const STORAGE_KEY = 'bowlingTournamentManager_v8';
 let isAdmin = false;
 
 function showAdminPrompt(){ document.getElementById('adminForm').style.display = 'block'; }
@@ -482,7 +481,7 @@ function selectUserRole(){
 
 function loginAdmin(){
   const pass = document.getElementById('adminPass').value;
-  if(pass === 'admin'){
+  if(pass === 'B0l1ch3b1ll4r'){
     isAdmin = true;
     document.body.classList.add('is-admin');
     document.getElementById('roleBadge').textContent = 'Mode: Admin';
@@ -496,14 +495,13 @@ function loginAdmin(){
 let state = loadState();
 
 function defaultState(){
-  return { teams: [], settings: { totalLanes: 30, satGames: 4, sunGames: 3 }, games: [], currentGame: 1, started: false };
+  return { teams: [], settings: { satGames: 4, sunGames: 3 }, games: [], currentGame: 1, started: false };
 }
 
 function loadState(){
   try { 
     const s = JSON.parse(localStorage.getItem(STORAGE_KEY)); 
     if(s) {
-      if(!s.settings.totalLanes) s.settings.totalLanes = 30;
       if(!s.currentGame) s.currentGame = 1;
       return s;
     }
@@ -557,11 +555,7 @@ function clearForm(){
 
 function registerTeam(){
   if(!isAdmin) return;
-  const totalLanes = Number(document.getElementById('totalLanesInput').value) || 30;
-  state.settings.totalLanes = totalLanes;
   const shift = Number(document.getElementById('teamShiftSelect').value);
-  const shiftCount = state.teams.filter(t => (t.shift || 1) === shift).length;
-  if(shiftCount >= totalLanes) { alert(`Shift ${shift} has reached the maximum capacity of ${totalLanes} teams.`); return; }
   const name=document.getElementById('teamName').value.trim();
   const contact=document.getElementById('teamCaptain').value.trim();
   const bowlers=[0,1,2].map(i=>({
@@ -587,7 +581,7 @@ function generateDummyTeams(){
   if(!isAdmin) return;
   const count = parseInt(document.getElementById('dummyCount').value);
   const targetShift = document.getElementById('dummyShift').value;
-  const dummyLanesLimit = Number(document.getElementById('dummyLanes').value) || 30;
+  const dummyMaxTeamsLimit = Number(document.getElementById('dummyMaxTeams').value) || 90;
 
   if(isNaN(count) || count < 1 || count > 90) { alert('Please select a number of teams between 1 and 90.'); return; }
   
@@ -604,7 +598,7 @@ function generateDummyTeams(){
     }
 
     let shiftTeamsCount = state.teams.filter(t => t.shift === currentShift).length;
-    if(shiftTeamsCount >= dummyLanesLimit) {
+    if(shiftTeamsCount >= dummyMaxTeamsLimit) {
       if (targetShift !== 'all') { break; } else { continue; }
     }
 
@@ -625,7 +619,7 @@ function generateDummyTeams(){
   
   save();
   if (teamsAdded < count) {
-      alert(`Generated ${teamsAdded} teams. Limit reached based on custom capacity (${dummyLanesLimit} lanes).`);
+      alert(`Generated ${teamsAdded} teams. Limit reached based on custom capacity (${dummyMaxTeamsLimit} max teams).`);
   } else {
       alert(`Successfully generated ${teamsAdded} dummy teams!`);
   }
@@ -667,89 +661,112 @@ function generateSpecificGame() {
   if(!isAdmin) return;
   const gameNo = Number(document.getElementById('genGameSelect').value);
   const shift = Number(document.getElementById('genShiftSelect').value);
-  const startLane = Number(document.getElementById('genStartLane').value) || 1;
   
-  if(gameNo === 5) {
-    if(state.games[4]) { 
-       if(!confirm('Game 5 is already generated. This will overwrite existing Game 5 data. Continue?')) return; 
-       state.games[4].matches = [];
-    }
-    let standings = calculateTeamStandings('all', 4, 'all');
-    if(standings.length < 2) { alert('Not enough team data from Games 1-4.'); return; }
-    
-    let ids = standings.map(s => s.id);
-    if(ids.length % 2 !== 0) ids.push(null);
-    
-    const pairsCount = ids.length / 2;
-    const shift2Pairs = Math.ceil(pairsCount / 2); 
-    
-    const shift2Ids = ids.slice(0, shift2Pairs * 2); 
-    const shift1Ids = ids.slice(shift2Pairs * 2);    
-    
-    let matches = [];
-    for(let i=0; i<shift1Ids.length; i+=2) {
-       if(!shift1Ids[i]) continue;
-       matches.push(buildMatchObj(5, 1, shift1Ids[i], shift1Ids[i+1], startLane + i));
-       let tA = state.teams.find(t=>t.id===shift1Ids[i]); if(tA) tA.shift = 1;
-       let tB = state.teams.find(t=>t.id===shift1Ids[i+1]); if(tB) tB.shift = 1;
-    }
-    for(let i=0; i<shift2Ids.length; i+=2) {
-       if(!shift2Ids[i]) continue;
-       matches.push(buildMatchObj(5, 2, shift2Ids[i], shift2Ids[i+1], startLane + i));
-       let tA = state.teams.find(t=>t.id===shift2Ids[i]); if(tA) tA.shift = 2;
-       let tB = state.teams.find(t=>t.id===shift2Ids[i+1]); if(tB) tB.shift = 2;
-    }
-    state.games[4] = { number: 5, day: 'Sunday', matches: matches };
-    state.currentGame = 5;
-    
-  } else {
-    if(!state.games[gameNo-1]) {
-       state.games[gameNo-1] = { number: gameNo, day: gameNo <= state.settings.satGames ? 'Saturday' : 'Sunday', matches: [] };
-    } else if (state.games[gameNo-1].matches.some(m => m.shift === shift)) {
-       if(!confirm(`Game ${gameNo} already generated for Shift ${shift}. This will overwrite it. Continue?`)) return;
-       state.games[gameNo-1].matches = state.games[gameNo-1].matches.filter(m => m.shift !== shift);
-    }
-    
-    let matches = [];
-    if (gameNo === 1) {
-      const shiftTeams = state.teams.filter(t => (t.shift || 1) === shift);
-      if(shiftTeams.length < 2) { alert(`Not enough teams in Shift ${shift}.`); return; }
-      let ids = randomizeTeamsForShift(shiftTeams);
-      if(ids.length % 2 !== 0) ids.push(null);
-      for(let i=0; i<ids.length; i+=2) {
-         if(!ids[i]) continue;
-         matches.push(buildMatchObj(gameNo, shift, ids[i], ids[i+1], startLane + i));
-      }
-    } else if (gameNo >= 2 && gameNo <= 4) {
-      let standings = calculateTeamStandings('all', gameNo - 1, shift);
-      if(standings.length < 2) { alert(`Not enough data from previous games for Shift ${shift}.`); return; }
-      let ids = standings.map(s => s.id);
-      if(ids.length % 2 !== 0) ids.push(null);
-      for(let i=0; i<ids.length; i+=2) {
-         if(!ids[i]) continue;
-         matches.push(buildMatchObj(gameNo, shift, ids[i], ids[i+1], startLane + i));
-      }
-    } else if (gameNo > 5) {
-      const prevGame = state.games[gameNo - 2];
-      if(!prevGame) { alert(`Game ${gameNo-1} is missing.`); return; }
-      const prevMatches = prevGame.matches.filter(m => m.shift === shift);
-      if(prevMatches.length === 0) { alert(`No previous matches found for Shift ${shift}.`); return; }
-      
-      prevMatches.sort((a,b) => a.laneA - b.laneA).forEach(prevM => {
-         matches.push(buildMatchObj(gameNo, shift, prevM.aId, prevM.bId, prevM.laneA + 4));
-      });
-    }
-    
-    state.games[gameNo-1].matches.push(...matches);
-    state.currentGame = gameNo;
+  let poolStart = Number(document.getElementById('genPoolStart').value) || 1;
+  let poolEnd = Number(document.getElementById('genPoolEnd').value) || 30;
+  let topSeedLane = Number(document.getElementById('genTopSeedLane').value) || poolStart;
+
+  poolStart = poolStart % 2 === 0 ? poolStart - 1 : poolStart;
+  poolEnd = poolEnd % 2 !== 0 ? poolEnd + 1 : poolEnd; 
+  topSeedLane = topSeedLane % 2 === 0 ? topSeedLane - 1 : topSeedLane;
+
+  let availablePairs = [];
+  for (let i = poolStart; i <= poolEnd; i += 2) {
+      availablePairs.push(i);
+  }
+
+  let startIndex = availablePairs.indexOf(topSeedLane);
+  if (startIndex === -1) startIndex = 0; 
+
+  function getLaneForMatch(idx) {
+      let pairIdx = (startIndex + idx) % availablePairs.length;
+      return availablePairs[pairIdx];
   }
   
+  if(!state.games[gameNo-1]) {
+     state.games[gameNo-1] = { number: gameNo, day: gameNo <= state.settings.satGames ? 'Saturday' : 'Sunday', matches: [] };
+  } else if (state.games[gameNo-1].matches.some(m => m.shift === shift)) {
+     if(!confirm(`Game ${gameNo} already generated for Shift ${shift}. This will overwrite it. Continue?`)) return;
+     state.games[gameNo-1].matches = state.games[gameNo-1].matches.filter(m => m.shift !== shift);
+  }
+
+  let matches = [];
+  
+  if (gameNo === 1) {
+    const shiftTeams = state.teams.filter(t => (t.shift || 1) === shift);
+    if(shiftTeams.length < 2) { alert(`Not enough teams in Shift ${shift}.`); return; }
+    let ids = randomizeTeamsForShift(shiftTeams);
+    if(ids.length % 2 !== 0) ids.push(null);
+    for(let i=0; i<ids.length; i+=2) {
+       if(!ids[i]) continue;
+       matches.push(buildMatchObj(gameNo, shift, ids[i], ids[i+1], getLaneForMatch(i/2)));
+    }
+  } 
+  else if (gameNo >= 2 && gameNo <= 4) {
+    let standings = calculateTeamStandings('all', gameNo - 1, shift);
+    if(standings.length < 2) { alert(`Not enough data from previous games for Shift ${shift}.`); return; }
+    let ids = standings.map(s => s.id);
+    if(ids.length % 2 !== 0) ids.push(null);
+    for(let i=0; i<ids.length; i+=2) {
+       if(!ids[i]) continue;
+       matches.push(buildMatchObj(gameNo, shift, ids[i], ids[i+1], getLaneForMatch(i/2)));
+    }
+  } 
+  else if (gameNo === 5) {
+    let overallStandings = calculateTeamStandings('all', 4, 'all');
+    if(overallStandings.length < 2) { alert('Not enough team data from Games 1-4.'); return; }
+    
+    let allIds = overallStandings.map(s => s.id);
+    if(allIds.length % 2 !== 0) allIds.push(null);
+    
+    let activeShifts = [...new Set(state.teams.map(t=>t.shift))].sort((a,b)=>b-a); 
+    if(activeShifts.length === 0) activeShifts = [1];
+    
+    let totalPairsCount = allIds.length / 2;
+    let pairsPerShift = Math.ceil(totalPairsCount / activeShifts.length);
+    
+    let shiftChunks = {};
+    let currentIdx = 0;
+    for(let i=0; i<activeShifts.length; i++) {
+        let s = activeShifts[i];
+        let pairs = (i === activeShifts.length - 1) ? (totalPairsCount - (currentIdx/2)) : pairsPerShift;
+        shiftChunks[s] = allIds.slice(currentIdx, currentIdx + (pairs * 2));
+        currentIdx += pairs * 2;
+    }
+    
+    let idsForThisShift = shiftChunks[shift];
+    if(!idsForThisShift || idsForThisShift.length === 0) { alert(`No overall standing segment mapped to Shift ${shift} for Game 5.`); return; }
+    
+    for(let i=0; i<idsForThisShift.length; i+=2) {
+       if(!idsForThisShift[i]) continue;
+       matches.push(buildMatchObj(gameNo, shift, idsForThisShift[i], idsForThisShift[i+1], getLaneForMatch(i/2)));
+       let tA = state.teams.find(t=>t.id===idsForThisShift[i]); if(tA) tA.shift = shift;
+       let tB = state.teams.find(t=>t.id===idsForThisShift[i+1]); if(tB) tB.shift = shift;
+    }
+  } 
+  else if (gameNo > 5) {
+    const prevGame = state.games[gameNo - 2];
+    if(!prevGame) { alert(`Game ${gameNo-1} is missing.`); return; }
+    const prevMatches = prevGame.matches.filter(m => m.shift === shift);
+    if(prevMatches.length === 0) { alert(`No previous matches found for Shift ${shift}.`); return; }
+    
+    prevMatches.sort((a,b) => a.laneA - b.laneA).forEach(prevM => {
+       let currentPairIdx = availablePairs.indexOf(prevM.laneA);
+       if (currentPairIdx === -1) currentPairIdx = 0;
+       
+       let newPairIdx = (currentPairIdx + 2) % availablePairs.length;
+       matches.push(buildMatchObj(gameNo, shift, prevM.aId, prevM.bId, availablePairs[newPairIdx]));
+    });
+  }
+  
+  state.games[gameNo-1].matches.push(...matches);
+  state.currentGame = gameNo;
   state.started = true;
   save();
-  alert(`Game ${gameNo} generated for ${gameNo === 5 ? 'All Shifts' : 'Shift ' + shift}.`);
+  alert(`Game ${gameNo} Generated & Assigned for Shift ${shift}.`);
   activateTab('game');
   document.getElementById('auditGameSelect').value = gameNo;
-  document.getElementById('auditShiftFilter').value = gameNo === 5 ? 'all' : shift;
+  document.getElementById('auditShiftFilter').value = shift;
   renderGame();
 }
 
@@ -782,7 +799,7 @@ function renderGame(){
   const filteredMatches = game.matches.filter(m => shiftFilter === 'all' || String(m.shift) === shiftFilter);
   
   let html = `<div class="card" style="margin-bottom:14px;"><div class="actions" style="justify-content:space-between">
-      <div><h2>Game ${game.number} — ${game.day}</h2><div class="muted">Quantity of Lanes: <b>${state.settings.totalLanes}</b> • Showing ${filteredMatches.length} match${filteredMatches.length===1?'':'es'}</div></div>
+      <div><h2>Game ${game.number} — ${game.day}</h2><div class="muted">Showing ${filteredMatches.length} match${filteredMatches.length===1?'':'es'}</div></div>
       <div class="actions">
         <div class="badge">${game.matches.filter(m=>m.completed).length}/${game.matches.length} matches complete</div>
       </div>
@@ -791,7 +808,7 @@ function renderGame(){
   if(filteredMatches.length === 0){
     html += `<div class="card"><div class="empty">No matches found for the selected shift in this game round.</div></div>`;
   } else {
-    html += filteredMatches.map((m)=>renderMatch(m,map)).join('');
+    html += filteredMatches.sort((a,b)=>a.laneA - b.laneA).map((m)=>renderMatch(m,map)).join('');
   }
   
   if (isAdmin) {
@@ -1164,7 +1181,7 @@ function activateTab(id){
 
 function renderAll(){
   renderTeams(); renderGame(); renderStandings(); updateExportOptions();
-  document.getElementById('headerStatus').textContent=`${state.settings.satGames+state.settings.sunGames} games • Lanes: ${state.settings.totalLanes}`;
+  document.getElementById('headerStatus').textContent=`${state.settings.satGames+state.settings.sunGames} games • 7-Game Masters Format`;
 }
 
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{ activateTab(b.dataset.tab); if(b.dataset.tab==='standings') renderStandings(); if(b.dataset.tab==='export') updateExportOptions(); });
