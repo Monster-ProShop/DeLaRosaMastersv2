@@ -469,6 +469,7 @@ body.is-admin div.admin-only{display:flex !important}
 <script>
 const STORAGE_KEY = 'bowlingTournamentManager_v8';
 let isAdmin = false;
+let editingTeamId = null;
 
 function showAdminPrompt(){ document.getElementById('adminForm').style.display = 'block'; }
 function selectUserRole(){
@@ -549,6 +550,8 @@ function updateFormPreview(){
 }
 
 function clearForm(){
+  editingTeamId = null;
+  document.getElementById('addTeamBtn').textContent = 'Register Team';
   document.getElementById('teamName').value=''; document.getElementById('teamCaptain').value='';
   document.querySelectorAll('.bn,.ba').forEach(x=>x.value=''); initBowlerForm();
 }
@@ -571,8 +574,39 @@ function registerTeam(){
   const sorted=bowlers.sort((a,b)=>a.average-b.average);
   sorted.forEach((b,idx)=>b.handicap=handicap(b.average,b.gender));
   
-  state.teams.push({id:crypto.randomUUID(), name, contact, shift, bowlers:sorted});
+  if (editingTeamId) {
+     const idx = state.teams.findIndex(t => t.id === editingTeamId);
+     if (idx !== -1) {
+         state.teams[idx] = { ...state.teams[idx], name, contact, shift, bowlers: sorted };
+     }
+     editingTeamId = null;
+     document.getElementById('addTeamBtn').textContent = 'Register Team';
+  } else {
+     state.teams.push({id:crypto.randomUUID(), name, contact, shift, bowlers:sorted});
+  }
+  
   save(); clearForm();
+}
+
+function editTeam(id) {
+  if(!isAdmin) return;
+  const t = state.teams.find(x => x.id === id);
+  if(!t) return;
+  
+  editingTeamId = id;
+  document.getElementById('teamName').value = t.name;
+  document.getElementById('teamCaptain').value = t.contact || '';
+  document.getElementById('teamShiftSelect').value = t.shift || 1;
+  
+  t.bowlers.forEach((b, i) => {
+    document.querySelector(`.bn[data-i="${i}"]`).value = b.name;
+    document.querySelector(`.ba[data-i="${i}"]`).value = b.average;
+    document.querySelector(`.bg[data-i="${i}"]`).value = b.gender;
+  });
+  
+  updateFormPreview();
+  document.getElementById('addTeamBtn').textContent = 'Update Team Info';
+  window.scrollTo(0, 0);
 }
 
 function showTeamAlert(msg,type){document.getElementById('teamAlert').innerHTML=`<div class="alert alert-${type==='danger'?'danger':'ok'}">${esc(msg)}</div>`}
@@ -629,17 +663,23 @@ function renderTeams(){
   const holder=document.getElementById('teamsTable');
   const setupHolder=document.getElementById('setupTeamsTable');
   document.getElementById('teamCountBadge').textContent=`${state.teams.length} team${state.teams.length===1?'':'s'}`;
-  const tableHtml = !state.teams.length ? '<div class="empty">No teams registered yet.</div>' : `<table><thead><tr><th>#</th><th>Team</th><th>Shift</th><th>Bowler 1</th><th>Bowler 2</th><th>Bowler 3</th><th>Avg Total</th><th>HDCP Total</th><th></th></tr></thead><tbody>${
+  const tableHtml = !state.teams.length ? '<div class="empty">No teams registered yet.</div>' : `<table><thead><tr><th>#</th><th>Team</th><th>Shift</th><th>Bowler 1</th><th>Bowler 2</th><th>Bowler 3</th><th>Avg Total</th><th>HDCP Total</th><th>Actions</th></tr></thead><tbody>${
     state.teams.map((t,i)=>`<tr><td>${i+1}</td><td><b>${esc(t.name)}</b><div class="small muted">${esc(t.contact||'')}</div></td><td>Shift ${t.shift||1}</td>${
       t.bowlers.map(b=>`<td>${esc(b.name)}<br><span class="small muted">${b.average} avg • ${b.handicap} hdcp</span></td>`).join('')
-    }<td>${totalAvg(t)}</td><td>${t.bowlers.reduce((a,b)=>a+b.handicap,0)}</td><td><button class="btn-ghost" onclick="removeTeam('${t.id}')">Remove</button></td></tr>`).join('')
+    }<td>${totalAvg(t)}</td><td>${t.bowlers.reduce((a,b)=>a+b.handicap,0)}</td>
+    <td>
+      <div style="display:flex;gap:4px;flex-direction:column;">
+        <button class="btn-ghost" style="width:100%; border-color:var(--ok); color:var(--ok);" onclick="editTeam('${t.id}')">Edit</button>
+        <button class="btn-ghost" style="width:100%; border-color:var(--line);" onclick="removeTeam('${t.id}')">Remove</button>
+      </div>
+    </td></tr>`).join('')
   }</tbody></table>`;
   holder.innerHTML = tableHtml; if(setupHolder) setupHolder.innerHTML = tableHtml;
 }
 
 function removeTeam(id){
   if(!isAdmin) return;
-  if(state.started){alert('Cannot remove teams after tournament start.');return}
+  if(state.started){alert('Cannot remove teams after tournament start. Use Edit to modify details.');return}
   state.teams=state.teams.filter(t=>t.id!==id); save();
 }
 
