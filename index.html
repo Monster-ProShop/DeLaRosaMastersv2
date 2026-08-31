@@ -247,6 +247,7 @@ body.is-admin div.admin-only{display:flex !important}
 <main>
   <div class="tabs">
     <button class="tab admin-only" data-tab="registration">Team Registration</button>
+    <button class="tab" data-tab="teamlist">Registered Teams</button>
     <button class="tab admin-only" data-tab="setup">Tournament Setup</button>
     <button class="tab active" data-tab="game">Current Game</button>
     <button class="tab" data-tab="standings">Standings</button>
@@ -313,10 +314,15 @@ body.is-admin div.admin-only{display:flex !important}
           </div>
         </div>
       </div>
+    </div>
+  </section>
 
+  <!-- SECTION 1B: TEAM LIST -->
+  <section id="teamlist" class="panel">
+    <div class="grid">
       <div class="card span12">
-        <div class="actions" style="justify-content:space-between"><h3 style="margin:0">Registered Teams</h3><span id="teamCountBadge" class="badge">0 teams</span></div>
-        <div id="teamsTable"></div>
+        <div class="actions" style="justify-content:space-between"><h2 style="margin:0">Registered Teams Roster</h2><span id="teamCountBadge" class="badge">0 teams</span></div>
+        <div id="teamsTable" style="margin-top: 14px;"></div>
       </div>
     </div>
   </section>
@@ -368,11 +374,6 @@ body.is-admin div.admin-only{display:flex !important}
         <div class="actions" style="margin-top: 20px;">
           <button class="btn-danger" id="resetTournamentBtn" onclick="resetGames()">Reset All Tournament Games</button>
         </div>
-      </div>
-      
-      <div class="card span12">
-        <h3>Registered Teams Overview</h3>
-        <div id="setupTeamsTable"></div>
       </div>
     </div>
   </section>
@@ -467,7 +468,7 @@ body.is-admin div.admin-only{display:flex !important}
 </main>
 
 <script>
-const STORAGE_KEY = 'bowlingTournamentManager_v8';
+const STORAGE_KEY = 'bowlingTournamentManager_v9';
 let isAdmin = false;
 let editingTeamId = null;
 
@@ -606,6 +607,7 @@ function editTeam(id) {
   
   updateFormPreview();
   document.getElementById('addTeamBtn').textContent = 'Update Team Info';
+  activateTab('registration');
   window.scrollTo(0, 0);
 }
 
@@ -661,20 +663,14 @@ function generateDummyTeams(){
 
 function renderTeams(){
   const holder=document.getElementById('teamsTable');
-  const setupHolder=document.getElementById('setupTeamsTable');
   document.getElementById('teamCountBadge').textContent=`${state.teams.length} team${state.teams.length===1?'':'s'}`;
-  const tableHtml = !state.teams.length ? '<div class="empty">No teams registered yet.</div>' : `<table><thead><tr><th>#</th><th>Team</th><th>Shift</th><th>Bowler 1</th><th>Bowler 2</th><th>Bowler 3</th><th>Avg Total</th><th>HDCP Total</th><th>Actions</th></tr></thead><tbody>${
+  const tableHtml = !state.teams.length ? '<div class="empty">No teams registered yet.</div>' : `<table><thead><tr><th>#</th><th>Team</th><th>Shift</th><th>Bowler 1</th><th>Bowler 2</th><th>Bowler 3</th><th>Avg Total</th><th>HDCP Total</th>${isAdmin ? '<th>Actions</th>' : ''}</tr></thead><tbody>${
     state.teams.map((t,i)=>`<tr><td>${i+1}</td><td><b>${esc(t.name)}</b><div class="small muted">${esc(t.contact||'')}</div></td><td>Shift ${t.shift||1}</td>${
       t.bowlers.map(b=>`<td>${esc(b.name)}<br><span class="small muted">${b.average} avg • ${b.handicap} hdcp</span></td>`).join('')
     }<td>${totalAvg(t)}</td><td>${t.bowlers.reduce((a,b)=>a+b.handicap,0)}</td>
-    <td>
-      <div style="display:flex;gap:4px;flex-direction:column;">
-        <button class="btn-ghost" style="width:100%; border-color:var(--ok); color:var(--ok);" onclick="editTeam('${t.id}')">Edit</button>
-        <button class="btn-ghost" style="width:100%; border-color:var(--line);" onclick="removeTeam('${t.id}')">Remove</button>
-      </div>
-    </td></tr>`).join('')
+    ${isAdmin ? `<td><div style="display:flex;gap:4px;flex-direction:column;"><button class="btn-ghost" style="width:100%; border-color:var(--ok); color:var(--ok);" onclick="editTeam('${t.id}')">Edit</button><button class="btn-ghost" style="width:100%; border-color:var(--line);" onclick="removeTeam('${t.id}')">Remove</button></div></td>` : ''}</tr>`).join('')
   }</tbody></table>`;
-  holder.innerHTML = tableHtml; if(setupHolder) setupHolder.innerHTML = tableHtml;
+  holder.innerHTML = tableHtml;
 }
 
 function removeTeam(id){
