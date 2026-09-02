@@ -467,6 +467,51 @@ let isAdmin = false;
 let editingTeamId = null;
 let currentLang = localStorage.getItem('dlr_lang') || 'en';
 
+// 1. Initialize State
+let state = {
+  settings: { satGames: 4, sunGames: 3 },
+  teams: [],
+  games: [],
+  started: false,
+  currentGame: 1
+};
+
+// Load from local storage if it exists
+try {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) state = JSON.parse(saved);
+} catch(e) { console.warn("Could not load state"); }
+
+// 2. Missing Core Functions
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function handicap(avg, gender) {
+  // 210 base, max 40 for Female/Senior, max 35 for Male
+  let raw = 210 - avg;
+  if (raw < 0) return 0;
+  let maxCap = (gender === 'Male') ? 35 : 40;
+  return raw > maxCap ? maxCap : raw;
+}
+
+function esc(str) { 
+  if (!str) return '';
+  return String(str).replace(/[&<>"']/g, s => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[s])); 
+}
+
+function teamMap() {
+  const map = {};
+  state.teams.forEach(t => map[t.id] = t);
+  return map;
+}
+
+function playerOrder(team) {
+  // Assuming bowlers are already stored in sorted order from registration
+  return team.bowlers;
+}
+
+
 const tDict = {
   "subtitle": "ILUSIÓN BOWL • Motor Dinámico de Rondas",
   "Team Registration": "Registro de Equipos",
@@ -636,7 +681,13 @@ function loginAdmin(){
 function hardResetTournament() {
   if(!isAdmin) return;
   if(confirm('WARNING: This will completely delete ALL registered teams, games, and standings. This action cannot be undone. Are you absolutely sure?')) {
-    state = defaultState();
+    state = {
+      settings: { satGames: 4, sunGames: 3 },
+      teams: [],
+      games: [],
+      started: false,
+      currentGame: 1
+    };
     save();
     updateExportOptions();
     clearForm();
@@ -773,6 +824,8 @@ function generateDummyTeams(){
   save();
   if (teamsAdded < count) alert(`Generated ${teamsAdded} teams. Limit reached.`);
   else alert(`Successfully generated ${teamsAdded} dummy teams!`);
+  
+  renderTeams();
 }
 
 function renderTeams(){
@@ -787,10 +840,15 @@ function renderTeams(){
   holder.innerHTML = tableHtml;
 }
 
+function totalAvg(tItem) {
+  return tItem.bowlers.reduce((a, b) => a + b.average, 0);
+}
+
 function removeTeam(id){
   if(!isAdmin) return;
   if(state.started){alert('Cannot remove teams after tournament start. Use Edit to modify details.');return}
   state.teams=state.teams.filter(t=>t.id!==id); save();
+  renderTeams();
 }
 
 function randomizeTeamsForShift(shiftTeams){
@@ -1041,7 +1099,7 @@ function saveAllMatches() {
       m.bowlers = bowlers; m.teamScoreA = ta; m.teamScoreB = tb; m.completed = true;
     }
   });
-  if(hasError) { alert('Could not save all matches. Please ensure all bowler scores are entered correctly (0–300).'); } else { save(); }
+  if(hasError) { alert('Could not save all matches. Please ensure all bowler scores are entered correctly (0–300).'); } else { save(); renderGame(); }
 }
 
 function getBowlerScore(m,pos,side){ const o=m.bowlers.find(x=>x.pos===pos); return o ? (side==='a'?o.a:o.b) : ''; }
@@ -1104,7 +1162,7 @@ function saveMatch(id){
     bowlers.push({pos,a,b});
   }
   const ta=bowlers.reduce((sum,o)=>sum+o.a,0), tb=bowlers.reduce((sum,o)=>sum+o.b,0);
-  m.bowlers=bowlers; m.teamScoreA=ta; m.teamScoreB=tb; m.completed=true; save();
+  m.bowlers=bowlers; m.teamScoreA=ta; m.teamScoreB=tb; m.completed=true; save(); renderGame();
 }
 
 function calculateTeamStandings(dayFilter = 'all', upToGameNo = 999, shiftFilter = 'all'){
