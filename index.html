@@ -189,6 +189,7 @@ body.is-admin div.admin-only{display:flex !important}
 
 @media(max-width:900px){.span8,.span6,.span4{grid-column:span 12}.bowler-row{grid-template-columns:1fr 1fr 1fr}.kpis{grid-template-columns:repeat(2,1fr)}.score-grid{grid-template-columns:1fr repeat(4, 1fr) 1fr}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -462,12 +463,16 @@ body.is-admin div.admin-only{display:flex !important}
 </main>
 
 <script>
-const STORAGE_KEY = 'bowlingTournamentManager_v11';
+const SUPABASE_URL = "https://yfpdcwhhnnucqjahoilz.supabase.co/rest/v1/";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlmcGRjd2hobm51Y3FqYWhvaWx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MDA1MDgsImV4cCI6MjEwMzk3NjUwOH0.8ipJ3QYfBpmvPZb_-BUovSDaoCpnxJ9BIw6NPE43Alw";
+const TOURNAMENT_ID = "delarosa_masters_2026"; // Unique key for this tournament
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 let isAdmin = false;
 let editingTeamId = null;
 let currentLang = localStorage.getItem('dlr_lang') || 'en';
 
-// 1. Initialize State
 let state = {
   settings: { satGames: 4, sunGames: 3 },
   teams: [],
@@ -476,17 +481,60 @@ let state = {
   currentGame: 1
 };
 
-// Load from local storage if it exists
-try {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) state = JSON.parse(saved);
-} catch(e) { console.warn("Could not load state"); }
+// Cloud Save Function
+async function save() {
+  // Keep local backup as fallback
+  localStorage.setItem('dlr_local_cache', JSON.stringify(state));
 
-// 2. Missing Core Functions
-function save() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const { error } = await db
+    .from('tournament_data')
+    .upsert({
+      id: TOURNAMENT_ID,
+      state: state,
+      updated_at: new Date().toISOString()
+    });
+
+  if (error) {
+    console.error("Cloud sync failed:", error.message);
+  }
 }
 
+// Cloud Load Function
+async function loadStateFromCloud() {
+  const { data, error } = await db
+    .from('tournament_data')
+    .select('state')
+    .eq('id', TOURNAMENT_ID)
+    .single();
+
+  if (data && data.state) {
+    state = data.state;
+  } else if (error) {
+    console.warn("No cloud state found or connection failed, checking local cache...");
+    const cached = localStorage.getItem('dlr_local_cache');
+    if (cached) state = JSON.parse(cached);
+  }
+
+  // Refresh UI with downloaded data
+  renderAll();
+}
+
+// Live Multi-Device Realtime Listener
+function setupRealtimeListener() {
+  db.channel('tournament_updates')
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'tournament_data',
+      filter: `id=eq.${TOURNAMENT_ID}`
+    }, payload => {
+      if (payload.new && payload.new.state) {
+        state = payload.new.state;
+        renderAll();
+      }
+    })
+    .subscribe();
+}
 function handicap(avg, gender) {
   // 210 base, max 40 for Female/Senior, max 35 for Male
   let raw = 210 - avg;
@@ -1377,11 +1425,14 @@ document.getElementById('addTeamBtn').onclick=registerTeam;
 document.getElementById('clearFormBtn').onclick=clearForm;
 document.getElementById('auditShiftFilter').onchange=()=>renderGame();
 
-window.onload = () => {
+window.onload = async () => {
   initBowlerForm();
   updateExportOptions();
   applyTranslations();
-  renderAll();
+  
+  // Fetch cloud state and establish live sync
+  await loadStateFromCloud();
+  setupRealtimeListener();
 };
 </script>
 </body>
