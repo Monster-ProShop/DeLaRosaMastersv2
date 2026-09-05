@@ -194,7 +194,7 @@ body.is-admin button.admin-only{display:inline-block !important}
 <meta name="theme-color" content="#b80000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="DLR Masters">
-<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <style>
 body{background-color:#6e0000}
 .grid>.card{min-width:0}
@@ -213,12 +213,12 @@ body:not(.is-admin) .panel.admin-only{display:none!important}
 .cal-message{white-space:pre-line;margin:10px 0;color:var(--gold)}
 input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
 @media(max-width:600px){header{padding:12px}.header-inner{flex-wrap:wrap}.brand{font-size:1rem}.brand-logo{height:40px}main{padding:0 10px 90px}.card{padding:12px}.tab{padding:10px;font-size:.8rem}input,select{font-size:16px}.bowler-row{grid-template-columns:1fr 1fr}.fab-container{bottom:12px;right:10px;gap:6px}.fab{padding:10px;font-size:.7rem}.auth-card{max-width:calc(100vw - 24px)}.score-grid{min-width:480px}.match-card{overflow-x:auto}}
-</style></head>
+</style><link rel="icon" href="./favicon.png" type="image/png"><link rel="stylesheet" href="./finals.css"></head>
 <body>
 
 <div id="authModal">
   <div class="auth-card">
-    <h2 style="font-size:1.5rem;margin-bottom:8px">DE LA ROSA MASTERS</h2>
+    <img class="login-logo" src="./logo.png" alt="De La Rosa Masters · Ilusión Bowl" width="180" height="180"><h2 style="font-size:1.5rem;margin-bottom:8px">DE LA ROSA MASTERS</h2>
     <p class="muted" style="margin-bottom:20px" data-i18n="Select access mode to continue">Select access mode to continue</p>
     
     <button class="role-btn btn-primary" onclick="selectUserRole()" data-i18n="User Access (View / Audit)">User Access (View / Audit)</button>
@@ -236,22 +236,7 @@ input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
 <header>
   <div class="header-inner">
     <div class="brand-wrapper">
-      <svg class="brand-logo" viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 120 180 C 120 70, 380 70, 380 180 C 380 340, 120 340, 120 180 Z" fill="#000" stroke="#ffd700" stroke-width="8"/>
-        <path d="M 80 100 Q 250 40 420 100 Q 450 200 420 280 Q 250 380 80 280 Q 50 200 80 100 Z" fill="none" stroke="#ff2a1a" stroke-width="14"/>
-        <path d="M 100 80 Q 250 30 400 80 L 380 120 Q 250 80 120 120 Z" fill="#ff2a1a" stroke="#ffd700" stroke-width="3"/>
-        <text x="250" y="70" font-family="Arial Black, sans-serif" font-size="24" fill="#ffd700" text-anchor="middle" font-style="italic">DE LA ROSA</text>
-        <circle cx="250" cy="100" r="14" fill="#ff2a1a"/>
-        <path d="M 245 100 Q 250 90 255 100 Q 250 110 245 100" fill="#ffd700"/>
-        <rect x="70" y="140" width="360" height="90" rx="15" fill="#e6e6e6" stroke="#000" stroke-width="8"/>
-        <text x="250" y="210" font-family="Impact, Arial Black" font-size="70" fill="#000" text-anchor="middle" font-weight="bold">MASTERS</text>
-        <circle cx="250" cy="270" r="45" fill="#ff2a1a"/>
-        <circle cx="240" cy="260" r="5" fill="#fff"/>
-        <circle cx="260" cy="260" r="5" fill="#fff"/>
-        <circle cx="250" cy="275" r="5" fill="#fff"/>
-        <text x="250" y="335" font-family="Brush Script MT, cursive, sans-serif" font-size="22" fill="#fff" text-anchor="middle">ilusión Bowl</text>
-        <polygon points="250,345 255,360 270,360 257,370 262,385 250,375 238,385 243,370 230,360 245,360" fill="#ff2a1a"/>
-      </svg>
+      <img class="brand-logo" src="./logo.png" alt="De La Rosa Masters · Ilusión Bowl" width="88" height="88">
       <div>
         <div class="brand">DE LA ROSA <span>MASTERS</span></div>
         <div class="subtitle" data-i18n="subtitle">ILUSIÓN BOWL • Dynamic Position Rounds Engine</div>
@@ -266,23 +251,14 @@ input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
   </div>
 </header>
 <main>
-  <div class="tabs">
-    <button class="tab admin-only" data-tab="registration" data-i18n="Team Registration">Team Registration</button>
-    <button class="tab" data-tab="teamlist" data-i18n="Registered Teams">Registered Teams</button>
-    <button class="tab admin-only" data-tab="setup" data-i18n="Tournament Setup">Tournament Setup</button>
-    <button class="tab active" data-tab="game" data-i18n="Matches">Matches</button>
-    <button class="tab" data-tab="standings" data-i18n="Standings">Standings</button>
-    <button class="tab admin-only" data-tab="calcutta" data-i18n="Calcutta">Calcutta</button>
-    <button class="tab admin-only" data-tab="calcuttaPayout" data-i18n="Calcutta Payout">Calcutta Payout</button>
-    <button class="tab admin-only" data-tab="export" data-i18n="Export Data (XLS)">Export Data (XLS)</button>
-  </div>
+  <nav class="section-nav" aria-label="Tournament navigation"><div><span class="eyebrow" data-i18n="Tournament center">Tournament center</span><h1 id="sectionTitle">Matches</h1></div><div class="menu-control"><label for="sectionSelect" data-i18n="Go to section">Go to section</label><select id="sectionSelect" onchange="activateTab(this.value)"></select></div></nav>
 
   <!-- SECTION 1: TEAM REGISTRATION -->
   <section id="registration" class="panel admin-only">
     <div class="grid">
       <div class="card span8">
         <h2 data-i18n="Team Registration">Team Registration</h2>
-        <p class="muted" data-i18n="reg_desc">Assign each team to a shift (1, 2, or 3), and register teams (max 3 bowlers per team, total avg ≤ 630). Lanes limits are now fully dynamic and handled during match generation.</p>
+        <p class="muted" data-i18n="reg_desc">Assign each team to a shift (1 or 2), and register teams (max 3 bowlers per team, total avg ≤ 630). Lanes limits are now fully dynamic and handled during match generation.</p>
         
         <div class="row" style="margin-bottom: 16px;">
           <div style="flex:1">
@@ -290,7 +266,7 @@ input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
             <select id="teamShiftSelect">
               <option value="1">Shift 1</option>
               <option value="2">Shift 2</option>
-              <option value="3">Shift 3</option>
+              
             </select>
           </div>
           <div style="flex:2"><label for="teamName" data-i18n="Team name">Team name</label><input id="teamName" data-i18n-ph="Team name" placeholder="Example: Strike Force"></div>
@@ -324,7 +300,7 @@ input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
             <select id="dummyShift" style="border-color:var(--ok);">
               <option value="1">Shift 1</option>
               <option value="2">Shift 2</option>
-              <option value="3">Shift 3</option>
+              
               <option value="all" data-i18n="Spread Evenly">Spread Evenly</option>
             </select>
           </div>
@@ -351,7 +327,7 @@ input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
   </section>
 
   <!-- SECTION 2: TOURNAMENT SETUP -->
-  <section id="setup" class="panel admin-only">
+  <section id="setup" class="panel admin-only"><div id="legacyShiftControl"></div>
     <div class="grid">
       <div class="card span12">
         <h2 data-i18n="Tournament Setup & Assignment Engine">Tournament Setup & Assignment Engine</h2>
@@ -375,7 +351,7 @@ input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
             <select id="genShiftSelect">
               <option value="1">Shift 1</option>
               <option value="2">Shift 2</option>
-              <option value="3">Shift 3</option>
+              
             </select>
           </div>
           <div>
@@ -412,7 +388,7 @@ input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
             <option value="all" data-i18n="All Shifts">All Shifts</option>
             <option value="1">Shift 1</option>
             <option value="2">Shift 2</option>
-            <option value="3">Shift 3</option>
+            
           </select>
         </div>
       </div>
@@ -437,7 +413,8 @@ input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
   </section>
 
   <!-- SECTION 5: EXPORT DATA -->
-<section id="calcutta" class="panel admin-only"><div id="calcuttaContent"></div></section>
+<section id="finals" class="panel"><div id="finalsContent"></div></section>
+  <section id="calcutta" class="panel admin-only"><div id="calcuttaContent"></div></section>
   <section id="calcuttaPayout" class="panel admin-only"><div id="calcuttaPayoutContent"></div></section>
   <section id="export" class="panel admin-only">
     <div class="grid">
@@ -466,7 +443,7 @@ input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
             <select id="exportShiftSelect">
               <option value="1">Shift 1</option>
               <option value="2">Shift 2</option>
-              <option value="3">Shift 3</option>
+              
             </select>
           </div>
           <div>
@@ -595,7 +572,7 @@ const tDict = {
   "Admin Access": "Acceso Administrador",
   "Enter Password": "Contraseña",
   "Login as Admin": "Ingresar como Admin",
-  "reg_desc": "Asigna equipos a turnos (1, 2, 3) y registra (máx 3 jugadores, prom total ≤ 630). Los límites de pistas son dinámicos al generar enfrentamientos.",
+  "reg_desc": "Asigna equipos a turnos (1, 2) y registra (máx 3 jugadores, prom total ≤ 630). Los límites de pistas son dinámicos al generar enfrentamientos.",
   "Shift Selection": "Selección de Turno",
   "Team name": "Nombre del Equipo",
   "Optional contact": "Contacto Opcional",
@@ -721,6 +698,8 @@ function applyTranslations() {
   document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
   const btn = document.getElementById('langBtn');
   if(btn) btn.textContent = currentLang === 'en' ? '🇲🇽 ES' : '🇺🇸 EN';
+  document.documentElement.lang=currentLang;
+  if(typeof syncNavigation==='function') syncNavigation();
 }
 
 function showAdminPrompt(){ document.getElementById('adminForm').style.display = 'block'; document.getElementById('adminPass').focus(); }
@@ -758,7 +737,7 @@ function hardResetTournament() {
     save();
     updateExportOptions();
     clearForm();
-    calDrafts.clear(); purseDrafts.clear(); renderAll(); alert('Tournament has been completely reset.');
+    calDrafts.clear(); purseDrafts.clear(); finalsDrafts.clear(); finalsEditing.clear(); renderAll(); alert('Tournament has been completely reset.');
   }
 }
 
@@ -805,6 +784,7 @@ function clearForm(){
 function registerTeam(){
   if(!isAdmin) return;
   const shift = Number(document.getElementById('teamShiftSelect').value);
+  if(![1,2].includes(shift)) return;
   const name=document.getElementById('teamName').value.trim();
   const contact=document.getElementById('teamCaptain').value.trim();
   const bowlers=[0,1,2].map(i=>({
@@ -868,7 +848,8 @@ function generateDummyTeams(){
   let teamsAdded = 0;
 
   for(let i=0; i<count; i++){
-    let currentShift = targetShift === 'all' ? ((teamsAdded % 3) + 1) : Number(targetShift);
+    let currentShift = targetShift === 'all' ? ((teamsAdded % 2) + 1) : Number(targetShift);
+    if(![1,2].includes(currentShift)) return;
     let shiftTeamsCount = state.teams.filter(t => t.shift === currentShift).length;
     if(shiftTeamsCount >= dummyMaxTeamsLimit) {
       if (targetShift !== 'all') { break; } else { continue; }
@@ -933,6 +914,7 @@ function generateSpecificGame() {
   if(!isAdmin) return;
   const gameNo = Number(document.getElementById('genGameSelect').value);
   const shift = Number(document.getElementById('genShiftSelect').value);
+  if(![1,2].includes(shift)||hasLegacyShift()) {alert(t('Resolve legacy shift 3 before continuing.'));return;}
   let poolStart = Number(document.getElementById('genPoolStart').value) || 1;
   let poolEnd = Number(document.getElementById('genPoolEnd').value) || 30;
   let topSeedLane = Number(document.getElementById('genTopSeedLane').value) || poolStart;
@@ -1424,7 +1406,7 @@ function importTournamentJSON(event) {
   if(!isAdmin) return;
   const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
   reader.onload = function(e) {
-    try { const importedState = JSON.parse(e.target.result); if (importedState && importedState.teams && importedState.settings) { state = importedState; calDrafts.clear(); purseDrafts.clear(); save(); alert('Tournament data imported and loaded successfully!'); renderAll(); } else { alert('Invalid tournament file structure.'); } } catch (err) { alert('Error parsing JSON file: ' + err.message); } event.target.value = '';
+    try { const importedState = JSON.parse(e.target.result); if (importedState && importedState.teams && importedState.settings) { state = importedState; calDrafts.clear(); purseDrafts.clear(); finalsDrafts.clear(); finalsEditing.clear(); save(); alert('Tournament data imported and loaded successfully!'); renderAll(); } else { alert('Invalid tournament file structure.'); } } catch (err) { alert('Error parsing JSON file: ' + err.message); } event.target.value = '';
   }; reader.readAsText(file);
 }
 
@@ -1437,14 +1419,16 @@ function activateTab(id){
   const target = document.getElementById(id);
   if(!target || (target.classList.contains('admin-only') && !isAdmin)) return;
   if(id === 'teamlist') renderTeams();
+  if(id === 'finals') renderFinals();
   if(id === 'calcutta') renderCalcutta();
   if(id === 'calcuttaPayout') renderCalcuttaPayout();
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+  syncNavigation();
 }
 
 function renderAll(){
-  renderTeams(); renderGame(); renderStandings(); updateExportOptions(); renderCalcutta(); renderCalcuttaPayout();
+  renderTeams(); renderGame(); renderStandings(); updateExportOptions(); renderCalcutta(); renderCalcuttaPayout(); renderFinals(); syncNavigation();
 }
 
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{ activateTab(b.dataset.tab); if(b.dataset.tab==='standings') renderStandings(); if(b.dataset.tab==='export') updateExportOptions(); });
@@ -1645,5 +1629,6 @@ if('serviceWorker' in navigator && ['http:','https:'].includes(location.protocol
 window.addEventListener('beforeunload',event=>{if(calDrafts.size||purseDrafts.size){event.preventDefault();event.returnValue='';}});
 
 </script>
+<script src="./finals.js"></script>
 </body>
 </html>
