@@ -221,7 +221,7 @@ input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
     <img class="login-logo" src="./logo.png" alt="De La Rosa Masters · Ilusión Bowl" width="180" height="180"><h2 style="font-size:1.5rem;margin-bottom:8px">DE LA ROSA MASTERS</h2>
     <p class="muted" style="margin-bottom:20px" data-i18n="Select access mode to continue">Select access mode to continue</p>
     
-    <button class="role-btn btn-primary" onclick="selectUserRole()" data-i18n="User Access (View / Audit)">User Access (View / Audit)</button>
+    <button class="role-btn btn-primary" onclick="selectUserRole()" data-i18n="View Results">View Results</button>
     <button class="role-btn btn-secondary" onclick="showAdminPrompt()" data-i18n="Admin Access">Admin Access</button>
     
     <form id="adminForm" onsubmit="event.preventDefault(); loginAdmin()" style="display:none;margin-top:16px">
@@ -245,7 +245,7 @@ input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
     <div style="display:flex;align-items:center;gap:10px">
       <button onclick="toggleLang()" style="padding: 6px 12px; font-size: 0.75rem; border-radius: 999px; background: transparent; border: 1px solid var(--gold); color: var(--gold); cursor: pointer; font-weight:800;" id="langBtn">🇲🇽 ES</button>
       <button class="btn-danger admin-only" onclick="hardResetTournament()" style="padding: 6px 12px; font-size: 0.75rem; border-radius: 999px;" data-i18n="Reset All Data">Reset All Data</button>
-      <div id="roleBadge" class="badge" style="background:#000" data-i18n="Mode: User (Audit View)">Mode: User (Audit View)</div>
+      <div id="roleBadge" class="badge" style="background:#000" data-i18n="View Results">View Results</div>
       <div id="headerStatus" class="badge">7 games • 7-Game Masters Format</div>
     </div>
   </div>
@@ -565,10 +565,10 @@ const tDict = {
   "Standings": "Posiciones",
   "Export Data (XLS)": "Exportar Datos",
   "Reset All Data": "Borrar Datos",
-  "Mode: User (Audit View)": "Modo: Usuario (Visor)",
+
   "Mode: Admin": "Modo: Administrador",
   "Select access mode to continue": "Selecciona el modo de acceso",
-  "User Access (View / Audit)": "Acceso Usuario (Solo Vista)",
+  "View Results": "Ver Resultados",
   "Admin Access": "Acceso Administrador",
   "Enter Password": "Contraseña",
   "Login as Admin": "Ingresar como Admin",
@@ -706,7 +706,7 @@ function showAdminPrompt(){ document.getElementById('adminForm').style.display =
 function selectUserRole(){
   isAdmin = false;
   document.body.classList.remove('is-admin');
-  document.getElementById('roleBadge').setAttribute('data-i18n', 'Mode: User (Audit View)');
+  document.getElementById('roleBadge').setAttribute('data-i18n', 'View Results');
   document.getElementById('authModal').style.display = 'none';
   applyTranslations(); activateTab('game'); renderAll();
 }
