@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#000000" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="De La Rosa Masters" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
 <title>De La Rosa Masters - Bowling Tournament Manager</title>
 <style>
 :root{
@@ -51,8 +57,9 @@ header{
 .subtitle{font-size:.88rem;color:var(--muted);margin-top:2px}
 
 main{max-width:1400px;margin:22px auto;padding:0 18px 50px}
-.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.tabs{display:flex;flex-wrap:nowrap;gap:8px;margin-bottom:18px;overflow-x:auto;overflow-y:hidden;padding-bottom:4px;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
 .tab{
+  flex:0 0 auto;
   border:2px solid var(--gold);
   background:#111;
   color:#fff;
@@ -63,11 +70,12 @@ main{max-width:1400px;margin:22px auto;padding:0 18px 50px}
   text-transform: uppercase;
   letter-spacing: 0.03em;
   transition: all 0.2s ease;
+  white-space:nowrap;
 }
 .tab:hover{background:var(--gold);color:#000}
 .tab.active{background:var(--accent);border-color:#fff;color:#fff;box-shadow:0 0 12px rgba(255,42,26,0.6)}
-.panel{display:none}
-.panel.active{display:block}
+.panel{display:none !important}
+.panel.active{display:block !important}
 .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
 .card{
   background:var(--card-bg);
@@ -187,6 +195,19 @@ body.is-admin div.admin-only{display:flex !important}
   color: #fff;
 }
 
+@media(max-width:700px){
+  header{padding:12px}.header-inner{align-items:flex-start;flex-direction:column}
+  .brand-logo{height:42px}.brand{font-size:1.05rem}.subtitle{font-size:.72rem}
+  main{margin:12px auto;padding:0 10px 80px}.tabs{gap:6px;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}
+  .tab{white-space:nowrap;padding:9px 13px;font-size:.76rem}
+  .card{padding:14px}.score-grid{grid-template-columns:1.35fr repeat(4,minmax(55px,1fr)) 1.1fr;gap:5px;font-size:.78rem}
+  .score-grid input{padding:7px 4px}.kpis{grid-template-columns:repeat(2,1fr)}
+  table{min-width:720px}.bowler-row{grid-template-columns:1fr}.fab-container{right:12px;bottom:12px}
+  .fab{padding:11px 14px}
+}
+@media(min-width:701px) and (max-width:1100px){
+  .header-inner{flex-wrap:wrap}.score-grid{grid-template-columns:1.2fr repeat(4,minmax(60px,1fr)) 1.2fr}
+}
 @media(max-width:900px){.span8,.span6,.span4{grid-column:span 12}.bowler-row{grid-template-columns:1fr 1fr 1fr}.kpis{grid-template-columns:repeat(2,1fr)}.score-grid{grid-template-columns:1fr repeat(4, 1fr) 1fr}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -203,7 +224,7 @@ body.is-admin div.admin-only{display:flex !important}
     
     <div id="adminForm" style="display:none;margin-top:16px">
       <label for="adminPass" data-i18n="Enter Password">Enter Password</label>
-      <input type="password" id="adminPass" placeholder="••••••••" style="margin-bottom:10px">
+      <input type="password" id="adminPass" placeholder="••••••••" style="margin-bottom:10px"><div class="small muted" style="margin:-2px 0 10px" data-i18n="Press Enter to Login">Press Enter to Login</div>
       <div id="authAlert"></div>
       <button class="btn-primary" style="width:100%" onclick="loginAdmin()" data-i18n="Login as Admin">Login as Admin</button>
     </div>
@@ -247,7 +268,9 @@ body.is-admin div.admin-only{display:flex !important}
     <button class="tab admin-only" data-tab="registration" data-i18n="Team Registration">Team Registration</button>
     <button class="tab" data-tab="teamlist" data-i18n="Registered Teams">Registered Teams</button>
     <button class="tab admin-only" data-tab="setup" data-i18n="Tournament Setup">Tournament Setup</button>
-    <button class="tab active" data-tab="game" data-i18n="Current Game">Current Game</button>
+    <button class="tab active" data-tab="game" data-i18n="Matches">Matches</button>
+    <button class="tab admin-only" data-tab="calcutta" data-i18n="Calcutta">Calcutta</button>
+    <button class="tab admin-only" data-tab="calcuttaPayout" data-i18n="Calcutta Payout">Calcutta Payout</button>
     <button class="tab" data-tab="standings" data-i18n="Standings">Standings</button>
     <button class="tab admin-only" data-tab="export" data-i18n="Export Data (XLS)">Export Data (XLS)</button>
   </div>
@@ -411,6 +434,47 @@ body.is-admin div.admin-only{display:flex !important}
     </div>
   </section>
 
+
+  <!-- SECTION 5: CALCUTTA -->
+  <section id="calcutta" class="panel admin-only">
+    <div class="grid">
+      <div class="card span12">
+        <div class="actions" style="justify-content:space-between;align-items:flex-start">
+          <div>
+            <h2 data-i18n="Calcutta">Calcutta</h2>
+            <p class="muted" data-i18n="calcutta_desc">Assign a sale price and purchaser to every team and bowler. Team order uses the tournament standings; individual order is Men first, then Seniors + All Women.</p>
+          </div>
+          <span class="badge" id="calcuttaTotalBadge">$0.00</span>
+        </div>
+        <div id="calcuttaContent" style="margin-top:16px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: CALCUTTA PAYOUT -->
+  <section id="calcuttaPayout" class="panel admin-only">
+    <div class="grid">
+      <div class="card span12">
+        <h2 data-i18n="Calcutta Payout">Calcutta Payout</h2>
+        <p class="muted" data-i18n="calcutta_results_desc">Sunday Games only (the 3 Sunday games), using handicap. Ties share the winnings; there is no tie breaker.</p>
+        <div class="card" style="margin:14px 0;background:#18181c;border-color:var(--gold)">
+          <h3 data-i18n="Calcutta Purse Distribution">Calcutta Purse Distribution</h3>
+          <div class="row" style="align-items:end">
+            <div><label data-i18n="Men Purse %">Men Purse %</label><input id="payoutMenPct" type="number" min="0" max="100" step="0.01"></div>
+            <div><label data-i18n="Men Places">Men Places</label><input id="payoutMenPlaces" type="number" min="1" max="50" step="1"></div>
+            <div><label data-i18n="Seniors + All Women Purse %">Seniors + All Women Purse %</label><input id="payoutWomenPct" type="number" min="0" max="100" step="0.01"></div>
+            <div><label data-i18n="Seniors + All Women Places">Seniors + All Women Places</label><input id="payoutWomenPlaces" type="number" min="1" max="50" step="1"></div>
+            <div><label data-i18n="Team Purse %">Team Purse %</label><input id="payoutTeamPct" type="number" min="0" max="100" step="0.01"></div>
+            <div><label data-i18n="Team Places">Team Places</label><input id="payoutTeamPlaces" type="number" min="1" max="50" step="1"></div>
+            <div><button class="btn-primary" onclick="saveCalcuttaPayouts()" data-i18n="Save">Save</button></div>
+          </div>
+          <div id="payoutValidation" class="small muted" style="margin-top:10px"></div>
+        </div>
+        <div id="calcuttaPayoutContent"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- SECTION 5: EXPORT DATA -->
   <section id="export" class="panel admin-only">
     <div class="grid">
@@ -447,6 +511,12 @@ body.is-admin div.admin-only{display:flex !important}
           </div>
         </div>
 
+        <h3 style="margin-top:30px;" data-i18n="Calcutta Collections">Calcutta Collections</h3>
+        <p class="muted" data-i18n="calcutta_collections_desc">Export a spreadsheet summary showing every purchaser and the amount they owe.</p>
+        <div class="actions" style="margin-bottom:20px">
+          <button class="btn-primary" onclick="exportCalcuttaOwing()" data-i18n="Export Calcutta Owing">Export Calcutta Owing</button>
+        </div>
+
         <h3 style="margin-top:30px; border-top: 1px solid var(--line); padding-top: 20px;" data-i18n="Tournament State Backup (JSON)">Tournament State Backup (JSON)</h3>
         <p class="muted" data-i18n="backup_desc">Export the full tournament state to transfer data between computers, or upload a previously saved backup file to restore or reuse.</p>
         <div class="actions" style="gap:10px; margin-top: 12px; align-items: center;">
@@ -460,6 +530,9 @@ body.is-admin div.admin-only{display:flex !important}
   </section>
 
   <footer data-i18n="footer_txt">Data is stored locally in browser storage. De La Rosa Masters • Ilusión Bowl Edition</footer>
+  <div id="installPrompt" class="admin-only" style="display:none !important;position:fixed;left:16px;bottom:16px;z-index:1200">
+    <button class="btn-primary" onclick="installApp()" data-i18n="Install App">📲 Install App</button>
+  </div>
 </main>
 
 <script>
@@ -565,9 +638,26 @@ const tDict = {
   "Team Registration": "Registro de Equipos",
   "Registered Teams": "Equipos Registrados",
   "Tournament Setup": "Config. del Torneo",
-  "Current Game": "Juego Actual",
+  "Matches": "Partidas",
   "Standings": "Posiciones",
   "Export Data (XLS)": "Exportar Datos",
+  "Calcutta": "Calcutta",
+  "Calcutta Payout": "Premiacion Calcutta",
+  "calcutta_desc": "Asigna precio de venta y comprador a cada equipo y jugador. Los equipos se ordenan por posiciones; los individuales se muestran Varonil primero y después Senior + Femenil.",
+  "calcutta_results_desc": "Solo se toman los 3 juegos del domingo, con handicap. Los empates comparten el premio; no hay desempate.",
+  "Calcutta Purse Distribution": "Distribución de Bolsas Calcutta",
+  "Men Purse %": "% Bolsa Varonil",
+  "Men Places": "Lugares Varonil",
+  "Seniors + All Women Purse %": "% Bolsa Senior + Femenil",
+  "Seniors + All Women Places": "Lugares Senior + Femenil",
+  "Team Purse %": "% Bolsa Equipos",
+  "Team Places": "Lugares Equipos",
+  "Save": "Guardar",
+  "Calcutta Collections": "Cobranza Calcutta",
+  "calcutta_collections_desc": "Exporta un resumen con cada comprador y el importe que debe.",
+  "Export Calcutta Owing": "Exportar Adeudos Calcutta",
+  "Install App": "Instalar App",
+  "Press Enter to Login": "Presiona Enter para ingresar",
   "Reset All Data": "Borrar Datos",
   "Mode: User (Audit View)": "Modo: Usuario (Visor)",
   "Mode: Admin": "Modo: Administrador",
@@ -682,7 +772,10 @@ const tDict = {
   "Net Pinfall": "Pinos Netos",
   "Scr. Avg": "Prom. Scr.",
   "High Game (Scr/Net)": "Juego Mayor (Scr/Neto)",
-  "Division": "División"
+  "Division": "División",
+  "Cost": "Costo",
+  "Purchaser": "Comprador",
+  "Seniors + All Women": "Senior + Femenil"
 };
 
 function t(key) {
@@ -1410,8 +1503,18 @@ function updateExportOptions() {
 }
 
 function activateTab(id){
-  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+  const target=document.getElementById(id);
+  if(!target || (target.classList.contains('admin-only') && !isAdmin)) id='game';
+  document.querySelectorAll('.tab').forEach(b=>{
+    const active=b.dataset.tab===id;
+    b.classList.toggle('active',active);
+    b.setAttribute('aria-selected',active?'true':'false');
+  });
+  document.querySelectorAll('.panel').forEach(p=>{
+    const active=p.id===id;
+    p.classList.toggle('active',active);
+    p.setAttribute('aria-hidden',active?'false':'true');
+  });
 }
 
 function renderAll(){
@@ -1434,6 +1537,201 @@ window.onload = async () => {
   await loadStateFromCloud();
   setupRealtimeListener();
 };
+
+// ===== CALCUTTA + PWA EXTENSION =====
+const DEFAULT_CALCUTTA = {
+  teams: {},
+  players: {},
+  payouts: {menPct:100, menPlaces:5, womenPct:100, womenPlaces:5, teamPct:100, teamPlaces:5}
+};
+
+function ensureCalcuttaState(){
+  if(!state.calcutta) state.calcutta = JSON.parse(JSON.stringify(DEFAULT_CALCUTTA));
+  state.calcutta.teams = state.calcutta.teams || {};
+  state.calcutta.players = state.calcutta.players || {};
+  state.calcutta.payouts = Object.assign({}, DEFAULT_CALCUTTA.payouts, state.calcutta.payouts || {});
+}
+function getCalcuttaEntry(type,id){
+  ensureCalcuttaState();
+  return state.calcutta[type==='team'?'teams':'players'][id] || {cost:'',purchaser:'',saved:false};
+}
+function formatMoney(v){
+  const n=Number(v);
+  return Number.isFinite(n)?n.toLocaleString('en-US',{style:'currency',currency:'USD'}):'$0.00';
+}
+function calcuttaTeamStandings(){ return calculateTeamStandings('all').map((x,i)=>({...x,calPos:i+1})); }
+function calcuttaPlayerStandings(){
+  const p=calculatePlayerStandings('all');
+  return {men:p.filter(x=>x.gender==='Male'),combined:p.filter(x=>x.gender!=='Male')};
+}
+function saveCalcuttaEntry(type,id){
+  if(!isAdmin)return;
+  ensureCalcuttaState();
+  const store=type==='team'?'teams':'players';
+  const prefix=type==='team'?'team':'player';
+  const costEl=document.getElementById(`cal_${prefix}_cost_${id}`);
+  const buyerEl=document.getElementById(`cal_${prefix}_buyer_${id}`);
+  if(!costEl||!buyerEl)return;
+  const cost=costEl.value===''?'':Number(costEl.value);
+  if(cost!=='' && (!Number.isFinite(cost)||cost<0)){alert('Please enter a valid non-negative cost.');return;}
+  state.calcutta[store][id]={cost:cost===''?'':Number(cost.toFixed(2)),purchaser:buyerEl.value.trim(),saved:true};
+  save(); renderCalcutta();
+}
+function editCalcuttaEntry(type,id){
+  if(!isAdmin)return;
+  ensureCalcuttaState();
+  const store=type==='team'?'teams':'players';
+  if(state.calcutta[store][id])state.calcutta[store][id].saved=false;
+  renderCalcutta();
+}
+function renderCalcuttaEditableRow(type,item,pos,divisionLabel){
+  const id=item.id;
+  const entry=getCalcuttaEntry(type,id);
+  const prefix=type==='team'?'team':'player';
+  const disabled=entry.saved?'disabled':'';
+  const label=type==='team'?`#${pos} • ${t('Shift')} ${item.shift}`:`#${pos} • ${divisionLabel}`;
+  const idAttr=esc(id);
+  const jsId=JSON.stringify(id).replace(/</g,'\\u003c');
+  return `<tr>
+    <td><b>${pos}</b></td>
+    <td><b>${esc(item.name)}</b><div class="small muted">${type==='team'?label:esc(item.team)}</div></td>
+    ${type==='player'?`<td>${esc(divisionLabel)}</td>`:''}
+    <td><input id="cal_${prefix}_cost_${idAttr}" type="number" min="0" step="0.01" value="${entry.cost===''?'':esc(entry.cost)}" ${disabled} placeholder="0.00"></td>
+    <td><input id="cal_${prefix}_buyer_${idAttr}" value="${esc(entry.purchaser||'')}" ${disabled} placeholder="${currentLang==='es'?'Nombre del comprador':'Purchaser name'}"></td>
+    <td class="center">${entry.saved
+      ? `<button class="btn-secondary" onclick="editCalcuttaEntry('${type}',${jsId})">${t('Edit')}</button>`
+      : `<button class="btn-primary" onclick="saveCalcuttaEntry('${type}',${jsId})">${t('Save')}</button>`}</td>
+  </tr>`;
+}
+function renderCalcutta(){
+  ensureCalcuttaState();
+  const holder=document.getElementById('calcuttaContent');
+  if(!holder||!isAdmin)return;
+  const teams=calcuttaTeamStandings(), {men,combined}=calcuttaPlayerStandings();
+  const total=Object.values(state.calcutta.teams).reduce((s,e)=>s+(Number(e.cost)||0),0)+Object.values(state.calcutta.players).reduce((s,e)=>s+(Number(e.cost)||0),0);
+  document.getElementById('calcuttaTotalBadge').textContent=formatMoney(total);
+  const empty=`<div class="empty">${t('No teams registered yet.')}</div>`;
+  holder.innerHTML=`
+    <h3>${currentLang==='es'?'Equipos por Posiciones':'Teams by Standings'}</h3>
+    ${teams.length?`<div style="overflow-x:auto"><table><thead><tr><th>Pos</th><th>${t('Team')}</th><th>${t('Cost')}</th><th>${t('Purchaser')}</th><th>${t('Actions')}</th></tr></thead><tbody>${teams.map((x,i)=>renderCalcuttaEditableRow('team',x,i+1,'')).join('')}</tbody></table></div>`:empty}
+    <h3 style="margin-top:24px">${currentLang==='es'?'Individual — Varonil':'Individual — Men'}</h3>
+    ${men.length?`<div style="overflow-x:auto"><table><thead><tr><th>Pos</th><th>${t('Player')}</th><th>${t('Division')}</th><th>${t('Cost')}</th><th>${t('Purchaser')}</th><th>${t('Actions')}</th></tr></thead><tbody>${men.map((x,i)=>renderCalcuttaEditableRow('player',x,i+1,t('Male'))).join('')}</tbody></table></div>`:empty}
+    <h3 style="margin-top:24px">${currentLang==='es'?'Individual — Senior + Femenil':'Individual — Seniors + All Women'}</h3>
+    ${combined.length?`<div style="overflow-x:auto"><table><thead><tr><th>Pos</th><th>${t('Player')}</th><th>${t('Division')}</th><th>${t('Cost')}</th><th>${t('Purchaser')}</th><th>${t('Actions')}</th></tr></thead><tbody>${combined.map((x,i)=>renderCalcuttaEditableRow('player',x,i+1,t('Seniors + All Women'))).join('')}</tbody></table></div>`:empty}
+  `;
+}
+
+function sundayPlayerResults(){
+  const start=Number(state.settings?.satGames||4)+1, end=start+Number(state.settings?.sunGames||3)-1;
+  const players=[]; state.teams.forEach(t=>t.bowlers.forEach(b=>players.push({id:t.id+'|'+b.name,name:b.name,team:t.name,gender:b.gender,handicap:b.handicap,scratch:0,net:0,games:0})));
+  const sm=Object.fromEntries(players.map(p=>[p.id,p])), map=teamMap();
+  state.games.forEach(g=>{
+    if(g.number<start||g.number>end)return;
+    g.matches.forEach(m=>{
+      if(!m.completed||!m.bowlers?.length)return;
+      const A=map[m.aId],B=map[m.bId];if(!A||!B)return;
+      const as=playerOrder(A),bs=playerOrder(B);
+      m.bowlers.forEach((o,pos)=>{
+        const a=as[pos],b=bs[pos];
+        if(a&&sm[m.aId+'|'+a.name]){const p=sm[m.aId+'|'+a.name],v=Number(o.a)||0;p.scratch+=v;p.net+=v+(Number(a.handicap)||0);p.games++;}
+        if(b&&sm[m.bId+'|'+b.name]){const p=sm[m.bId+'|'+b.name],v=Number(o.b)||0;p.scratch+=v;p.net+=v+(Number(b.handicap)||0);p.games++;}
+      });
+    });
+  });
+  return players.filter(p=>p.games>0).sort((a,b)=>b.net-a.net||b.scratch-a.scratch);
+}
+function sundayTeamResults(){
+  const start=Number(state.settings?.satGames||4)+1,end=start+Number(state.settings?.sunGames||3)-1;
+  const rows=state.teams.map(t=>({id:t.id,name:t.name,shift:t.shift||1,scratch:0,net:0,games:0})),sm=Object.fromEntries(rows.map(x=>[x.id,x])),map=teamMap();
+  state.games.forEach(g=>{
+    if(g.number<start||g.number>end)return;
+    g.matches.forEach(m=>{
+      if(!m.completed)return;
+      const A=map[m.aId],B=map[m.bId],sa=sm[m.aId],sb=sm[m.bId];if(!A||!B||!sa||!sb)return;
+      const ta=Number(m.teamScoreA)||0,tb=Number(m.teamScoreB)||0;
+      sa.scratch+=ta;sb.scratch+=tb;sa.net+=ta+teamTotals(A).hdcp;sb.net+=tb+teamTotals(B).hdcp;sa.games++;sb.games++;
+    });
+  });
+  return rows.filter(x=>x.games>0).sort((a,b)=>b.net-a.net||b.scratch-a.scratch);
+}
+function payoutRows(rows,pct,places,purse){
+  const count=Math.max(0,Math.floor(Number(places)||0)),pool=purse*Math.max(0,Number(pct)||0)/100;
+  if(!count||!pool)return [];
+  const share=pool/count,out=[];let idx=0,place=1;
+  while(idx<rows.length&&place<=count){
+    const score=rows[idx].net;let j=idx+1;while(j<rows.length&&rows[j].net===score)j++;
+    const occupied=Math.min(j-idx,count-place+1),prize=(share*occupied)/Math.max(1,j-idx);
+    for(let k=idx;k<j;k++)out.push({...rows[k],rank:place,prize});
+    place+=j-idx;idx=j;
+  }
+  return out;
+}
+function saveCalcuttaPayouts(){
+  if(!isAdmin)return;ensureCalcuttaState();
+  const vals=['Men','Women','Team'].map(k=>({pct:Number(document.getElementById(`payout${k}Pct`).value),places:Number(document.getElementById(`payout${k}Places`).value)}));
+  if(vals.some(v=>!Number.isFinite(v.pct)||v.pct<0||v.pct>100||!Number.isInteger(v.places)||v.places<1)){alert('Please enter valid payout percentages (0–100) and whole-number place counts.');return;}
+  state.calcutta.payouts={menPct:vals[0].pct,menPlaces:vals[0].places,womenPct:vals[1].pct,womenPlaces:vals[1].places,teamPct:vals[2].pct,teamPlaces:vals[2].places};
+  save();renderCalcuttaPayout();
+}
+function renderCalcuttaPayout(){
+  ensureCalcuttaState();const c=document.getElementById('calcuttaPayoutContent');if(!c||!isAdmin)return;
+  const p=state.calcutta.payouts;
+  document.getElementById('payoutMenPct').value=p.menPct;document.getElementById('payoutMenPlaces').value=p.menPlaces;
+  document.getElementById('payoutWomenPct').value=p.womenPct;document.getElementById('payoutWomenPlaces').value=p.womenPlaces;
+  document.getElementById('payoutTeamPct').value=p.teamPct;document.getElementById('payoutTeamPlaces').value=p.teamPlaces;
+  const totalPct=Number(p.menPct)+Number(p.womenPct)+Number(p.teamPct);
+  document.getElementById('payoutValidation').textContent=`Total payout allocation: ${totalPct.toFixed(2)}%`;
+  const teams=sundayTeamResults(), players=sundayPlayerResults(),men=players.filter(x=>x.gender==='Male'),combined=players.filter(x=>x.gender!=='Male');
+  const teamPurse=Object.values(state.calcutta.teams).reduce((s,e)=>s+(Number(e.cost)||0),0);
+  const menPurse=Object.entries(state.calcutta.players).reduce((s,[id,e])=>{const x=players.find(q=>q.id===id);return x?.gender==='Male'?s+(Number(e.cost)||0):s;},0);
+  const womenPurse=Object.entries(state.calcutta.players).reduce((s,[id,e])=>{const x=players.find(q=>q.id===id);return x?.gender!=='Male'?s+(Number(e.cost)||0):s;},0);
+  const tp=payoutRows(teams,p.teamPct,p.teamPlaces,teamPurse),mp=payoutRows(men,p.menPct,p.menPlaces,menPurse),wp=payoutRows(combined,p.womenPct,p.womenPlaces,womenPurse);
+  const table=(title,rows,prizes,scoreLabel,isTeam)=>`<div class="card" style="margin:14px 0;background:#18181c"><div class="actions" style="justify-content:space-between"><h3>${title}</h3><span class="badge">${formatMoney(prizes.reduce((s,x)=>s+x.prize,0))}</span></div>${rows.length?`<div style="overflow-x:auto"><table><thead><tr><th>Pos</th><th>${isTeam?t('Team'):t('Player')}</th><th>${isTeam?t('Shift'):t('Team')}</th><th>${scoreLabel}</th><th>${currentLang==='es'?'Premio':'Prize'}</th></tr></thead><tbody>${rows.map((r,i)=>{const pr=prizes.find(x=>x.id===r.id);return `<tr><td><b>${pr?pr.rank:i+1}</b></td><td><b>${esc(r.name)}</b></td><td>${esc(isTeam?`${t('Shift')} ${r.shift}`:r.team)}</td><td>${r.net}</td><td>${pr?formatMoney(pr.prize):'—'}</td></tr>`}).join('')}</tbody></table></div>`:`<div class="empty">${currentLang==='es'?'No hay resultados completos del domingo.':'No completed Sunday results yet.'}</div>`}</div>`;
+  c.innerHTML=`<div class="kpis"><div class="kpi"><div class="small">Men Purse</div><div class="big">${formatMoney(menPurse)}</div></div><div class="kpi"><div class="small">Senior + Women Purse</div><div class="big">${formatMoney(womenPurse)}</div></div><div class="kpi"><div class="small">Team Purse</div><div class="big">${formatMoney(teamPurse)}</div></div><div class="kpi"><div class="small">Sunday Games</div><div class="big">${state.settings?.sunGames||3}</div></div></div>
+    ${table(currentLang==='es'?'Equipos — Domingo':'Teams — Sunday',teams,tp,'Net Total',true)}
+    ${table(currentLang==='es'?'Varonil — Domingo':'Men — Sunday',men,mp,'Net Pinfall',false)}
+    ${table(currentLang==='es'?'Senior + Femenil — Domingo':'Seniors + All Women — Sunday',combined,wp,'Net Pinfall',false)}`;
+}
+function exportCalcuttaOwing(){
+  if(!isAdmin)return;ensureCalcuttaState();const rows=[];
+  calcuttaTeamStandings().forEach((x,i)=>{const e=state.calcutta.teams[x.id];if(e&&Number(e.cost)>0)rows.push({category:'Team',position:i+1,item:x.name,purchaser:e.purchaser||'Unassigned',amount:Number(e.cost)||0});});
+  const {men,combined}=calcuttaPlayerStandings();
+  [...men,...combined].forEach(p=>{const e=state.calcutta.players[p.id];if(e&&Number(e.cost)>0)rows.push({category:p.gender==='Male'?'Men':'Seniors + All Women',position:'',item:p.name,purchaser:e.purchaser||'Unassigned',amount:Number(e.cost)||0});});
+  const totals={};rows.forEach(r=>totals[r.purchaser]=(totals[r.purchaser]||0)+r.amount);
+  let html='<table><tr><td colspan="5" class="hdr">Calcutta Purchases / Amount Owed</td></tr><tr><th>Category</th><th>Pos</th><th>Item</th><th>Purchaser</th><th>Amount Owed</th></tr>';
+  rows.forEach(r=>html+=`<tr><td>${esc(r.category)}</td><td>${r.position}</td><td>${esc(r.item)}</td><td>${esc(r.purchaser)}</td><td>${r.amount.toFixed(2)}</td></tr>`);
+  html+='<tr><td colspan="5"></td></tr><tr><th colspan="4">Purchaser Total</th><th>Amount Owed</th></tr>';
+  Object.entries(totals).sort((a,b)=>b[1]-a[1]).forEach(([buyer,total])=>html+=`<tr><td colspan="4">${esc(buyer)}</td><td>${total.toFixed(2)}</td></tr>`);
+  html+='</table>';downloadExcel(html,'calcutta_amounts_owed');
+}
+
+// Wrap renderAll so old tournament functions continue to run unchanged.
+const _renderAllBase=renderAll;
+renderAll=function(){ensureCalcuttaState();_renderAllBase();if(isAdmin){renderCalcutta();renderCalcuttaPayout();}};
+
+// Preserve imported old backups while upgrading their state shape.
+const _importTournamentJSON=importTournamentJSON;
+importTournamentJSON=function(event){
+  if(!isAdmin)return;
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){try{const imported=JSON.parse(e.target.result);if(imported&&imported.teams&&imported.settings){state=imported;ensureCalcuttaState();save();alert('Tournament data imported and loaded successfully!');renderAll();}else alert('Invalid tournament file structure.');}catch(err){alert('Error parsing JSON file: '+err.message);}event.target.value='';};
+  reader.readAsText(file);
+};
+
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;const el=document.getElementById('installPrompt');if(el&&isAdmin){el.style.setProperty('display','block','important');applyTranslations();}});
+async function installApp(){
+  if(!deferredInstallPrompt){alert(currentLang==='es'?'Usa el menú del navegador para instalar la aplicación.':'Use your browser menu to install the app.');return;}
+  deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;const el=document.getElementById('installPrompt');if(el)el.style.setProperty('display','none','important');
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const pass=document.getElementById('adminPass');
+  if(pass)pass.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();loginAdmin();}});
+  if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(err=>console.warn('PWA service worker unavailable',err));
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{activateTab(b.dataset.tab);if(b.dataset.tab==='standings')renderStandings();if(b.dataset.tab==='export')updateExportOptions();if(b.dataset.tab==='calcutta')renderCalcutta();if(b.dataset.tab==='calcuttaPayout')renderCalcuttaPayout();});
+});
+
 </script>
 </body>
 </html>
