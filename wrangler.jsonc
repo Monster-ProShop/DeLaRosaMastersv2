@@ -1,0 +1,12 @@
+{
+  "name":"delarosamasters",
+  "main":"worker.js",
+  "compatibility_date":"2026-09-05",
+  "assets":{"directory":"./public","binding":"ASSETS","run_worker_first":true},
+  "rules":[{"type":"Text","globs":["**/*.html.txt","**/*.js.txt","**/*.css.txt"],"fallthrough":true}],
+  "vars":{
+    "SUPABASE_URL":"https://yfpdcwhhnnucqjahoilz.supabase.co",
+    "ADMIN_EMAIL":"monsterproshop@outlook.com",
+    "TOURNAMENT_ID":"delarosa_masters_2026"
+  }
+}

@@ -1,75 +1,45 @@
-# De La Rosa Masters — branding, menu and finals update
+# De La Rosa Masters — secure upgrade
 
-This is the complete replacement webapp, including the earlier Calcutta features. Your existing tournament connection and admin password are preserved. No live database or hosting changes were made during development.
+This is a complete Cloudflare Worker project, not a replacement index.html alone. The public website lives in public/. Administrator HTML and JavaScript are bundled privately and served only after verified sign-in. Existing tournament, Calcutta and finals editor features are retained.
 
-## Install the update
+## Current verification
+Eight automated backend tests pass. Headless Edge checks pass for public Spanish results, Enter-key sign-in, each admin menu showing one section, saving and reloading, HttpOnly session cookies, no private browser-storage cache, phone/tablet/desktop widths, logout and no uncaught JavaScript errors. These checks use a simulated Supabase service; live database migration, email delivery and Cloudflare deployment still require verification. Previous feature tests are not a substitute for live acceptance testing.
 
-1. In the existing app, use **Export Data → Export Tournament (.json)** to keep a backup.
-2. Upload **every application file in this package** to your existing website directory. Replace `index.html`, the manifest and service worker. Keep `finals.js`, `finals.css`, the logo and all icons next to `index.html`.
-3. Use the same HTTPS domain and directory to retain browser storage and installation identity.
-4. Close every open app window/tab, then reopen the site. The new service worker takes over once the old windows close. Refresh if necessary.
-5. Android: choose **Install app** or the browser's Install / Add to Home screen option. iPhone/iPad: Safari → Share → Add to Home Screen → Open as Web App, if offered.
-6. Existing installations may retain an old operating-system icon. If it does not refresh, remove the old home-screen installation and add the updated site again. Back up tournament data first.
+## Deployment order
+1. Export a current tournament backup from the existing app and keep it outside the repository. Pause editing during migration.
+2. In GitHub, make Monster-ProShop/DeLaRosaMastersv2 private and disable its old GitHub Pages site. Remove the public backup JSON from the current checkout. Previously public copies cannot be recalled.
+3. Replace the repository contents with this complete project. Keep the public folder structure. Cloudflare must run `npx wrangler deploy` from the project root, using wrangler.jsonc; do not deploy the entire repository as static files. Only public/ is the asset directory.
+4. In Supabase project yfpdcwhhnnucqjahoilz, Authentication > Users: create monsterproshop@outlook.com with a strong unique password and a confirmed email. Enter the password yourself; do not paste it into chat. Disable new public signups under Sign In / Providers.
+5. Configure Cloudflare Worker secrets SUPABASE_SERVICE_ROLE_KEY and SUPABASE_PUBLISHABLE_KEY from this Supabase project's API Keys settings. Never put the service key in GitHub, public files, or chat. SUPABASE_URL, ADMIN_EMAIL and TOURNAMENT_ID are already in wrangler.jsonc.
+6. When the Worker is ready to deploy, run supabase/01-secure-migration.sql in Supabase SQL Editor. It preserves the tournament row but revokes old direct browser database access, so the old site stops syncing immediately. Then run supabase/02-authorize-admin.sql to allow only your confirmed account UUID.
+7. Deploy the Worker. Keep the existing masters.ilusionbowl.com custom domain attached to delarosamasters. GitHub commits to the configured production branch trigger Cloudflare's connected build; there is no need to toggle the branch to None.
+8. Open /login and sign in. Verify the old tournament is present. Open the domain in a private browser window: results should work without login, /admin/ should redirect to login, and /api/admin/state should return 401.
+9. Import a backup only if needed. Test on a separate tournament row before altering production scores. For an isolated testing Worker, duplicate wrangler.jsonc with a different Worker name and TOURNAMENT_ID, and configure its secrets separately. Never run destructive tests on your production row.
 
-PWA installation requires HTTPS (localhost works for development). Opening the downloaded HTML directly does not enable installation. References: [MDN](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Making_PWAs_installable), [Apple](https://support.apple.com/en-ca/guide/iphone/iphea86e5236/ios).
+Optional email-code login requires working Supabase email delivery. Set the Magic Link email template to display {{ .Token }}. Supabase's default email service restricts recipients; configure custom SMTP for dependable delivery. Password sign-in is available while SMTP is being configured.
 
-## Navigation and branding
+## Local commands
+Install Node.js, then in this folder run:
 
-The tabs are replaced by a **Go to section** dropdown and matching heading. Only the selected section is displayed. Public viewers have Matches, Registered Teams, Standings and Finals. Administrators also have Team Registration, Tournament Setup, Calcutta, Calcutta Payout and Export Data. Finals has its own event selector.
+    npm install
+    npm test
+    npx wrangler login
+    npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+    npx wrangler secret put SUPABASE_PUBLISHABLE_KEY
+    npm run deploy
 
-The polished supplied emblem appears in the header, login screen, finals screen, favicon and installation icons. The maskable icon has extra safe padding. `logo.png` is the full-resolution artwork. The generation prompt and tool details are in `logo-generation.md`.
+For local development put those keys in an untracked .dev.vars file and run npm run dev. The package contains no real secrets.
 
-The app now uses **two shifts** in registration, dummy-team generation, match setup, viewing and exports. If an older backup contains shift 3, an administrator can choose its destination (1 or 2) in Tournament Setup. Teams and matches move without erasing scores. Finals stay locked until this is resolved.
+## Testing checklist
+- Public English/Spanish results, team and individual standings, matches, finals, and mobile installation. iPhone/iPad: Safari Share > Add to Home Screen. Android: Install App prompt or browser install menu.
+- Admin login by password and Enter; email code after SMTP setup; logout; expired session.
+- Two shifts, registration, edits, seven matches, zero scores and ties, score corrections and exports.
+- Each Calcutta category: buyer/cost/paid, Save/Edit/Cancel, debts CSV, payout percentages summing to 100%, Sunday ties sharing occupied places.
+- Individual finals: top 10/10/6, cutoff selections, handicap elimination, 5/5/3 stepladders, winner changes resetting later rounds.
+- Team finals: two shift seeds, 16 other teams, Baker 16-to-8-to-4; the last six format remains intentionally pending.
+- Two admin windows: a stale save must be rejected rather than overwriting changes. Export edits before reloading after a conflict.
 
-## Finals eligibility and publication
+## Security boundaries
+Public HTML, styles, logo and rendering JavaScript remain inspectable, as on any website. Private admin code is accessible to a signed-in administrator, and the repository must be private to hide its source. Server credentials never reach the browser. The server verifies both the Supabase account and its admin UUID on each protected request, validates regular scores/handicap and computes public standings. Admin finals and Calcutta calculations still run in the authenticated editor; this does not conceal them from an authorized administrator.
 
-Finals can be generated only when every current team has one valid, completed match in each of rounds 1–7, with all three bowlers' scores entered. Missing matches, duplicate appearances, incomplete scores and legacy third-shift data block generation. Later games do not affect qualification.
-
-Each event is generated separately by an administrator. Qualifiers, elimination standings, pairings, winners and champions appear in public Finals. Finals are saved with the tournament and included in full JSON backups, using the existing cloud connection when available.
-
-Changing regular-play scores or roster data after generating an event marks it **outdated**. Further scoring is blocked until the administrator regenerates it. Regeneration requires confirmation and resets that event's finals scores and advancement decisions.
-
-## Individual finals
-
-| Event | Qualifying field | Elimination survivors |
-|---|---:|---:|
-| Individual Overall: all bowlers | Top 10 | Top 5 |
-| Seniors: Male Senior + Female Senior | Top 10 | Top 5 |
-| Women: Female + Female Senior | Top 6 | Top 3 |
-
-Qualification uses the seven-game pin total including handicap. Categories come from registration, not birth dates. Bowlers may qualify for multiple events.
-
-At tied qualification cutoffs, the app waits for an administrator to select the rollout winner(s). It does not use high game, scratch total or alphabetical order to eliminate tied bowlers. The selected qualifiers appear in the published list.
-
-All qualifiers bowl **one new elimination game**. Enter scratch scores from 0–300; the app adds handicap. The qualifying total does not carry over. Save every elimination score before generating the stepladder. Ties affecting advancement or seed order require explicit rollout/seed selections. Each name may be selected once.
-
-The five-player stepladder starts **5 vs 4**, then winner vs 3, winner vs 2, and winner vs 1. The women's three-player stepladder starts **3 vs 2**, then winner vs 1. Every scored individual finals game includes handicap.
-
-For a stepladder match, enter both scratch scores or select only the winner. Unequal handicap totals determine the winner. A tie needs an explicit rollout winner. A selected winner that conflicts with entered scores is rejected. Saving creates the next match; the last winner becomes champion.
-
-Use Edit to correct results. Correcting elimination scores resets the stepladder after confirmation. Correcting an earlier stepladder match resets its dependent later matches and champion after confirmation.
-
-## Team finals
-
-- First place in **shift 1** and first place in **shift 2** are seeded using the app's existing seven-game team standings rules: match points and existing team tiebreakers.
-- Excluding those two seeds, the next **16 teams** in overall standings enter the Baker bracket. At least 18 teams, with teams in both shifts, are required.
-- Round of 16: **1 vs 16, 2 vs 15, …, 8 vs 9**.
-- Each pair bowls one Baker game shared by all three bowlers. Enter one **scratch team score (0–300)** per team. No individual or summed team handicap is added.
-- The eight match winners reseed by their first Baker game score, highest first. Tied seeding scores require an explicit administrator selection of order.
-- Round of 8: **1 vs 8, 2 vs 7, 3 vs 6, 4 vs 5**, again one Baker game per team.
-- The four winners join the two seeded shift winners as the **last six**. The next format remains pending. No additional matches or team champion are invented.
-- Correcting an earlier Baker result resets the dependent later round and last-six list after confirmation.
-
-## Calcutta and existing controls
-
-Calcutta remains admin-only: teams across both shifts, Men, and Seniors + All Women; buyer/cost/amount paid; Save, Edit and Cancel; buyer balance and payout CSV exports; separate configurable purses. Calcutta payouts still use only Sunday's first three games with handicap. Tied entries divide the prizes of their occupied places. These payouts are separate from the new finals.
-
-Registration, score entry, game generation, standings, exports and Enter-to-login remain available. Saving one match preserves unsaved inputs in other visible matches. Wide tables scroll horizontally on small screens.
-
-## Storage and validation limits
-
-The original client-side password system is preserved. Admin-only controls are hidden and action handlers check the role, but this is **not server-enforced privacy**: a technical user can inspect the embedded password and shared state. Private financial records require backend authentication and database access policies. Keep JSON backups private.
-
-The app saves locally and attempts the existing whole-state cloud upsert. If sync is pending, use the existing notice and Retry sync. Coordinate edits across devices: the inherited storage design does not merge simultaneous changes. Other devices receive updated public finals after successful cloud synchronization/reload.
-
-Tests use isolated sample data with external requests blocked. Physical Android/iOS installation, live Supabase synchronization and database policies were not tested. See `verification.md` for the browser checks.
+Admin requires a network connection. Sessions last at most one hour; export unsaved edits before signing in again. Public results refresh every 30 seconds. Only the public shell is cached offline, not private records or results API responses.
