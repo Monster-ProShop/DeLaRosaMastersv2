@@ -76,7 +76,7 @@ export function createHandler(assets={},fetcher=fetch){
       if(request.method!=='GET'&&request.method!=='HEAD')throw new HTTPError(405,'Method not allowed.');
       const allowed=new Set(['/','/index.html','/login','/app.js','/style.css','/sw.js','/manifest.webmanifest','/logo.png','/favicon.png','/apple-touch-icon.png','/icon-finals-192.png','/icon-finals-512.png','/icon-finals-maskable.png']);
       if(!allowed.has(path))throw new HTTPError(404,'Not found.');
-      const assetURL=new URL(request.url);if(path==='/login')assetURL.pathname='/index.html';const response=await env.ASSETS.fetch(new Request(assetURL,request));const headers=new Headers(response.headers);
+      const assetURL=new URL(request.url);if(path==='/login')assetURL.pathname='/';const response=await env.ASSETS.fetch(new Request(assetURL,request));const headers=new Headers(response.headers);
       for(const [k,v]of Object.entries(baseHeaders))headers.set(k,v);headers.set('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
       if(path==='/sw.js')headers.set('Service-Worker-Allowed','/');return new Response(response.body,{status:response.status,headers});
     }catch(error){return json({error:error.status?error.message:'Service temporarily unavailable.'},error.status||503);}
