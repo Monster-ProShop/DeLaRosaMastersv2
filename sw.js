@@ -1,4 +1,4 @@
-const CACHE='dlr-masters-finals-v3';
+const CACHE='dlr-masters-finals-v3.1';
 const SHELL=['./','./index.html','./manifest.webmanifest','./icon-finals-192.png','./icon-finals-512.png','./icon-finals-maskable.png','./logo.png','./favicon.png','./apple-touch-icon.png','./finals.js','./finals.css'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('dlr-masters-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});
