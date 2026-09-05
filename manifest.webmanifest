@@ -1,0 +1,31 @@
+{
+  "id": "./",
+  "name": "De La Rosa Masters",
+  "short_name": "DLR Masters",
+  "description": "De La Rosa Masters · Two shifts, tournament standings and championship finals",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#b80000",
+  "icons": [
+    {
+      "src": "./icon-finals-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-finals-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-finals-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -1,0 +1,1986 @@
+{
+  "games": [
+    {
+      "day": "Saturday",
+      "number": 1,
+      "matches": [
+        {
+          "id": "3453cd9e-2d99-48e2-8d5d-3121c5b9e6ea",
+          "aId": "11571232-e5c3-4f41-a13b-e7a741e4387a",
+          "bId": "168292ce-4109-4e77-8af2-bcc0e29d96b6",
+          "laneA": 1,
+          "laneB": 2,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 165,
+              "b": 234,
+              "pos": 0
+            },
+            {
+              "a": 212,
+              "b": 153,
+              "pos": 1
+            },
+            {
+              "a": 203,
+              "b": 167,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 580,
+          "teamScoreB": 554
+        },
+        {
+          "id": "1bbbec2f-1643-4048-afda-023d30b85c12",
+          "aId": "2363dee1-7cce-46d3-96a2-9f5e94b93cfa",
+          "bId": "df811d99-0627-4011-92a4-1a93768fefd2",
+          "laneA": 3,
+          "laneB": 4,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 176,
+              "b": 248,
+              "pos": 0
+            },
+            {
+              "a": 226,
+              "b": 150,
+              "pos": 1
+            },
+            {
+              "a": 192,
+              "b": 230,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 594,
+          "teamScoreB": 628
+        },
+        {
+          "id": "91480235-de0e-4fa4-9086-d9cad4c9e877",
+          "aId": "2ef5d25a-9fdb-4dc9-8339-d263d5e1daba",
+          "bId": "c895a6f8-01e2-4f60-8f79-175eff97810d",
+          "laneA": 5,
+          "laneB": 6,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 156,
+              "b": 193,
+              "pos": 0
+            },
+            {
+              "a": 208,
+              "b": 203,
+              "pos": 1
+            },
+            {
+              "a": 158,
+              "b": 189,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 522,
+          "teamScoreB": 585
+        },
+        {
+          "id": "0bb3559c-c18d-48b6-9db1-22e08fddbf59",
+          "aId": "f7af41c0-8c0c-413e-a8ca-fadf461823df",
+          "bId": "4bb05d46-16ef-4f1e-8d27-bd3574a199f3",
+          "laneA": 7,
+          "laneB": 8,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 254,
+              "b": 214,
+              "pos": 0
+            },
+            {
+              "a": 238,
+              "b": 225,
+              "pos": 1
+            },
+            {
+              "a": 179,
+              "b": 150,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 671,
+          "teamScoreB": 589
+        },
+        {
+          "id": "7b2ff799-97a9-40bb-b4e2-325071c04fce",
+          "aId": "676caf54-2d96-4198-98aa-02b944c1012f",
+          "bId": "8ccf9590-c080-4742-a1ff-85c064a7eaa0",
+          "laneA": 9,
+          "laneB": 10,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 249,
+              "b": 196,
+              "pos": 0
+            },
+            {
+              "a": 166,
+              "b": 186,
+              "pos": 1
+            },
+            {
+              "a": 243,
+              "b": 253,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 658,
+          "teamScoreB": 635
+        },
+        {
+          "id": "afe71def-4fab-4066-a2cb-c0a7f6c85b29",
+          "aId": "a24f179f-d064-4296-b02a-81c68903fea9",
+          "bId": "c9524566-7d27-43f6-b25f-cc3610094aaa",
+          "laneA": 11,
+          "laneB": 12,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 181,
+              "b": 233,
+              "pos": 0
+            },
+            {
+              "a": 230,
+              "b": 145,
+              "pos": 1
+            },
+            {
+              "a": 204,
+              "b": 221,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 615,
+          "teamScoreB": 599
+        },
+        {
+          "id": "6f3e4998-43a8-4b86-8b41-c7d7c47ab2ca",
+          "aId": "4b86b542-dd0d-4032-a575-f85af86d1d05",
+          "bId": "94f9f27b-7c98-453f-a27e-e59317a51344",
+          "laneA": 13,
+          "laneB": 14,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 169,
+              "b": 165,
+              "pos": 0
+            },
+            {
+              "a": 208,
+              "b": 245,
+              "pos": 1
+            },
+            {
+              "a": 229,
+              "b": 186,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 606,
+          "teamScoreB": 596
+        },
+        {
+          "id": "6d45ee35-fdf1-4fc9-8f0b-f267d743d4f0",
+          "aId": "1967f8dc-6bbb-4440-8180-33f03360c55b",
+          "bId": "97e13f49-9bbf-4239-8e29-29444c65bac2",
+          "laneA": 15,
+          "laneB": 16,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 182,
+              "b": 198,
+              "pos": 0
+            },
+            {
+              "a": 203,
+              "b": 201,
+              "pos": 1
+            },
+            {
+              "a": 197,
+              "b": 237,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 582,
+          "teamScoreB": 636
+        }
+      ]
+    },
+    {
+      "day": "Saturday",
+      "number": 2,
+      "matches": [
+        {
+          "id": "09dfa155-2011-4eaf-a1b4-c43ea2f4f40e",
+          "aId": "f7af41c0-8c0c-413e-a8ca-fadf461823df",
+          "bId": "97e13f49-9bbf-4239-8e29-29444c65bac2",
+          "laneA": 3,
+          "laneB": 4,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 217,
+              "b": 181,
+              "pos": 0
+            },
+            {
+              "a": 188,
+              "b": 222,
+              "pos": 1
+            },
+            {
+              "a": 162,
+              "b": 158,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 567,
+          "teamScoreB": 561
+        },
+        {
+          "id": "7d048cf4-ac02-4d11-b67a-f4a754a2e747",
+          "aId": "8ccf9590-c080-4742-a1ff-85c064a7eaa0",
+          "bId": "df811d99-0627-4011-92a4-1a93768fefd2",
+          "laneA": 5,
+          "laneB": 6,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 184,
+              "b": 224,
+              "pos": 0
+            },
+            {
+              "a": 170,
+              "b": 248,
+              "pos": 1
+            },
+            {
+              "a": 191,
+              "b": 165,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 545,
+          "teamScoreB": 637
+        },
+        {
+          "id": "b63c2ec8-53df-4f12-b31c-c238f42019be",
+          "aId": "94f9f27b-7c98-453f-a27e-e59317a51344",
+          "bId": "c895a6f8-01e2-4f60-8f79-175eff97810d",
+          "laneA": 7,
+          "laneB": 8,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 199,
+              "b": 150,
+              "pos": 0
+            },
+            {
+              "a": 205,
+              "b": 165,
+              "pos": 1
+            },
+            {
+              "a": 194,
+              "b": 190,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 598,
+          "teamScoreB": 505
+        },
+        {
+          "id": "7a27ce14-5e1a-414b-be7e-cc2c10e4b988",
+          "aId": "11571232-e5c3-4f41-a13b-e7a741e4387a",
+          "bId": "a24f179f-d064-4296-b02a-81c68903fea9",
+          "laneA": 9,
+          "laneB": 10,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 229,
+              "b": 216,
+              "pos": 0
+            },
+            {
+              "a": 233,
+              "b": 221,
+              "pos": 1
+            },
+            {
+              "a": 179,
+              "b": 250,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 641,
+          "teamScoreB": 687
+        },
+        {
+          "id": "f037acc1-5a26-4593-9cbe-a3fd44981a63",
+          "aId": "c9524566-7d27-43f6-b25f-cc3610094aaa",
+          "bId": "676caf54-2d96-4198-98aa-02b944c1012f",
+          "laneA": 11,
+          "laneB": 12,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 188,
+              "b": 248,
+              "pos": 0
+            },
+            {
+              "a": 196,
+              "b": 175,
+              "pos": 1
+            },
+            {
+              "a": 248,
+              "b": 199,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 632,
+          "teamScoreB": 622
+        },
+        {
+          "id": "53e45991-8443-4e92-8e7e-bbb72f6f7df5",
+          "aId": "4b86b542-dd0d-4032-a575-f85af86d1d05",
+          "bId": "2363dee1-7cce-46d3-96a2-9f5e94b93cfa",
+          "laneA": 13,
+          "laneB": 14,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 234,
+              "b": 155,
+              "pos": 0
+            },
+            {
+              "a": 168,
+              "b": 196,
+              "pos": 1
+            },
+            {
+              "a": 157,
+              "b": 169,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 559,
+          "teamScoreB": 520
+        },
+        {
+          "id": "3df3c82d-1350-4d0b-883d-452cc3210015",
+          "aId": "1967f8dc-6bbb-4440-8180-33f03360c55b",
+          "bId": "168292ce-4109-4e77-8af2-bcc0e29d96b6",
+          "laneA": 15,
+          "laneB": 16,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 191,
+              "b": 196,
+              "pos": 0
+            },
+            {
+              "a": 148,
+              "b": 246,
+              "pos": 1
+            },
+            {
+              "a": 203,
+              "b": 149,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 542,
+          "teamScoreB": 591
+        },
+        {
+          "id": "ffd03f09-c401-45f1-a1a9-719a25cf3d50",
+          "aId": "2ef5d25a-9fdb-4dc9-8339-d263d5e1daba",
+          "bId": "4bb05d46-16ef-4f1e-8d27-bd3574a199f3",
+          "laneA": 1,
+          "laneB": 2,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 190,
+              "b": 204,
+              "pos": 0
+            },
+            {
+              "a": 187,
+              "b": 255,
+              "pos": 1
+            },
+            {
+              "a": 253,
+              "b": 221,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 630,
+          "teamScoreB": 680
+        }
+      ]
+    },
+    {
+      "day": "Saturday",
+      "number": 3,
+      "matches": [
+        {
+          "id": "b5cd9ff9-e49d-4ce9-84a1-d78eac231c81",
+          "aId": "f7af41c0-8c0c-413e-a8ca-fadf461823df",
+          "bId": "94f9f27b-7c98-453f-a27e-e59317a51344",
+          "laneA": 9,
+          "laneB": 10,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 233,
+              "b": 250,
+              "pos": 0
+            },
+            {
+              "a": 208,
+              "b": 177,
+              "pos": 1
+            },
+            {
+              "a": 158,
+              "b": 169,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 599,
+          "teamScoreB": 596
+        },
+        {
+          "id": "3b22afc9-02fb-485d-b110-0ffacea74d06",
+          "aId": "df811d99-0627-4011-92a4-1a93768fefd2",
+          "bId": "a24f179f-d064-4296-b02a-81c68903fea9",
+          "laneA": 11,
+          "laneB": 12,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 235,
+              "b": 229,
+              "pos": 0
+            },
+            {
+              "a": 152,
+              "b": 147,
+              "pos": 1
+            },
+            {
+              "a": 150,
+              "b": 185,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 537,
+          "teamScoreB": 561
+        },
+        {
+          "id": "4d176a68-097b-4d0e-bcc3-42b75f769c97",
+          "aId": "c9524566-7d27-43f6-b25f-cc3610094aaa",
+          "bId": "11571232-e5c3-4f41-a13b-e7a741e4387a",
+          "laneA": 13,
+          "laneB": 14,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 191,
+              "b": 246,
+              "pos": 0
+            },
+            {
+              "a": 246,
+              "b": 229,
+              "pos": 1
+            },
+            {
+              "a": 256,
+              "b": 187,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 693,
+          "teamScoreB": 662
+        },
+        {
+          "id": "02ec50f0-b00f-4173-84d9-5954ac4ccf00",
+          "aId": "97e13f49-9bbf-4239-8e29-29444c65bac2",
+          "bId": "8ccf9590-c080-4742-a1ff-85c064a7eaa0",
+          "laneA": 15,
+          "laneB": 16,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 226,
+              "b": 254,
+              "pos": 0
+            },
+            {
+              "a": 157,
+              "b": 218,
+              "pos": 1
+            },
+            {
+              "a": 248,
+              "b": 226,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 631,
+          "teamScoreB": 698
+        },
+        {
+          "id": "7c79bdc6-134c-49bb-93e4-f6a58d1ee0fc",
+          "aId": "4bb05d46-16ef-4f1e-8d27-bd3574a199f3",
+          "bId": "4b86b542-dd0d-4032-a575-f85af86d1d05",
+          "laneA": 17,
+          "laneB": 18,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 173,
+              "b": 224,
+              "pos": 0
+            },
+            {
+              "a": 180,
+              "b": 221,
+              "pos": 1
+            },
+            {
+              "a": 254,
+              "b": 241,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 607,
+          "teamScoreB": 686
+        },
+        {
+          "id": "c53e2912-846a-4208-8bcb-c92b29959669",
+          "aId": "168292ce-4109-4e77-8af2-bcc0e29d96b6",
+          "bId": "c895a6f8-01e2-4f60-8f79-175eff97810d",
+          "laneA": 19,
+          "laneB": 20,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 189,
+              "b": 228,
+              "pos": 0
+            },
+            {
+              "a": 163,
+              "b": 178,
+              "pos": 1
+            },
+            {
+              "a": 163,
+              "b": 212,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 515,
+          "teamScoreB": 618
+        },
+        {
+          "id": "e2dc2a7c-8f16-46dc-87ed-b50abedfa038",
+          "aId": "1967f8dc-6bbb-4440-8180-33f03360c55b",
+          "bId": "2363dee1-7cce-46d3-96a2-9f5e94b93cfa",
+          "laneA": 21,
+          "laneB": 22,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 250,
+              "b": 195,
+              "pos": 0
+            },
+            {
+              "a": 201,
+              "b": 202,
+              "pos": 1
+            },
+            {
+              "a": 149,
+              "b": 247,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 600,
+          "teamScoreB": 644
+        },
+        {
+          "id": "4c88e2e7-3467-4edc-8441-e5ebaf071fe4",
+          "aId": "676caf54-2d96-4198-98aa-02b944c1012f",
+          "bId": "2ef5d25a-9fdb-4dc9-8339-d263d5e1daba",
+          "laneA": 23,
+          "laneB": 24,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 171,
+              "b": 242,
+              "pos": 0
+            },
+            {
+              "a": 205,
+              "b": 251,
+              "pos": 1
+            },
+            {
+              "a": 222,
+              "b": 176,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 598,
+          "teamScoreB": 669
+        }
+      ]
+    },
+    {
+      "day": "Saturday",
+      "number": 4,
+      "matches": [
+        {
+          "id": "617e0046-9f86-4159-976b-8aafe91a8535",
+          "aId": "94f9f27b-7c98-453f-a27e-e59317a51344",
+          "bId": "df811d99-0627-4011-92a4-1a93768fefd2",
+          "laneA": 11,
+          "laneB": 12,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 182,
+              "b": 254,
+              "pos": 0
+            },
+            {
+              "a": 171,
+              "b": 203,
+              "pos": 1
+            },
+            {
+              "a": 208,
+              "b": 203,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 561,
+          "teamScoreB": 660
+        },
+        {
+          "id": "5f8dd1ee-4806-4606-bcc9-3977d0319d43",
+          "aId": "c9524566-7d27-43f6-b25f-cc3610094aaa",
+          "bId": "f7af41c0-8c0c-413e-a8ca-fadf461823df",
+          "laneA": 13,
+          "laneB": 14,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 198,
+              "b": 178,
+              "pos": 0
+            },
+            {
+              "a": 218,
+              "b": 228,
+              "pos": 1
+            },
+            {
+              "a": 195,
+              "b": 179,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 611,
+          "teamScoreB": 585
+        },
+        {
+          "id": "cfc08317-b963-452b-84fb-c4074a3dde6e",
+          "aId": "8ccf9590-c080-4742-a1ff-85c064a7eaa0",
+          "bId": "c895a6f8-01e2-4f60-8f79-175eff97810d",
+          "laneA": 15,
+          "laneB": 16,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 255,
+              "b": 194,
+              "pos": 0
+            },
+            {
+              "a": 205,
+              "b": 209,
+              "pos": 1
+            },
+            {
+              "a": 195,
+              "b": 232,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 655,
+          "teamScoreB": 635
+        },
+        {
+          "id": "b1f03978-d3f9-4764-98ba-192cb695bb34",
+          "aId": "4b86b542-dd0d-4032-a575-f85af86d1d05",
+          "bId": "11571232-e5c3-4f41-a13b-e7a741e4387a",
+          "laneA": 17,
+          "laneB": 18,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 257,
+              "b": 208,
+              "pos": 0
+            },
+            {
+              "a": 239,
+              "b": 250,
+              "pos": 1
+            },
+            {
+              "a": 205,
+              "b": 228,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 701,
+          "teamScoreB": 686
+        },
+        {
+          "id": "db90eb56-4cec-41e8-ad10-d21687d03993",
+          "aId": "a24f179f-d064-4296-b02a-81c68903fea9",
+          "bId": "2363dee1-7cce-46d3-96a2-9f5e94b93cfa",
+          "laneA": 19,
+          "laneB": 20,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 169,
+              "b": 220,
+              "pos": 0
+            },
+            {
+              "a": 188,
+              "b": 155,
+              "pos": 1
+            },
+            {
+              "a": 182,
+              "b": 195,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 539,
+          "teamScoreB": 570
+        },
+        {
+          "id": "02c8525c-6834-42d6-b667-2f7352618ac2",
+          "aId": "97e13f49-9bbf-4239-8e29-29444c65bac2",
+          "bId": "2ef5d25a-9fdb-4dc9-8339-d263d5e1daba",
+          "laneA": 21,
+          "laneB": 22,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 161,
+              "b": 146,
+              "pos": 0
+            },
+            {
+              "a": 148,
+              "b": 194,
+              "pos": 1
+            },
+            {
+              "a": 245,
+              "b": 153,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 554,
+          "teamScoreB": 493
+        },
+        {
+          "id": "afb1dae0-5fea-4b9c-9ac8-8fc188a40604",
+          "aId": "4bb05d46-16ef-4f1e-8d27-bd3574a199f3",
+          "bId": "1967f8dc-6bbb-4440-8180-33f03360c55b",
+          "laneA": 23,
+          "laneB": 24,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 155,
+              "b": 146,
+              "pos": 0
+            },
+            {
+              "a": 206,
+              "b": 173,
+              "pos": 1
+            },
+            {
+              "a": 243,
+              "b": 239,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 604,
+          "teamScoreB": 558
+        },
+        {
+          "id": "fd0a2ff7-2275-40b3-9929-0bf5a1d74b10",
+          "aId": "168292ce-4109-4e77-8af2-bcc0e29d96b6",
+          "bId": "676caf54-2d96-4198-98aa-02b944c1012f",
+          "laneA": 25,
+          "laneB": 26,
+          "shift": 1,
+          "bowlers": [
+            {
+              "a": 220,
+              "b": 215,
+              "pos": 0
+            },
+            {
+              "a": 203,
+              "b": 181,
+              "pos": 1
+            },
+            {
+              "a": 229,
+              "b": 154,
+              "pos": 2
+            }
+          ],
+          "completed": true,
+          "teamScoreA": 652,
+          "teamScoreB": 550
+        }
+      ]
+    }
+  ],
+  "teams": [
+    {
+      "id": "1967f8dc-6bbb-4440-8180-33f03360c55b",
+      "name": "Team1",
+      "shift": 1,
+      "bowlers": [
+        {
+          "name": "Player1",
+          "gender": "Male",
+          "average": 179,
+          "handicap": 31
+        },
+        {
+          "name": "Player2",
+          "gender": "Male",
+          "average": 192,
+          "handicap": 18
+        },
+        {
+          "name": "Player3",
+          "gender": "Male",
+          "average": 200,
+          "handicap": 10
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "f7af41c0-8c0c-413e-a8ca-fadf461823df",
+      "name": "Team2",
+      "shift": 1,
+      "bowlers": [
+        {
+          "name": "Player4",
+          "gender": "Male",
+          "average": 193,
+          "handicap": 17
+        },
+        {
+          "name": "Player6",
+          "gender": "Male",
+          "average": 198,
+          "handicap": 12
+        },
+        {
+          "name": "Player5",
+          "gender": "Male",
+          "average": 199,
+          "handicap": 11
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "97e13f49-9bbf-4239-8e29-29444c65bac2",
+      "name": "Team3",
+      "shift": 1,
+      "bowlers": [
+        {
+          "name": "Player7",
+          "gender": "Male",
+          "average": 177,
+          "handicap": 33
+        },
+        {
+          "name": "Player8",
+          "gender": "Male",
+          "average": 204,
+          "handicap": 6
+        },
+        {
+          "name": "Player9",
+          "gender": "Male",
+          "average": 210,
+          "handicap": 0
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "df811d99-0627-4011-92a4-1a93768fefd2",
+      "name": "Team4",
+      "shift": 1,
+      "bowlers": [
+        {
+          "name": "Player12",
+          "gender": "Male",
+          "average": 176,
+          "handicap": 34
+        },
+        {
+          "name": "Player11",
+          "gender": "Female Senior",
+          "average": 177,
+          "handicap": 33
+        },
+        {
+          "name": "Player10",
+          "gender": "Female Senior",
+          "average": 182,
+          "handicap": 28
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "2ef5d25a-9fdb-4dc9-8339-d263d5e1daba",
+      "name": "Team5",
+      "shift": 1,
+      "bowlers": [
+        {
+          "name": "Player15",
+          "gender": "Male",
+          "average": 190,
+          "handicap": 20
+        },
+        {
+          "name": "Player13",
+          "gender": "Male",
+          "average": 191,
+          "handicap": 19
+        },
+        {
+          "name": "Player14",
+          "gender": "Male",
+          "average": 206,
+          "handicap": 4
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "c895a6f8-01e2-4f60-8f79-175eff97810d",
+      "name": "Team6",
+      "shift": 1,
+      "bowlers": [
+        {
+          "name": "Player17",
+          "gender": "Male",
+          "average": 185,
+          "handicap": 25
+        },
+        {
+          "name": "Player18",
+          "gender": "Male",
+          "average": 199,
+          "handicap": 11
+        },
+        {
+          "name": "Player16",
+          "gender": "Male",
+          "average": 201,
+          "handicap": 9
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "8ccf9590-c080-4742-a1ff-85c064a7eaa0",
+      "name": "Team7",
+      "shift": 1,
+      "bowlers": [
+        {
+          "name": "Player20",
+          "gender": "Female Senior",
+          "average": 179,
+          "handicap": 31
+        },
+        {
+          "name": "Player19",
+          "gender": "Male",
+          "average": 185,
+          "handicap": 25
+        },
+        {
+          "name": "Player21",
+          "gender": "Male",
+          "average": 194,
+          "handicap": 16
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "2363dee1-7cce-46d3-96a2-9f5e94b93cfa",
+      "name": "Team8",
+      "shift": 1,
+      "bowlers": [
+        {
+          "name": "Player23",
+          "gender": "Male Senior",
+          "average": 186,
+          "handicap": 24
+        },
+        {
+          "name": "Player24",
+          "gender": "Male Senior",
+          "average": 189,
+          "handicap": 21
+        },
+        {
+          "name": "Player22",
+          "gender": "Male",
+          "average": 207,
+          "handicap": 3
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "4b86b542-dd0d-4032-a575-f85af86d1d05",
+      "name": "Team9",
+      "shift": 1,
+      "bowlers": [
+        {
+          "name": "Player27",
+          "gender": "Male Senior",
+          "average": 197,
+          "handicap": 13
+        },
+        {
+          "name": "Player25",
+          "gender": "Male Senior",
+          "average": 199,
+          "handicap": 11
+        },
+        {
+          "name": "Player26",
+          "gender": "Male",
+          "average": 205,
+          "handicap": 5
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "94f9f27b-7c98-453f-a27e-e59317a51344",
+      "name": "Team10",
+      "shift": 1,
+      "bowlers": [
+        {
+          "name": "Player28",
+          "gender": "Male",
+          "average": 177,
+          "handicap": 33
+        },
+        {
+          "name": "Player29",
+          "gender": "Male",
+          "average": 179,
+          "handicap": 31
+        },
+        {
+          "name": "Player30",
+          "gender": "Male",
+          "average": 190,
+          "handicap": 20
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "676caf54-2d96-4198-98aa-02b944c1012f",
+      "name": "Team11",
+      "shift": 1,
+      "bowlers": [
+        {
+          "name": "Player31",
+          "gender": "Male",
+          "average": 199,
+          "handicap": 11
+        },
+        {
+          "name": "Player33",
+          "gender": "Male",
+          "average": 207,
+          "handicap": 3
+        },
+        {
+          "name": "Player32",
+          "gender": "Male",
+          "average": 208,
+          "handicap": 2
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "4bb05d46-16ef-4f1e-8d27-bd3574a199f3",
+      "name": "Team12",
+      "shift": 1,
+      "bowlers": [
+        {
+          "name": "Player35",
+          "gender": "Male",
+          "average": 182,
+          "handicap": 28
+        },
+        {
+          "name": "Player36",
+          "gender": "Male",
+          "average": 193,
+          "handicap": 17
+        },
+        {
+          "name": "Player34",
+          "gender": "Male",
+          "average": 205,
+          "handicap": 5
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "c9524566-7d27-43f6-b25f-cc3610094aaa",
+      "name": "Team13",
+      "shift": 1,
+      "bowlers": [
+        {
+          "name": "Player38",
+          "gender": "Male",
+          "average": 176,
+          "handicap": 34
+        },
+        {
+          "name": "Player39",
+          "gender": "Male Senior",
+          "average": 199,
+          "handicap": 11
+        },
+        {
+          "name": "Player37",
+          "gender": "Male Senior",
+          "average": 203,
+          "handicap": 7
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "11571232-e5c3-4f41-a13b-e7a741e4387a",
+      "name": "Team14",
+      "shift": 1,
+      "bowlers": [
+        {
+          "name": "Player40",
+          "gender": "Male",
+          "average": 185,
+          "handicap": 25
+        },
+        {
+          "name": "Player41",
+          "gender": "Male",
+          "average": 195,
+          "handicap": 15
+        },
+        {
+          "name": "Player42",
+          "gender": "Male",
+          "average": 199,
+          "handicap": 11
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "168292ce-4109-4e77-8af2-bcc0e29d96b6",
+      "name": "Team15",
+      "shift": 1,
+      "bowlers": [
+        {
+          "name": "Player45",
+          "gender": "Male",
+          "average": 186,
+          "handicap": 24
+        },
+        {
+          "name": "Player44",
+          "gender": "Male",
+          "average": 192,
+          "handicap": 18
+        },
+        {
+          "name": "Player43",
+          "gender": "Male Senior",
+          "average": 202,
+          "handicap": 8
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "a24f179f-d064-4296-b02a-81c68903fea9",
+      "name": "Team16",
+      "shift": 1,
+      "bowlers": [
+        {
+          "name": "Player48",
+          "gender": "Male",
+          "average": 178,
+          "handicap": 32
+        },
+        {
+          "name": "Player47",
+          "gender": "Female",
+          "average": 193,
+          "handicap": 17
+        },
+        {
+          "name": "Player46",
+          "gender": "Male",
+          "average": 210,
+          "handicap": 0
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "871e12fb-a3cb-47e9-b260-537dae87e2dd",
+      "name": "Team17",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player51",
+          "gender": "Male",
+          "average": 201,
+          "handicap": 9
+        },
+        {
+          "name": "Player50",
+          "gender": "Female Senior",
+          "average": 205,
+          "handicap": 5
+        },
+        {
+          "name": "Player49",
+          "gender": "Male",
+          "average": 206,
+          "handicap": 4
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "9aa107f2-a004-49af-a616-eb7fd18e011d",
+      "name": "Team18",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player53",
+          "gender": "Male",
+          "average": 178,
+          "handicap": 32
+        },
+        {
+          "name": "Player52",
+          "gender": "Male",
+          "average": 179,
+          "handicap": 31
+        },
+        {
+          "name": "Player54",
+          "gender": "Male Senior",
+          "average": 196,
+          "handicap": 14
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "83dabb86-8f45-490f-9636-a2ae4d1f35db",
+      "name": "Team19",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player56",
+          "gender": "Male Senior",
+          "average": 183,
+          "handicap": 27
+        },
+        {
+          "name": "Player55",
+          "gender": "Female Senior",
+          "average": 185,
+          "handicap": 25
+        },
+        {
+          "name": "Player57",
+          "gender": "Male",
+          "average": 200,
+          "handicap": 10
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "c593473a-f154-41be-b06d-446c0f5be443",
+      "name": "Team20",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player58",
+          "gender": "Male",
+          "average": 176,
+          "handicap": 34
+        },
+        {
+          "name": "Player60",
+          "gender": "Male",
+          "average": 208,
+          "handicap": 2
+        },
+        {
+          "name": "Player59",
+          "gender": "Male",
+          "average": 210,
+          "handicap": 0
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "7c4b9247-7635-4f89-9ec9-c7fb36168d89",
+      "name": "Team21",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player62",
+          "gender": "Male",
+          "average": 178,
+          "handicap": 32
+        },
+        {
+          "name": "Player63",
+          "gender": "Male",
+          "average": 183,
+          "handicap": 27
+        },
+        {
+          "name": "Player61",
+          "gender": "Male",
+          "average": 185,
+          "handicap": 25
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "3c5b42f2-af84-4292-8ab9-3fbbe6510411",
+      "name": "Team22",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player65",
+          "gender": "Male",
+          "average": 190,
+          "handicap": 20
+        },
+        {
+          "name": "Player64",
+          "gender": "Male",
+          "average": 196,
+          "handicap": 14
+        },
+        {
+          "name": "Player66",
+          "gender": "Male",
+          "average": 205,
+          "handicap": 5
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "a6d8f94c-5bd8-4357-b9e2-00886b9bb12f",
+      "name": "Team23",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player67",
+          "gender": "Female Senior",
+          "average": 181,
+          "handicap": 29
+        },
+        {
+          "name": "Player69",
+          "gender": "Male",
+          "average": 191,
+          "handicap": 19
+        },
+        {
+          "name": "Player68",
+          "gender": "Female",
+          "average": 196,
+          "handicap": 14
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "6b330454-dca6-41e4-914f-70100fd4bb44",
+      "name": "Team24",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player71",
+          "gender": "Male",
+          "average": 176,
+          "handicap": 34
+        },
+        {
+          "name": "Player70",
+          "gender": "Male",
+          "average": 199,
+          "handicap": 11
+        },
+        {
+          "name": "Player72",
+          "gender": "Male Senior",
+          "average": 202,
+          "handicap": 8
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "f4c48908-0c7f-4492-8d02-9f5fdbeda90e",
+      "name": "Team25",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player75",
+          "gender": "Male",
+          "average": 185,
+          "handicap": 25
+        },
+        {
+          "name": "Player74",
+          "gender": "Male",
+          "average": 199,
+          "handicap": 11
+        },
+        {
+          "name": "Player73",
+          "gender": "Female",
+          "average": 207,
+          "handicap": 3
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "4d50bd8f-3c56-471a-9a4c-cae319f7cd98",
+      "name": "Team26",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player78",
+          "gender": "Male",
+          "average": 181,
+          "handicap": 29
+        },
+        {
+          "name": "Player77",
+          "gender": "Male",
+          "average": 189,
+          "handicap": 21
+        },
+        {
+          "name": "Player76",
+          "gender": "Male",
+          "average": 196,
+          "handicap": 14
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "c252dc4d-7be1-4bda-b064-4ee5baea90d3",
+      "name": "Team27",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player80",
+          "gender": "Male",
+          "average": 184,
+          "handicap": 26
+        },
+        {
+          "name": "Player79",
+          "gender": "Male",
+          "average": 191,
+          "handicap": 19
+        },
+        {
+          "name": "Player81",
+          "gender": "Male",
+          "average": 210,
+          "handicap": 0
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "e2809c71-bb1b-4b75-80c8-16432d714a94",
+      "name": "Team28",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player84",
+          "gender": "Male",
+          "average": 176,
+          "handicap": 34
+        },
+        {
+          "name": "Player83",
+          "gender": "Male",
+          "average": 188,
+          "handicap": 22
+        },
+        {
+          "name": "Player82",
+          "gender": "Male",
+          "average": 194,
+          "handicap": 16
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "033e9afe-f87d-47f5-8dd3-eb6699c29167",
+      "name": "Team29",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player86",
+          "gender": "Male",
+          "average": 192,
+          "handicap": 18
+        },
+        {
+          "name": "Player87",
+          "gender": "Male",
+          "average": 194,
+          "handicap": 16
+        },
+        {
+          "name": "Player85",
+          "gender": "Male",
+          "average": 208,
+          "handicap": 2
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "11a5182e-dfd9-4c4d-85ad-3ebf3b9f7a5e",
+      "name": "Team30",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player88",
+          "gender": "Male",
+          "average": 175,
+          "handicap": 35
+        },
+        {
+          "name": "Player89",
+          "gender": "Male",
+          "average": 192,
+          "handicap": 18
+        },
+        {
+          "name": "Player90",
+          "gender": "Female Senior",
+          "average": 201,
+          "handicap": 9
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "5dc79b0b-bd70-46c9-b851-ee3974e1550d",
+      "name": "Team31",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player91",
+          "gender": "Female Senior",
+          "average": 184,
+          "handicap": 26
+        },
+        {
+          "name": "Player93",
+          "gender": "Male",
+          "average": 189,
+          "handicap": 21
+        },
+        {
+          "name": "Player92",
+          "gender": "Male",
+          "average": 205,
+          "handicap": 5
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "7b82f72c-a4c9-4320-aad6-c474737b5f72",
+      "name": "Team32",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player94",
+          "gender": "Male",
+          "average": 194,
+          "handicap": 16
+        },
+        {
+          "name": "Player96",
+          "gender": "Female",
+          "average": 197,
+          "handicap": 13
+        },
+        {
+          "name": "Player95",
+          "gender": "Male",
+          "average": 202,
+          "handicap": 8
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "c7e1c9ee-ccaf-4a6a-b319-b8139a93d90e",
+      "name": "Team33",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player97",
+          "gender": "Male Senior",
+          "average": 207,
+          "handicap": 3
+        },
+        {
+          "name": "Player98",
+          "gender": "Female",
+          "average": 207,
+          "handicap": 3
+        },
+        {
+          "name": "Player99",
+          "gender": "Male",
+          "average": 210,
+          "handicap": 0
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "da5df864-54de-4312-b016-3a7a0fc77aa1",
+      "name": "Team34",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player100",
+          "gender": "Male",
+          "average": 186,
+          "handicap": 24
+        },
+        {
+          "name": "Player101",
+          "gender": "Male",
+          "average": 194,
+          "handicap": 16
+        },
+        {
+          "name": "Player102",
+          "gender": "Female Senior",
+          "average": 198,
+          "handicap": 12
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "d8a2a1f6-3e87-4030-96f1-44d37aa9539d",
+      "name": "Team35",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player104",
+          "gender": "Female",
+          "average": 176,
+          "handicap": 34
+        },
+        {
+          "name": "Player105",
+          "gender": "Male",
+          "average": 203,
+          "handicap": 7
+        },
+        {
+          "name": "Player103",
+          "gender": "Male",
+          "average": 210,
+          "handicap": 0
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "4daaee5e-ad0b-49ff-a330-2d3a876132b6",
+      "name": "Team36",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player107",
+          "gender": "Male Senior",
+          "average": 184,
+          "handicap": 26
+        },
+        {
+          "name": "Player108",
+          "gender": "Male",
+          "average": 195,
+          "handicap": 15
+        },
+        {
+          "name": "Player106",
+          "gender": "Male",
+          "average": 203,
+          "handicap": 7
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "e9f8d728-8f1b-43db-8a01-874fb26b4133",
+      "name": "Team37",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player110",
+          "gender": "Male",
+          "average": 185,
+          "handicap": 25
+        },
+        {
+          "name": "Player109",
+          "gender": "Male",
+          "average": 201,
+          "handicap": 9
+        },
+        {
+          "name": "Player111",
+          "gender": "Female Senior",
+          "average": 206,
+          "handicap": 4
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "7e0c911f-e21b-4a24-9aa6-8f01fbfbe824",
+      "name": "Team38",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player112",
+          "gender": "Male Senior",
+          "average": 185,
+          "handicap": 25
+        },
+        {
+          "name": "Player114",
+          "gender": "Female",
+          "average": 202,
+          "handicap": 8
+        },
+        {
+          "name": "Player113",
+          "gender": "Male",
+          "average": 208,
+          "handicap": 2
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "87dd9b8b-bb51-42bf-974d-9094bc32e8a3",
+      "name": "Team39",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player116",
+          "gender": "Male",
+          "average": 185,
+          "handicap": 25
+        },
+        {
+          "name": "Player115",
+          "gender": "Male",
+          "average": 195,
+          "handicap": 15
+        },
+        {
+          "name": "Player117",
+          "gender": "Male",
+          "average": 197,
+          "handicap": 13
+        }
+      ],
+      "contact": "Auto-Gen"
+    },
+    {
+      "id": "60826259-6228-483a-882a-9782ef28baf1",
+      "name": "Team40",
+      "shift": 2,
+      "bowlers": [
+        {
+          "name": "Player120",
+          "gender": "Male",
+          "average": 185,
+          "handicap": 25
+        },
+        {
+          "name": "Player118",
+          "gender": "Male",
+          "average": 193,
+          "handicap": 17
+        },
+        {
+          "name": "Player119",
+          "gender": "Male",
+          "average": 195,
+          "handicap": 15
+        }
+      ],
+      "contact": "Auto-Gen"
+    }
+  ],
+  "started": true,
+  "calcutta": {
+    "teams": {},
+    "payouts": {
+      "menPct": 100,
+      "teamPct": 100,
+      "womenPct": 100,
+      "menPlaces": 5,
+      "teamPlaces": 5,
+      "womenPlaces": 5
+    },
+    "players": {},
+    "sales": {},
+    "purses": {}
+  },
+  "settings": {
+    "satGames": 4,
+    "sunGames": 3
+  },
+  "currentGame": 4
+}
