@@ -8,160 +8,55 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>De La Rosa Masters - Bowling Tournament Manager</title>
 <style>
-:root{
-  --bg-gradient: radial-gradient(circle at center, #ff2a1a 0%, #b80000 65%, #6e0000 100%);
-  --card-bg: rgba(18, 18, 20, 0.95);
-  --card-border: #ffd700;
-  --ink: #ffffff;
-  --muted: #d0d7de;
-  --line: #3d3d45;
-  --accent: #ff2a1a;
-  --accent-hover: #d61100;
-  --gold: #ffd700;
-  --danger: #ff4d4d;
-  --dangerbg: #4a0d0d;
-  --ok: #20e070;
-  --okbg: #0d381e;
-  --warn: #ffcc00;
-  --warnbg: #423500;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  --radius: 14px;
-}
+:root{--bg-gradient:radial-gradient(circle at center,#ff2a1a 0%,#b80000 65%,#6e0000 100%);--card-bg:rgba(18,18,20,0.95);--card-border:#ffd700;--ink:#ffffff;--muted:#d0d7de;--line:#3d3d45;--accent:#ff2a1a;--accent-hover:#d61100;--gold:#ffd700;--danger:#ff4d4d;--dangerbg:#4a0d0d;--ok:#20e070;--okbg:#0d381e;--warn:#ffcc00;--warnbg:#423500;--shadow:0 10px 30px rgba(0,0,0,0.5);--radius:14px}
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  background: var(--bg-gradient);
-  background-attachment: fixed;
-  color:var(--ink);
-  min-height: 100vh;
-}
-header{
-  background: #000000;
-  color:#fff;
-  padding:18px 24px;
-  position:sticky;
-  top:0;
-  z-index:20;
-  box-shadow:0 4px 20px rgba(0,0,0,.6);
-  border-bottom: 3px solid var(--gold);
-}
+body{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif;background:var(--bg-gradient);background-attachment:fixed;color:var(--ink);min-height:100vh}
+header{background:#000;color:#fff;padding:18px 24px;position:sticky;top:0;z-index:20;box-shadow:0 4px 20px rgba(0,0,0,.6);border-bottom:3px solid var(--gold)}
 .header-inner{max-width:1400px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
 .brand-wrapper{display:flex;align-items:center;gap:14px}
 .brand-logo{height:54px;width:auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))}
-.brand{font-size:1.4rem;font-weight:900;letter-spacing:0.04em;color:#fff;text-transform:uppercase}
-.brand span{color:var(--gold)}
+.brand{font-size:1.4rem;font-weight:900;letter-spacing:0.04em;color:#fff;text-transform:uppercase} .brand span{color:var(--gold)}
 .subtitle{font-size:.88rem;color:var(--muted);margin-top:2px}
-
 main{max-width:1400px;margin:22px auto;padding:0 18px 50px}
 .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
-.tab{
-  border:2px solid var(--gold);
-  background:#111;
-  color:#fff;
-  padding:10px 18px;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:800;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  transition: all 0.2s ease;
-}
-.tab:hover{background:var(--gold);color:#000}
-.tab.active{background:var(--accent);border-color:#fff;color:#fff;box-shadow:0 0 12px rgba(255,42,26,0.6)}
-.panel{display:none}
-.panel.active{display:block}
+.tab{border:2px solid var(--gold);background:#111;color:#fff;padding:10px 18px;border-radius:10px;cursor:pointer;font-weight:800;text-transform:uppercase;letter-spacing:0.03em;transition:all 0.2s ease}
+.tab:hover{background:var(--gold);color:#000} .tab.active{background:var(--accent);border-color:#fff;color:#fff;box-shadow:0 0 12px rgba(255,42,26,0.6)}
+.panel{display:none} .panel.active{display:block}
 .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
-.card{
-  background:var(--card-bg);
-  border:1.5px solid var(--line);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  padding:20px;
-  backdrop-filter: blur(8px);
-}
-.span12{grid-column:span 12}.span8{grid-column:span 8}.span6{grid-column:span 6}.span4{grid-column:span 4}
-h2,h3{margin:0 0 12px;color:var(--gold);text-transform:uppercase;letter-spacing:0.02em}
-.muted{color:var(--muted)}
+.card{background:var(--card-bg);border:1.5px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;backdrop-filter:blur(8px)}
+.span12{grid-column:span 12} .span8{grid-column:span 8} .span6{grid-column:span 6} .span4{grid-column:span 4}
+h2,h3{margin:0 0 12px;color:var(--gold);text-transform:uppercase;letter-spacing:0.02em} .muted{color:var(--muted)}
 label{display:block;font-size:.86rem;font-weight:700;margin:0 0 6px;color:var(--gold)}
 input,select,button{font:inherit}
-input,select{
-  width:100%;
-  padding:10px 11px;
-  border:1px solid #444;
-  border-radius:99px;
-  background:#222;
-  color:#fff;
-}
-input:focus, select:focus{outline:2px solid var(--gold);border-color:transparent}
-input:disabled, select:disabled{opacity:0.6; cursor:not-allowed}
-button{border:0;border-radius:99px;padding:10px 16px;font-weight:800;cursor:pointer;text-transform:uppercase;transition:all 0.2s ease;}
-.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 10px rgba(255,42,26,0.4)}.btn-primary:hover{background:var(--accent-hover)}
-.btn-secondary{background:#333;color:#fff;border:1px solid #555}.btn-secondary:hover{background:#444}
-.btn-danger{background:var(--danger);color:#fff}.btn-ghost{background:transparent;border:1px solid var(--line);color:#fff}
-.actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
-.row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.row>*{flex:1 1 150px}
+input,select{width:100%;padding:10px 11px;border:1px solid #444;border-radius:99px;background:#222;color:#fff}
+input:focus,select:focus{outline:2px solid var(--gold);border-color:transparent} input:disabled,select:disabled{opacity:0.6;cursor:not-allowed}
+button{border:0;border-radius:99px;padding:10px 16px;font-weight:800;cursor:pointer;text-transform:uppercase;transition:all 0.2s ease}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 10px rgba(255,42,26,0.4)} .btn-primary:hover{background:var(--accent-hover)}
+.btn-secondary{background:#333;color:#fff;border:1px solid #555} .btn-secondary:hover{background:#444}
+.btn-danger{background:var(--danger);color:#fff} .btn-ghost{background:transparent;border:1px solid var(--line);color:#fff}
+.actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center} .row{display:flex;gap:10px;align-items:end;flex-wrap:wrap} .row>*{flex:1 1 150px}
 .bowler-row{display:grid;grid-template-columns:1.6fr .6fr 1fr .55fr .55fr 1.1fr;gap:10px;align-items:end;padding:12px;border:1px solid var(--line);border-radius:10px;background:#18181c;margin:9px 0}
 .badge{display:inline-flex;align-items:center;gap:4px;padding:6px 10px;border-radius:999px;background:#222;color:var(--gold);border:1px solid var(--gold);font-size:.76rem;font-weight:800}
 .alert{padding:12px 14px;border-radius:10px;margin:10px 0;font-weight:700}
-.alert-danger{background:var(--dangerbg);color:var(--danger);border:1px solid var(--danger)}
-.alert-ok{background:var(--okbg);color:var(--ok);border:1px solid var(--ok)}
-.alert-warn{background:var(--warnbg);color:var(--warn);border:1px solid var(--warn)}
-table{width:100%;border-collapse:collapse;font-size:.93rem}th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}th{font-size:.78rem;text-transform:uppercase;color:var(--gold);letter-spacing:.04em}
-.right{text-align:right}.center{text-align:center}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-.kpi{background:#18181c;border:1px solid var(--gold);border-radius:11px;padding:12px;text-align:center}
-.kpi .big{font-size:1.65rem;font-weight:900;color:#fff}.kpi .small{font-size:.76rem;color:var(--gold);text-transform:uppercase}
+.alert-danger{background:var(--dangerbg);color:var(--danger);border:1px solid var(--danger)} .alert-ok{background:var(--okbg);color:var(--ok);border:1px solid var(--ok)}
+table{width:100%;border-collapse:collapse;font-size:.93rem} th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle} th{font-size:.78rem;text-transform:uppercase;color:var(--gold);letter-spacing:.04em}
+.center{text-align:center}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px} .kpi{background:#18181c;border:1px solid var(--gold);border-radius:11px;padding:12px;text-align:center} .kpi .big{font-size:1.65rem;font-weight:900;color:#fff} .kpi .small{font-size:.76rem;color:var(--gold);text-transform:uppercase}
 .match-card{border:1px solid var(--gold);border-radius:12px;margin:12px 0;overflow:hidden;background:#141416}
 .match-head{background:#000;padding:11px 13px;display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid var(--line)}
 .match-body{padding:12px}
-.score-grid{display:grid;grid-template-columns:1.2fr repeat(4, minmax(65px,1fr)) 1.2fr;gap:8px;align-items:center}
-.score-grid input{padding:8px;text-align:center}
-.small{font-size:.8rem}
-.empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}
+.score-grid{display:grid;grid-template-columns:1.2fr repeat(4, minmax(65px,1fr)) 1.2fr;gap:8px;align-items:center} .score-grid input{padding:8px;text-align:center}
+.small{font-size:.8rem} .empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}
 .pair-box{padding:10px;border:1px dashed var(--gold);border-radius:10px;margin-top:9px;background:#18181c}
-footer{color:#fff;font-size:.8rem;text-align:center;margin-top:18px;text-shadow:0 1px 2px #000}
-
-#authModal{
-  position:fixed;
-  top:0;left:0;right:0;bottom:0;
-  background:rgba(0,0,0,0.85);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-  backdrop-filter: blur(10px);
-}
-.auth-card{
-  background:#141416;
-  border:2px solid var(--gold);
-  border-radius:16px;
-  padding:32px;
-  width:90%;
-  max-width:420px;
-  text-align:center;
-  box-shadow:0 10px 40px rgba(0,0,0,0.8);
-}
-.role-btn{
-  width:100%;
-  margin:8px 0;
-  padding:14px;
-  font-size:1rem;
-}
-
-.admin-only{display:none !important}
-body.is-admin .admin-only{display:block !important}
-body.is-admin button.admin-only{display:inline-block !important}
-body.is-admin div.admin-only{display:flex !important}
-
-.fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 12px; z-index: 1000; }
-.fab { border: 2px solid var(--gold); border-radius: 99px; padding: 14px 20px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.6); transition: transform 0.2s ease, background 0.2s ease; text-transform: uppercase; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.fab:hover { transform: translateY(-3px); }
-.fab-random { background: var(--okbg); color: var(--ok); border-color: var(--ok); }
-.fab-save { background: var(--accent); color: #fff; }
-
-.calc-config-box { background: #1a1a1f; padding: 15px; border-radius: 10px; border: 1px solid var(--line); margin-bottom: 15px; }
-
+footer{color:#fff;font-size:.8rem;text-align:center;margin-top:18px}
+#authModal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(10px)}
+.auth-card{background:#141416;border:2px solid var(--gold);border-radius:16px;padding:32px;width:90%;max-width:420px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.8)}
+.role-btn{width:100%;margin:8px 0;padding:14px;font-size:1rem}
+.admin-only{display:none !important} body.is-admin .admin-only{display:block !important} body.is-admin button.admin-only{display:inline-block !important} body.is-admin div.admin-only{display:flex !important}
+.fab-container{position:fixed;bottom:30px;right:30px;display:flex;flex-direction:column;gap:12px;z-index:1000}
+.fab{border:2px solid var(--gold);border-radius:99px;padding:14px 20px;font-weight:800;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,0.6);text-transform:uppercase;font-size:0.85rem;display:flex;align-items:center;justify-content:center;gap:8px}
+.fab-random{background:var(--okbg);color:var(--ok);border-color:var(--ok)} .fab-save{background:var(--accent);color:#fff}
+.calc-config-box{background:#1a1a1f;padding:15px;border-radius:10px;border:1px solid var(--line);margin-bottom:15px}
 @media(max-width:900px){.span8,.span6,.span4{grid-column:span 12}.bowler-row{grid-template-columns:1fr 1fr 1fr}.kpis{grid-template-columns:repeat(2,1fr)}.score-grid{grid-template-columns:1fr repeat(4, 1fr) 1fr}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -172,10 +67,8 @@ body.is-admin div.admin-only{display:flex !important}
   <div class="auth-card">
     <h2 style="font-size:1.5rem;margin-bottom:8px">DE LA ROSA MASTERS</h2>
     <p class="muted" style="margin-bottom:20px" data-i18n="Select access mode to continue">Select access mode to continue</p>
-    
     <button class="role-btn btn-primary" onclick="selectUserRole()" data-i18n="User Access (View / Audit)">User Access (View / Audit)</button>
     <button class="role-btn btn-secondary" onclick="showAdminPrompt()" data-i18n="Admin Access">Admin Access</button>
-    
     <div id="adminForm" style="display:none;margin-top:16px">
       <label for="adminPass" data-i18n="Enter Password">Enter Password</label>
       <input type="password" id="adminPass" placeholder="••••••••" style="margin-bottom:10px">
@@ -210,13 +103,13 @@ body.is-admin div.admin-only{display:flex !important}
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
-      <button onclick="toggleLang()" style="padding: 6px 12px; font-size: 0.75rem; border-radius: 999px; background: transparent; border: 1px solid var(--gold); color: var(--gold); cursor: pointer; font-weight:800;" id="langBtn">🇲🇽 ES</button>
-      <button class="btn-danger admin-only" onclick="hardResetTournament()" style="padding: 6px 12px; font-size: 0.75rem; border-radius: 999px;" data-i18n="Reset All Data">Reset All Data</button>
+      <button onclick="toggleLang()" style="padding:6px 12px;font-size:0.75rem;border-radius:999px;background:transparent;border:1px solid var(--gold);color:var(--gold);cursor:pointer;font-weight:800;" id="langBtn">🇲🇽 ES</button>
+      <button class="btn-danger admin-only" onclick="hardResetTournament()" style="padding:6px 12px;font-size:0.75rem;border-radius:999px;" data-i18n="Reset All Data">Reset All Data</button>
       <div id="roleBadge" class="badge" style="background:#000" data-i18n="Mode: User (Audit View)">Mode: User (Audit View)</div>
-      <div id="headerStatus" class="badge">7 games • 7-Game Masters Format</div>
     </div>
   </div>
 </header>
+
 <main>
   <div class="tabs">
     <button class="tab admin-only" data-tab="registration" data-i18n="Team Registration">Team Registration</button>
@@ -234,26 +127,26 @@ body.is-admin div.admin-only{display:flex !important}
       <div class="card span8">
         <h2 data-i18n="Team Registration">Team Registration</h2>
         <p class="muted" data-i18n="reg_desc">Assign each team to a shift (1, 2, or 3), and register teams (max 3 bowlers per team, total avg ≤ 630).</p>
-        <div class="row" style="margin-bottom: 16px;">
-          <div style="flex:1"><label for="teamShiftSelect" data-i18n="Shift Selection">Shift Selection</label><select id="teamShiftSelect"><option value="1">Shift 1</option><option value="2">Shift 2</option><option value="3">Shift 3</option></select></div>
-          <div style="flex:2"><label for="teamName" data-i18n="Team name">Team name</label><input id="teamName" data-i18n-ph="Team name" placeholder="Example: Strike Force"></div>
-          <div style="flex:1"><label for="teamCaptain" data-i18n="Optional contact">Optional contact</label><input id="teamCaptain" data-i18n-ph="Optional contact" placeholder="Captain / contact"></div>
+        <div class="row" style="margin-bottom:16px;">
+          <div style="flex:1"><label data-i18n="Shift Selection">Shift Selection</label><select id="teamShiftSelect"><option value="1">Shift 1</option><option value="2">Shift 2</option><option value="3">Shift 3</option></select></div>
+          <div style="flex:2"><label data-i18n="Team name">Team name</label><input id="teamName" data-i18n-ph="Team name" placeholder="Example: Strike Force"></div>
+          <div style="flex:1"><label data-i18n="Optional contact">Optional contact</label><input id="teamCaptain" data-i18n-ph="Optional contact" placeholder="Captain / contact"></div>
         </div>
         <div id="teamAlert"></div><div id="bowlerInputs"></div>
-        <div class="actions" style="margin-top:12px"><button class="btn-primary" id="addTeamBtn" data-i18n="Register Team">Register Team</button><button class="btn-secondary" id="clearFormBtn" data-i18n="Clear Form">Clear Form</button></div>
+        <div class="actions" style="margin-top:12px"><button class="btn-primary" id="addTeamBtn" onclick="registerTeam()" data-i18n="Register Team">Register Team</button><button class="btn-secondary" id="clearFormBtn" onclick="clearForm()" data-i18n="Clear Form">Clear Form</button></div>
       </div>
       <div class="card span4">
         <h3 data-i18n="Shift Capacity Rules">Shift Capacity Rules</h3>
-        <div class="pair-box"><b data-i18n="Lane Assignments">Lane Assignments</b><br><span class="muted" data-i18n="shift_limits_desc">Shift limits are based on your manual pool assignments during Matchup Generation.</span></div>
-        <div class="pair-box"><b data-i18n="Team Average">Team Average</b><br><span class="muted" data-i18n="sum_desc">Sum of 3 averages must be ≤ 630.</span></div>
-        <div class="pair-box"><b data-i18n="Handicap Caps">Handicap Caps</b><br><span class="muted" data-i18n="hdcp_desc">210 − average, minimum 0.<br>Max 40 (Female/Senior), 35 (Male).</span></div>
+        <div class="pair-box"><b data-i18n="Lane Assignments">Lane Assignments</b><br><span class="muted" data-i18n="shift_limits_desc">Shift limits based on assignment.</span></div>
+        <div class="pair-box"><b data-i18n="Team Average">Team Average</b><br><span class="muted" data-i18n="sum_desc">Sum of 3 averages ≤ 630.</span></div>
+        <div class="pair-box"><b data-i18n="Handicap Caps">Handicap Caps</b><br><span class="muted" data-i18n="hdcp_desc">210 − average, min 0. Max 40 (F/Sr), 35 (M).</span></div>
       </div>
     </div>
   </section>
 
   <section id="teamlist" class="panel">
     <div class="grid">
-      <div class="card span12"><div class="actions" style="justify-content:space-between"><h2 style="margin:0" data-i18n="Registered Teams Roster">Registered Teams Roster</h2><span id="teamCountBadge" class="badge">0 teams</span></div><div id="teamsTable" style="margin-top: 14px;"></div></div>
+      <div class="card span12"><div class="actions" style="justify-content:space-between"><h2 style="margin:0" data-i18n="Registered Teams Roster">Registered Teams Roster</h2><span id="teamCountBadge" class="badge">0 teams</span></div><div id="teamsTable" style="margin-top:14px;"></div></div>
     </div>
   </section>
 
@@ -261,12 +154,12 @@ body.is-admin div.admin-only{display:flex !important}
     <div class="grid">
       <div class="card span12">
         <h2 data-i18n="Tournament Setup & Assignment Engine">Tournament Setup & Assignment Engine</h2>
-        <div class="row" style="align-items:end; margin-bottom:16px; margin-top:16px;">
-          <div><label for="genGameSelect" data-i18n="Target Game">Target Game</label><select id="genGameSelect"><option value="1">Game 1</option><option value="2">Game 2</option><option value="3">Game 3</option><option value="4">Game 4</option><option value="5">Game 5</option><option value="6">Game 6</option><option value="7">Game 7</option></select></div>
-          <div><label for="genShiftSelect" data-i18n="Target Shift">Target Shift</label><select id="genShiftSelect"><option value="1">Shift 1</option><option value="2">Shift 2</option><option value="3">Shift 3</option></select></div>
-          <div><label for="genPoolStart" data-i18n="Pool Start Lane (e.g. 4)">Pool Start Lane</label><input type="number" id="genPoolStart" value="1" min="1" max="100"></div>
-          <div><label for="genPoolEnd" data-i18n="Pool End Lane (e.g. 26)">Pool End Lane</label><input type="number" id="genPoolEnd" value="30" min="1" max="100"></div>
-          <div><label for="genTopSeedLane" data-i18n="1st Place Lane (e.g. 12)">1st Place Lane</label><input type="number" id="genTopSeedLane" value="1" min="1" max="100"></div>
+        <div class="row" style="align-items:end;margin-bottom:16px;margin-top:16px;">
+          <div><label data-i18n="Target Game">Target Game</label><select id="genGameSelect"><option value="1">Game 1</option><option value="2">Game 2</option><option value="3">Game 3</option><option value="4">Game 4</option><option value="5">Game 5</option><option value="6">Game 6</option><option value="7">Game 7</option></select></div>
+          <div><label data-i18n="Target Shift">Target Shift</label><select id="genShiftSelect"><option value="1">Shift 1</option><option value="2">Shift 2</option><option value="3">Shift 3</option></select></div>
+          <div><label data-i18n="Pool Start Lane (e.g. 4)">Pool Start Lane</label><input type="number" id="genPoolStart" value="1"></div>
+          <div><label data-i18n="Pool End Lane (e.g. 26)">Pool End Lane</label><input type="number" id="genPoolEnd" value="30"></div>
+          <div><label data-i18n="1st Place Lane (e.g. 12)">1st Place Lane</label><input type="number" id="genTopSeedLane" value="1"></div>
           <div><button class="btn-primary" style="width:100%" onclick="generateSpecificGame()" data-i18n="Generate Matchups">Generate Matchups</button></div>
         </div>
       </div>
@@ -276,8 +169,8 @@ body.is-admin div.admin-only{display:flex !important}
   <section id="game" class="panel active">
     <div class="card" style="margin-bottom:14px;">
       <div class="row" style="align-items:center;">
-        <div><label for="auditGameSelect" data-i18n="Select Generated Game">Select Generated Game</label><select id="auditGameSelect"></select></div>
-        <div><label for="auditShiftFilter" data-i18n="Filter by Shift">Filter by Shift</label><select id="auditShiftFilter"><option value="all" data-i18n="All Shifts">All Shifts</option><option value="1">Shift 1</option><option value="2">Shift 2</option><option value="3">Shift 3</option></select></div>
+        <div><label data-i18n="Select Generated Game">Select Generated Game</label><select id="auditGameSelect"></select></div>
+        <div><label data-i18n="Filter by Shift">Filter by Shift</label><select id="auditShiftFilter" onchange="renderGame()"><option value="all" data-i18n="All Shifts">All Shifts</option><option value="1">Shift 1</option><option value="2">Shift 2</option><option value="3">Shift 3</option></select></div>
       </div>
     </div>
     <div id="gameContent"></div>
@@ -287,8 +180,8 @@ body.is-admin div.admin-only{display:flex !important}
     <div class="grid">
       <div class="card span12">
         <div class="actions" style="justify-content:space-between">
-          <div><h2 style="margin-bottom:4px" data-i18n="Standings">Standings</h2><div id="standingsSubtitle" class="muted"></div></div>
-          <div class="actions"><button class="btn-primary view-team-btn" data-i18n="Team Standings">Team Standings</button><button class="btn-secondary view-player-btn" data-i18n="Player Standings">Player Standings</button></div>
+          <div><h2 style="margin-bottom:4px" data-i18n="Standings">Standings</h2></div>
+          <div class="actions"><button class="btn-primary view-team-btn" onclick="renderStandings()" data-i18n="Team Standings">Team Standings</button><button class="btn-secondary view-player-btn" onclick="renderPlayerStandings()" data-i18n="Player Standings">Player Standings</button></div>
         </div>
         <div id="standingsContent" style="margin-top:12px"></div>
       </div>
@@ -298,7 +191,7 @@ body.is-admin div.admin-only{display:flex !important}
   <section id="calcutta" class="panel admin-only">
     <div class="grid">
       <div class="card span12">
-        <div class="actions" style="justify-content:space-between; margin-bottom: 15px;">
+        <div class="actions" style="justify-content:space-between;margin-bottom:15px;">
            <h2 style="margin:0">Calcutta Registration</h2>
            <div>
              <button class="btn-secondary" onclick="toggleCalcuttaEdit()" id="calcEditBtn">Edit Mode</button>
@@ -314,18 +207,16 @@ body.is-admin div.admin-only{display:flex !important}
   <section id="calcutta-results" class="panel admin-only">
     <div class="grid">
       <div class="card span12">
-        <div class="actions" style="justify-content:space-between; margin-bottom: 15px;">
+        <div class="actions" style="justify-content:space-between;margin-bottom:15px;">
            <h2 style="margin:0" data-i18n="Calcutta Results">Calcutta Results</h2>
            <button class="btn-primary" onclick="renderCalcuttaResults()">Refresh Winnings</button>
         </div>
         <p class="muted">Standings based ONLY on Sunday Games (with Handicap). Tied bowlers divide pooled winnings.</p>
-        
         <div class="grid">
           <div class="span4 calc-config-box" id="calcConf_men"></div>
           <div class="span4 calc-config-box" id="calcConf_womenSeniors"></div>
           <div class="span4 calc-config-box" id="calcConf_teams"></div>
         </div>
-
         <div id="calcuttaResultsContent"></div>
       </div>
     </div>
@@ -335,313 +226,341 @@ body.is-admin div.admin-only{display:flex !important}
     <div class="grid">
       <div class="card span12">
         <h2 data-i18n="Export Tournament Data (.xls)">Export Tournament Data (.xls)</h2>
-        <div class="actions" style="gap:10px; margin-bottom: 20px;">
+        <div class="actions" style="gap:10px;margin-bottom:20px;">
           <button class="btn-primary" onclick="exportStandings('team', 'all')" data-i18n="Standings Teams Sat+Sun">Standings Teams Sat+Sun</button>
           <button class="btn-primary" onclick="exportStandings('player', 'all')" data-i18n="Standings Individuals Sat+Sun">Standings Individuals Sat+Sun</button>
           <button class="btn-secondary" onclick="exportStandings('team', 'sat')" data-i18n="Standings Team Saturday">Standings Team Saturday</button>
           <button class="btn-secondary" onclick="exportStandings('player', 'sun')" data-i18n="Standings Individual Sunday">Standings Individual Sunday</button>
-          <button class="btn-danger" style="background:#0066cc; border:none;" onclick="exportCalcuttaLedger()">Export Calcutta Owed Ledger</button>
+          <button class="btn-danger" style="background:#0066cc;border:none;" onclick="exportCalcuttaLedger()" data-i18n="Export Owed Ledger (Calcutta)">Export Owed Ledger (Calcutta)</button>
         </div>
       </div>
     </div>
   </section>
-
 </main>
 
 <script>
 // --- PWA Setup ---
-const manifest = {
-  name: "De La Rosa Masters", short_name: "DLR Masters", display: "standalone", start_url: ".", background_color: "#ff2a1a", theme_color: "#000000",
-  icons: [{ src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23000' width='100' height='100'/><text x='50' y='50' fill='%23ffd700' text-anchor='middle' alignment-baseline='middle' font-family='Arial' font-weight='bold' font-size='30'>DLR</text></svg>", sizes: "192x192", type: "image/svg+xml" }]
-};
+const manifest = { name: "DLR Masters", short_name: "DLR Masters", display: "standalone", start_url: ".", background_color: "#ff2a1a", theme_color: "#000000", icons: [{ src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23000' width='100' height='100'/><text x='50' y='50' fill='%23ffd700' text-anchor='middle' alignment-baseline='middle' font-family='Arial' font-weight='bold' font-size='30'>DLR</text></svg>", sizes: "192x192", type: "image/svg+xml" }] };
 const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
 document.head.appendChild(Object.assign(document.createElement('link'), {rel: 'manifest', href: URL.createObjectURL(manifestBlob)}));
-if('serviceWorker' in navigator) { const sw = `self.addEventListener('fetch', e => {});`; navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw], {type: 'application/javascript'}))); }
+if('serviceWorker' in navigator) { navigator.serviceWorker.register(URL.createObjectURL(new Blob([`self.addEventListener('fetch', e => {});`], {type: 'application/javascript'}))); }
 
 const SUPABASE_URL = "https://yfpdcwhhnnucqjahoilz.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlmcGRjd2hobm51Y3FqYWhvaWx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MDA1MDgsImV4cCI6MjEwMzk3NjUwOH0.8ipJ3QYfBpmvPZb_-BUovSDaoCpnxJ9BIw6NPE43Alw";
 const TOURNAMENT_ID = "delarosa_masters_2026";
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let isAdmin = false;
+let isAdmin = false, editingTeamId = null, calcuttaEditMode = false;
 let currentLang = localStorage.getItem('dlr_lang') || 'en';
-let calcuttaEditMode = false;
+let state = { settings:{satGames:4,sunGames:3}, teams:[], games:[], started:false, currentGame:1, calcuttaData:{teams:{},men:{},womenSeniors:{}}, calcuttaConfig:{teams:{purse:1000,places:3,percents:[50,30,20]},men:{purse:1000,places:3,percents:[50,30,20]},womenSeniors:{purse:1000,places:3,percents:[50,30,20]}} };
 
-let state = {
-  settings: { satGames: 4, sunGames: 3 },
-  teams: [],
-  games: [],
-  started: false,
-  currentGame: 1,
-  calcuttaData: { teams: {}, men: {}, womenSeniors: {} },
-  calcuttaConfig: {
-      teams: { purse: 1000, places: 3, percents: [50, 30, 20] },
-      men: { purse: 1000, places: 3, percents: [50, 30, 20] },
-      womenSeniors: { purse: 1000, places: 3, percents: [50, 30, 20] }
-  }
-};
-
-async function save() {
-  localStorage.setItem('dlr_local_cache', JSON.stringify(state));
-  await db.from('tournament_data').upsert({ id: TOURNAMENT_ID, state: state, updated_at: new Date().toISOString() });
-}
-
-async function loadStateFromCloud() {
+async function save(){ localStorage.setItem('dlr_local_cache', JSON.stringify(state)); await db.from('tournament_data').upsert({ id: TOURNAMENT_ID, state: state, updated_at: new Date().toISOString() }); }
+async function loadStateFromCloud(){
   const { data } = await db.from('tournament_data').select('state').eq('id', TOURNAMENT_ID).single();
-  if (data && data.state) {
-      state = data.state;
-      if (!state.calcuttaData) state.calcuttaData = { teams: {}, men: {}, womenSeniors: {} };
-      if (!state.calcuttaConfig) state.calcuttaConfig = { teams: { purse: 1000, places: 3, percents: [50, 30, 20] }, men: { purse: 1000, places: 3, percents: [50, 30, 20] }, womenSeniors: { purse: 1000, places: 3, percents: [50, 30, 20] } };
-  }
+  if (data && data.state){ state = data.state; if(!state.calcuttaData) state.calcuttaData={teams:{},men:{},womenSeniors:{}}; if(!state.calcuttaConfig) state.calcuttaConfig={teams:{purse:1000,places:3,percents:[50,30,20]},men:{purse:1000,places:3,percents:[50,30,20]},womenSeniors:{purse:1000,places:3,percents:[50,30,20]}}; }
+  else { const cached = localStorage.getItem('dlr_local_cache'); if(cached) state = JSON.parse(cached); }
   renderAll();
 }
+function setupRealtimeListener(){ db.channel('tournament_updates').on('postgres_changes',{event:'*',schema:'public',table:'tournament_data',filter:`id=eq.${TOURNAMENT_ID}`},p=>{if(p.new&&p.new.state){state=p.new.state;renderAll();}}).subscribe(); }
 
-const tDict = {
-  "Matches": "Partidas",
-  "Calcutta": "Calcutta",
-  "Calcutta Results": "Premiacion Calcutta"
-};
+const tDict = { "Matches":"Partidas", "Calcutta":"Calcutta", "Calcutta Results":"Premiacion Calcutta", "Team Registration":"Registro de Equipos", "Registered Teams":"Equipos Registrados", "Tournament Setup":"Config. del Torneo", "Standings":"Posiciones", "Export Data (XLS)":"Exportar Datos", "Export Owed Ledger (Calcutta)":"Exportar Resumen Deudas" };
+function t(key){ return currentLang === 'en' ? key : (tDict[key] || key); }
+function toggleLang(){ currentLang = currentLang === 'en' ? 'es' : 'en'; localStorage.setItem('dlr_lang', currentLang); applyTranslations(); renderAll(); }
+function applyTranslations(){ document.querySelectorAll('[data-i18n]').forEach(el => el.innerHTML = t(el.getAttribute('data-i18n'))); document.querySelectorAll('[data-i18n-ph]').forEach(el => el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph')))); const btn = document.getElementById('langBtn'); if(btn) btn.textContent = currentLang === 'en' ? '🇲🇽 ES' : '🇺🇸 EN'; }
 
-function t(key) { return currentLang === 'en' ? key : (tDict[key] || key); }
-function toggleLang() { currentLang = currentLang === 'en' ? 'es' : 'en'; localStorage.setItem('dlr_lang', currentLang); applyTranslations(); renderAll(); }
-function applyTranslations() { document.querySelectorAll('[data-i18n]').forEach(el => { el.innerHTML = t(el.getAttribute('data-i18n')); }); }
+function showAdminPrompt(){ document.getElementById('adminForm').style.display='block'; }
+function selectUserRole(){ isAdmin=false; document.body.classList.remove('is-admin'); document.getElementById('roleBadge').textContent='Mode: User (Audit View)'; document.getElementById('authModal').style.display='none'; activateTab('game'); renderAll(); }
+function loginAdmin(){
+  if(document.getElementById('adminPass').value === 'B0l1ch3b1ll4r'){ isAdmin=true; document.body.classList.add('is-admin'); document.getElementById('roleBadge').textContent='Mode: Admin'; document.getElementById('authModal').style.display='none'; activateTab('registration'); renderAll(); }
+  else { document.getElementById('authAlert').innerHTML='<div class="alert alert-danger">Incorrect password</div>'; }
+}
+function hardResetTournament(){ if(!isAdmin) return; if(confirm('WARNING: Deletes ALL data. Sure?')){ state={settings:{satGames:4,sunGames:3},teams:[],games:[],started:false,currentGame:1,calcuttaData:{teams:{},men:{},womenSeniors:{}},calcuttaConfig:{teams:{purse:1000,places:3,percents:[50,30,20]},men:{purse:1000,places:3,percents:[50,30,20]},womenSeniors:{purse:1000,places:3,percents:[50,30,20]}}}; save(); clearForm(); alert('Reset complete.'); renderAll(); } }
 
-function selectUserRole(){ isAdmin = false; document.body.classList.remove('is-admin'); document.getElementById('authModal').style.display = 'none'; activateTab('game'); renderAll(); }
-function loginAdmin(){ if(document.getElementById('adminPass').value === 'B0l1ch3b1ll4r'){ isAdmin = true; document.body.classList.add('is-admin'); document.getElementById('authModal').style.display = 'none'; activateTab('game'); renderAll(); } }
+function handicap(avg, gender){ let raw=210-avg; if(raw<0)return 0; let maxCap=(gender==='Male')?35:40; return raw>maxCap?maxCap:raw; }
+function esc(str){ return str?String(str).replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])):''; }
+function teamMap(){ const map={}; state.teams.forEach(t=>map[t.id]=t); return map; }
+function playerOrder(team){ return team.bowlers; }
+function teamTotals(tItem){ return tItem.bowlers.reduce((o,b)=>({avg:o.avg+b.average,hdcp:o.hdcp+b.handicap}),{avg:0,hdcp:0}); }
 
-function activateTab(id){
-  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
-  if (id === 'calcutta') renderCalcutta();
-  if (id === 'calcutta-results') renderCalcuttaResults();
+// Registration Functions
+function initBowlerForm(){
+  const g=[{v:'Male',l:'Male'},{v:'Female',l:'Female'},{v:'Male Senior',l:'Male Senior'},{v:'Female Senior',l:'Female Senior'}];
+  document.getElementById('bowlerInputs').innerHTML=[0,1,2].map(i=>`<div class="bowler-row">
+    <div><label>Bowler ${i+1} Name</label><input class="bn" data-i="${i}"></div>
+    <div><label>Avg</label><input class="ba" data-i="${i}" type="number" min="0" step="1"></div>
+    <div><label>Gender</label><select class="bg" data-i="${i}">${g.map(o=>`<option value="${o.v}">${o.l}</option>`).join('')}</select></div>
+    <div><label>HDCP</label><input class="bh" data-i="${i}" readonly value="0"></div>
+    <div><label>Order</label><input class="bo" data-i="${i}" readonly value="${i+1}"></div>
+    <div><label>Preview</label><div class="small muted" id="prev${i}">-</div></div>
+  </div>`).join('');
+  document.querySelectorAll('.ba,.bg').forEach(el=>el.addEventListener('input',updateFormPreview)); updateFormPreview();
+}
+function updateFormPreview(){
+  const bs=[0,1,2].map(i=>{ const avg=Number(document.querySelector(`.ba[data-i="${i}"]`).value)||0; const g=document.querySelector(`.bg[data-i="${i}"]`).value; return{i,avg,g,h:handicap(avg,g)}; });
+  const sorted=[...bs].sort((a,b)=>a.avg-b.avg||a.i-b.i);
+  sorted.forEach((b,idx)=>{ document.querySelector(`.bh[data-i="${b.i}"]`).value=b.h; document.querySelector(`.bo[data-i="${b.i}"]`).value=idx+1; document.getElementById(`prev${b.i}`).textContent=`HDCP ${b.h} • Pos ${idx+1}`; });
+  const sum=bs.reduce((a,b)=>a+b.avg,0); const box=document.getElementById('teamAlert');
+  box.innerHTML=sum>630?`<div class="alert alert-danger">ERROR: Avg = ${sum}. Max = 630.</div>`:(sum>0?`<div class="alert alert-ok">Avg: ${sum} / 630</div>`:'');
+}
+function clearForm(){ editingTeamId=null; document.getElementById('addTeamBtn').textContent='Register Team'; document.getElementById('teamName').value=''; document.getElementById('teamCaptain').value=''; document.querySelectorAll('.bn,.ba').forEach(x=>x.value=''); initBowlerForm(); }
+function registerTeam(){
+  if(!isAdmin)return;
+  const shift=Number(document.getElementById('teamShiftSelect').value), name=document.getElementById('teamName').value.trim(), contact=document.getElementById('teamCaptain').value.trim();
+  const bowlers=[0,1,2].map(i=>({name:document.querySelector(`.bn[data-i="${i}"]`).value.trim(), average:Number(document.querySelector(`.ba[data-i="${i}"]`).value), gender:document.querySelector(`.bg[data-i="${i}"]`).value}));
+  if(!name || bowlers.some(b=>!b.name||!Number.isFinite(b.average))) return showTeamAlert('Complete all fields.','danger');
+  const sum=bowlers.reduce((a,b)=>a+b.average,0); if(sum>630) return showTeamAlert('Average exceeds 630.','danger');
+  const sorted=bowlers.sort((a,b)=>a.average-b.average); sorted.forEach((b)=>b.handicap=handicap(b.average,b.gender));
+  if(editingTeamId){ const idx=state.teams.findIndex(t=>t.id===editingTeamId); if(idx!==-1) state.teams[idx]={...state.teams[idx],name,contact,shift,bowlers:sorted}; } 
+  else { state.teams.push({id:crypto.randomUUID(),name,contact,shift,bowlers:sorted}); }
+  save(); clearForm(); renderTeams();
+}
+function showTeamAlert(msg,type){ document.getElementById('teamAlert').innerHTML=`<div class="alert alert-${type}">${esc(msg)}</div>`; }
+function editTeam(id){ if(!isAdmin)return; const t=state.teams.find(x=>x.id===id); if(!t)return; editingTeamId=id; document.getElementById('teamName').value=t.name; document.getElementById('teamCaptain').value=t.contact||''; document.getElementById('teamShiftSelect').value=t.shift||1; t.bowlers.forEach((b,i)=>{ document.querySelector(`.bn[data-i="${i}"]`).value=b.name; document.querySelector(`.ba[data-i="${i}"]`).value=b.average; document.querySelector(`.bg[data-i="${i}"]`).value=b.gender; }); updateFormPreview(); document.getElementById('addTeamBtn').textContent='Update Team'; activateTab('registration'); window.scrollTo(0,0); }
+function removeTeam(id){ if(!isAdmin)return; if(state.started){alert('Cannot remove after start.');return;} state.teams=state.teams.filter(t=>t.id!==id); save(); renderTeams(); }
+function renderTeams(){
+  const holder=document.getElementById('teamsTable'); document.getElementById('teamCountBadge').textContent=`${state.teams.length} teams`;
+  if(!state.teams.length){ holder.innerHTML=`<div class="empty">No teams registered.</div>`; return; }
+  holder.innerHTML=`<table><thead><tr><th>#</th><th>Team</th><th>Shift</th><th>Bowler 1</th><th>Bowler 2</th><th>Bowler 3</th><th>Total Avg</th><th>Total HDCP</th>${isAdmin?'<th>Action</th>':''}</tr></thead><tbody>
+  ${state.teams.map((t,i)=>`<tr><td>${i+1}</td><td><b>${esc(t.name)}</b></td><td>Shift ${t.shift||1}</td>${t.bowlers.map(b=>`<td>${esc(b.name)} <span class="small muted">(${b.average})</span></td>`).join('')}<td>${t.bowlers.reduce((a,b)=>a+b.average,0)}</td><td>${t.bowlers.reduce((a,b)=>a+b.handicap,0)}</td>
+  ${isAdmin?`<td><button class="btn-ghost" onclick="editTeam('${t.id}')">Edit</button> <button class="btn-ghost" onclick="removeTeam('${t.id}')">Del</button></td>`:''}</tr>`).join('')}</tbody></table>`;
 }
 
-function esc(str) { return str ? String(str).replace(/[&<>"']/g, s => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[s])) : ''; }
-function teamMap() { const map = {}; state.teams.forEach(t => map[t.id] = t); return map; }
-function playerOrder(team) { return team.bowlers; }
-function teamTotals(t){return t.bowlers.reduce((o,b)=>({avg:o.avg+b.average,hdcp:o.hdcp+b.handicap}),{avg:0,hdcp:0})}
+// Engine Functions
+function buildMatchObj(gameNo, shift, aId, bId, laneA) { return { id:crypto.randomUUID(), shift, aId, bId, laneA, laneB:laneA+1, completed:false, teamScoreA:null, teamScoreB:null, bowlers:[] }; }
+function generateSpecificGame(){
+  if(!isAdmin)return;
+  const gameNo=Number(document.getElementById('genGameSelect').value), shift=Number(document.getElementById('genShiftSelect').value);
+  let poolStart=Number(document.getElementById('genPoolStart').value)||1, poolEnd=Number(document.getElementById('genPoolEnd').value)||30, topSeedLane=Number(document.getElementById('genTopSeedLane').value)||poolStart;
+  poolStart=poolStart%2===0?poolStart-1:poolStart; poolEnd=poolEnd%2!==0?poolEnd+1:poolEnd; topSeedLane=topSeedLane%2===0?topSeedLane-1:topSeedLane;
+  let avail=[]; for(let i=poolStart;i<=poolEnd;i+=2) avail.push(i);
+  let sIdx=avail.indexOf(topSeedLane); if(sIdx===-1) sIdx=0;
+  function getLane(idx){ return avail[(sIdx+idx)%avail.length]; }
+  
+  if(!state.games[gameNo-1]) state.games[gameNo-1]={number:gameNo,day:gameNo<=state.settings.satGames?'Saturday':'Sunday',matches:[]};
+  else if(state.games[gameNo-1].matches.some(m=>m.shift===shift)){ if(!confirm(`Overwrite Game ${gameNo} Shift ${shift}?`))return; state.games[gameNo-1].matches=state.games[gameNo-1].matches.filter(m=>m.shift!==shift); }
+  
+  let matches=[];
+  if(gameNo===1){
+    let st=state.teams.filter(t=>t.shift===shift); let ids=st.map(t=>t.id);
+    for(let i=ids.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [ids[i],ids[j]]=[ids[j],ids[i]]; }
+    if(ids.length%2!==0) ids.push(null);
+    for(let i=0;i<ids.length;i+=2) if(ids[i]) matches.push(buildMatchObj(gameNo,shift,ids[i],ids[i+1],getLane(i/2)));
+  } else if(gameNo>=2 && gameNo<=4){
+    let stand=calculateTeamStandings('all', gameNo-1, shift); let ids=stand.map(s=>s.id); if(ids.length%2!==0) ids.push(null);
+    for(let i=0;i<ids.length;i+=2) if(ids[i]) matches.push(buildMatchObj(gameNo,shift,ids[i],ids[i+1],getLane(i/2)));
+  } else if(gameNo===5){
+    let stand=calculateTeamStandings('all',4,'all'); let allIds=stand.map(s=>s.id); if(allIds.length%2!==0) allIds.push(null);
+    let aShifts=[...new Set(state.teams.map(t=>t.shift))].sort((a,b)=>b-a); if(!aShifts.length) aShifts=[1];
+    let pairsPerShift=Math.ceil((allIds.length/2)/aShifts.length); let cur=0;
+    for(let i=0;i<aShifts.length;i++){
+      let s=aShifts[i], p=(i===aShifts.length-1)?((allIds.length/2)-(cur/2)):pairsPerShift;
+      if(s===shift){
+        let sIds=allIds.slice(cur, cur+(p*2));
+        for(let j=0;j<sIds.length;j+=2) if(sIds[j]) matches.push(buildMatchObj(gameNo,shift,sIds[j],sIds[j+1],getLane(j/2)));
+      }
+      cur+=p*2;
+    }
+  } else if(gameNo>5){
+    const pg=state.games[gameNo-2]; if(!pg){alert('Missing previous game');return;}
+    const pm=pg.matches.filter(m=>m.shift===shift);
+    pm.sort((a,b)=>a.laneA-b.laneA).forEach(m=>{
+      let cIdx=avail.indexOf(m.laneA); if(cIdx===-1)cIdx=0;
+      matches.push(buildMatchObj(gameNo,shift,m.aId,m.bId,avail[(cIdx+2)%avail.length]));
+    });
+  }
+  state.games[gameNo-1].matches.push(...matches); state.currentGame=gameNo; state.started=true; save();
+  alert(`Generated Game ${gameNo} Shift ${shift}`); activateTab('game'); document.getElementById('auditGameSelect').value=gameNo; document.getElementById('auditShiftFilter').value=shift; renderGame();
+}
 
-function calculateTeamStandings(dayFilter = 'all', upToGameNo = 999, shiftFilter = 'all'){
+// Game Rendering
+function renderGame(){
+  const el=document.getElementById('gameContent');
+  if(!state.started||!state.games.length){ el.innerHTML=`<div class="card"><div class="empty">Tournament not started.</div></div>`; return; }
+  const totalG=state.settings.satGames+state.settings.sunGames, gs=document.getElementById('auditGameSelect');
+  if(gs.options.length===0) gs.innerHTML=Array.from({length:totalG},(_,i)=>`<option value="${i+1}">Game ${i+1}</option>`).join('');
+  gs.value=state.currentGame; gs.onchange=(e)=>{state.currentGame=Number(e.target.value);renderGame();};
+  
+  const sF=document.getElementById('auditShiftFilter').value, game=state.games[state.currentGame-1];
+  if(!game||!game.matches.length){ el.innerHTML=`<div class="card"><div class="empty">No matches generated yet.</div></div>`; return; }
+  
+  const map=teamMap(), fm=game.matches.filter(m=>sF==='all'||String(m.shift)===sF);
+  let html=`<div class="card" style="margin-bottom:14px"><div class="actions" style="justify-content:space-between"><div><h2>Game ${game.number}</h2></div><div class="badge">${game.matches.filter(m=>m.completed).length}/${game.matches.length} Done</div></div></div>`;
+  if(!fm.length) html+=`<div class="card"><div class="empty">No matches for this shift.</div></div>`;
+  else html+=fm.sort((a,b)=>a.laneA-b.laneA).map(m=>renderMatch(m,map)).join('');
+  
+  if(isAdmin && !game.matches.every(m=>m.completed)){
+    html+=`<div class="fab-container"><button class="fab fab-random" onclick="generateRandomScores()">🎲 Randomize</button><button class="fab fab-save" onclick="saveAllMatches()">💾 Save All</button></div>`;
+  }
+  el.innerHTML=html;
+  document.querySelectorAll('.match-card input[type=number]').forEach(inp=>{if(inp.id.startsWith('s_'))inp.addEventListener('input',()=>refreshMatchPreview(inp.id.split('_')[1]));});
+  game.matches.forEach(m=>refreshMatchPreview(m.id));
+}
+function renderMatch(m,map){
+  const A=map[m.aId], B=map[m.bId]; if(!A||!B)return''; const as=playerOrder(A), bs=playerOrder(B), canEdit=isAdmin&&!m.completed;
+  return `<div class="card match-card" data-match-id="${m.id}"><div class="match-head"><div><b>Shift ${m.shift} • Lanes ${m.laneA} & ${m.laneB}</b><div class="small muted">${esc(A.name)} vs ${esc(B.name)}</div></div><span class="badge">${m.completed?'Complete':'In Progress'}</span></div><div class="match-body">
+    <div class="score-grid" style="font-weight:800;margin-bottom:8px"><div>Bowler</div><div class="center">${esc(A.name)} (Scr)</div><div class="center">HDCP</div><div class="center">${esc(B.name)} (Scr)</div><div class="center">HDCP</div></div>
+    ${[0,1,2].map(p=>`<div class="score-grid" style="margin-bottom:6px"><div><b>P${p+1}</b><br><span class="small muted">${esc(as[p].name)}(${as[p].handicap}) vs ${esc(bs[p].name)}(${bs[p].handicap})</span></div>
+      <div><input type="number" id="s_${m.id}_a_${p}" value="${m.completed?m.bowlers[p].a:''}" ${canEdit?'':'disabled'}></div><div class="center" id="thdcp_val_${m.id}_a_${p}">—</div>
+      <div><input type="number" id="s_${m.id}_b_${p}" value="${m.completed?m.bowlers[p].b:''}" ${canEdit?'':'disabled'}></div><div class="center" id="thdcp_val_${m.id}_b_${p}">—</div>
+    </div>`).join('')}
+    <div class="pair-box"><div class="score-grid"><div><b>Team Totals</b></div><div><input type="number" id="ts_${m.id}_a" value="${m.teamScoreA||''}" disabled></div><div class="center" id="tots_val_${m.id}_a">—</div><div><input type="number" id="ts_${m.id}_b" value="${m.teamScoreB||''}" disabled></div><div class="center" id="tots_val_${m.id}_b">—</div></div></div>
+    ${canEdit?`<div class="actions" style="justify-content:flex-end;margin-top:10px"><button class="btn-primary" onclick="saveMatch('${m.id}')">Save Match</button></div>`:''}
+  </div></div>`;
+}
+function refreshMatchPreview(id){
+  const g=state.games.find(x=>x.number===state.currentGame), m=g?.matches.find(x=>x.id===id); if(!m)return;
+  const map=teamMap(), A=map[m.aId], B=map[m.bId]; if(!A||!B)return; const as=playerOrder(A), bs=playerOrder(B);
+  let ta=0,tb=0;
+  for(let p=0;p<3;p++){
+    const av=document.getElementById(`s_${id}_a_${p}`)?.value, bv=document.getElementById(`s_${id}_b_${p}`)?.value;
+    const a=Number(av)||0, b=Number(bv)||0; ta+=a; tb+=b;
+    const ela=document.getElementById(`thdcp_val_${id}_a_${p}`), elb=document.getElementById(`thdcp_val_${id}_b_${p}`);
+    if(ela) ela.textContent=av!==''?(a+as[p].handicap):'—'; if(elb) elb.textContent=bv!==''?(b+bs[p].handicap):'—';
+  }
+  const ea=document.getElementById(`ts_${id}_a`), eb=document.getElementById(`ts_${id}_b`), tota=document.getElementById(`tots_val_${id}_a`), totb=document.getElementById(`tots_val_${id}_b`);
+  if(ea) ea.value=ta; if(eb) eb.value=tb;
+  if(tota) tota.textContent=ea?.value!==''?(ta+teamTotals(A).hdcp):'—';
+  if(totb) totb.textContent=eb?.value!==''?(tb+teamTotals(B).hdcp):'—';
+}
+function saveMatch(id){
+  const g=state.games.find(x=>x.number===state.currentGame), m=g.matches.find(x=>x.id===id); let bws=[];
+  for(let p=0;p<3;p++){
+    const a=Number(document.getElementById(`s_${id}_a_${p}`).value), b=Number(document.getElementById(`s_${id}_b_${p}`).value);
+    if(a<0||b<0||a>300||b>300)return alert('Invalid scores.'); bws.push({pos:p,a,b});
+  }
+  m.bowlers=bws; m.teamScoreA=bws.reduce((s,x)=>s+x.a,0); m.teamScoreB=bws.reduce((s,x)=>s+x.b,0); m.completed=true; save(); renderGame();
+}
+function saveAllMatches(){
+  const g=state.games.find(x=>x.number===state.currentGame); let err=false;
+  g.matches.forEach(m=>{
+    if(m.completed)return; let bws=[];
+    for(let p=0;p<3;p++){ const av=document.getElementById(`s_${m.id}_a_${p}`).value, bv=document.getElementById(`s_${m.id}_b_${p}`).value; if(av===''||bv==='')err=true; bws.push({pos:p,a:Number(av),b:Number(bv)}); }
+    if(!err){ m.bowlers=bws; m.teamScoreA=bws.reduce((s,x)=>s+x.a,0); m.teamScoreB=bws.reduce((s,x)=>s+x.b,0); m.completed=true; }
+  });
+  if(err)alert('Missing valid scores.'); save(); renderGame();
+}
+function generateRandomScores(){ document.querySelectorAll('.match-card input[type=number][id^="s_"]').forEach(inp=>{if(!inp.disabled){inp.value=Math.floor(Math.random()*113)+145;inp.dispatchEvent(new Event('input'));}}); }
+
+// Standings Logic
+function calculateTeamStandings(dayF='all', upTo=999, shiftF='all'){
   const map=teamMap(), stats=state.teams.map(t=>({id:t.id,name:t.name,shift:t.shift||1,points:0,pinfall:0,net:0,highest:0,games:0}));
   const sm=Object.fromEntries(stats.map(s=>[s.id,s]));
-  for(const g of state.games){
-    if(g.number > upToGameNo) continue;
-    if(dayFilter === 'sat' && g.number > state.settings.satGames) continue;
-    if(dayFilter === 'sun' && g.number <= state.settings.satGames) continue;
-    
-    for(const m of g.matches){
-      if(!m.completed)continue;
-      const A=map[m.aId], B=map[m.bId], sa=sm[m.aId], sb=sm[m.bId];
-      if(!sa || !sb) continue;
-      const as=playerOrder(A), bs=playerOrder(B);
-      let ap=0, bp=0;
-      m.bowlers.forEach((o,pos)=>{
-        const aa=o.a+(as[pos]?.handicap||0), bb=o.b+(bs[pos]?.handicap||0);
-        if(aa>bb)ap+=2; else if(aa<bb)bp+=2; else {ap+=1;bp+=1;}
-        sa.pinfall+=o.a; sb.pinfall+=o.b; sa.net+=aa; sb.net+=bb;
-      });
-      const ha=m.teamScoreA+teamTotals(A).hdcp, hb=m.teamScoreB+teamTotals(B).hdcp;
-      if(ha>hb)ap+=4; else if(ha<hb)bp+=4; else {ap+=2;bp+=2;}
-      sa.points+=ap; sb.points+=bp; sa.games++; sb.games++;
-    }
-  }
-  let res = stats;
-  if(shiftFilter !== 'all') res = res.filter(s => String(s.shift) === String(shiftFilter));
-  // Calcutta results require raw net logic for sun. Standard logic applies fallback.
-  return res.sort((a,b)=> dayFilter==='sun' ? b.net - a.net : (b.points-a.points||b.pinfall-a.pinfall||a.name.localeCompare(b.name)));
+  state.games.forEach(g=>{
+    if(g.number>upTo || (dayF==='sat'&&g.number>state.settings.satGames) || (dayF==='sun'&&g.number<=state.settings.satGames)) return;
+    g.matches.forEach(m=>{
+      if(!m.completed)return; const A=map[m.aId], B=map[m.bId]; if(!A||!B)return;
+      const as=playerOrder(A), bs=playerOrder(B); let ap=0,bp=0;
+      m.bowlers.forEach((o,p)=>{ const aa=o.a+(as[p]?.handicap||0), bb=o.b+(bs[p]?.handicap||0); if(aa>bb)ap+=2;else if(aa<bb)bp+=2;else{ap+=1;bp+=1;} sm[m.aId].pinfall+=o.a; sm[m.bId].pinfall+=o.b; sm[m.aId].net+=aa; sm[m.bId].net+=bb; });
+      const ha=m.teamScoreA+teamTotals(A).hdcp, hb=m.teamScoreB+teamTotals(B).hdcp; if(ha>hb)ap+=4;else if(ha<hb)bp+=4;else{ap+=2;bp+=2;}
+      sm[m.aId].points+=ap; sm[m.bId].points+=bp; sm[m.aId].games++; sm[m.bId].games++;
+    });
+  });
+  let res=shiftF!=='all'?stats.filter(s=>String(s.shift)===String(shiftF)):stats;
+  return res.sort((a,b)=>dayF==='sun'?b.net-a.net:(b.points-a.points||b.pinfall-a.pinfall||a.name.localeCompare(b.name)));
 }
-
-function calculatePlayerStandings(dayFilter = 'all', upToGameNo = 999) {
-  const map=teamMap(), players=[];
-  state.teams.forEach(t=>t.bowlers.forEach(b=>players.push({
-    id: t.id+'|'+b.name, name: b.name, team: t.name, gender: b.gender, handicap: b.handicap, points: 0, netPinfall: 0, games: 0
-  })));
+function calculatePlayerStandings(dayF='all', upTo=999){
+  const players=[]; state.teams.forEach(t=>t.bowlers.forEach(b=>players.push({id:t.id+'|'+b.name,name:b.name,team:t.name,gender:b.gender,handicap:b.handicap,netPinfall:0,games:0})));
   const sm=Object.fromEntries(players.map(p=>[p.id,p]));
-  for(const g of state.games) {
-    if(g.number > upToGameNo) continue;
-    if(dayFilter === 'sat' && g.number > state.settings.satGames) continue;
-    if(dayFilter === 'sun' && g.number <= state.settings.satGames) continue;
-    for(const m of g.matches){
-      if(!m.completed)continue; const A=map[m.aId], B=map[m.bId];
-      if(!A || !B) continue;
-      const as=playerOrder(A), bs=playerOrder(B);
-      m.bowlers.forEach((o,pos)=>{
-        const bowlerA = as[pos], bowlerB = bs[pos];
-        if(sm[m.aId+'|'+bowlerA.name]){ sm[m.aId+'|'+bowlerA.name].netPinfall += (o.a + bowlerA.handicap); sm[m.aId+'|'+bowlerA.name].games++; }
-        if(sm[m.bId+'|'+bowlerB.name]){ sm[m.bId+'|'+bowlerB.name].netPinfall += (o.b + bowlerB.handicap); sm[m.bId+'|'+bowlerB.name].games++; }
+  state.games.forEach(g=>{
+    if(g.number>upTo || (dayF==='sat'&&g.number>state.settings.satGames) || (dayF==='sun'&&g.number<=state.settings.satGames)) return;
+    g.matches.forEach(m=>{
+      if(!m.completed)return; const A=teamMap()[m.aId], B=teamMap()[m.bId]; if(!A||!B)return;
+      m.bowlers.forEach((o,p)=>{
+        if(sm[m.aId+'|'+A.bowlers[p].name]){ sm[m.aId+'|'+A.bowlers[p].name].netPinfall+=(o.a+A.bowlers[p].handicap); sm[m.aId+'|'+A.bowlers[p].name].games++; }
+        if(sm[m.bId+'|'+B.bowlers[p].name]){ sm[m.bId+'|'+B.bowlers[p].name].netPinfall+=(o.b+B.bowlers[p].handicap); sm[m.bId+'|'+B.bowlers[p].name].games++; }
       });
-    }
-  }
-  return players.sort((a,b)=>b.netPinfall - a.netPinfall || a.name.localeCompare(b.name));
-}
-
-// ---------------- CALCUTTA TAB ----------------
-function toggleCalcuttaEdit() {
-  calcuttaEditMode = !calcuttaEditMode;
-  document.getElementById('calcEditBtn').textContent = calcuttaEditMode ? "Lock Mode" : "Edit Mode";
-  renderCalcutta();
-}
-
-function saveCalcutta() {
-  const cats = ['teams', 'men', 'womenSeniors'];
-  cats.forEach(cat => {
-      document.querySelectorAll(`.calc-input[data-cat="${cat}"]`).forEach(inp => {
-          const id = inp.dataset.id;
-          if(!state.calcuttaData[cat][id]) state.calcuttaData[cat][id] = { buyer: '', cost: 0 };
-          if (inp.classList.contains('buyer-in')) state.calcuttaData[cat][id].buyer = inp.value;
-          if (inp.classList.contains('cost-in')) state.calcuttaData[cat][id].cost = Number(inp.value) || 0;
-      });
+    });
   });
-  save();
-  alert("Calcutta Data Saved Successfully.");
-  calcuttaEditMode = false;
-  document.getElementById('calcEditBtn').textContent = "Edit Mode";
-  renderCalcutta();
+  return players.sort((a,b)=>b.netPinfall-a.netPinfall||a.name.localeCompare(b.name));
+}
+function renderStandings(){
+  const standT=calculateTeamStandings('all'); if(!state.teams.length)return document.getElementById('standingsContent').innerHTML=`<div class="empty">No teams registered.</div>`;
+  document.getElementById('standingsContent').innerHTML=`<table><thead><tr><th>Pos</th><th>Team</th><th>Shift</th><th>Points</th><th>Pinfall</th><th>Games</th></tr></thead>
+    <tbody>${standT.map((x,i)=>`<tr><td><b>${i+1}</b></td><td><b>${esc(x.name)}</b></td><td>Shift ${x.shift}</td><td><b>${x.points}</b></td><td>${x.pinfall}</td><td>${x.games}</td></tr>`).join('')}</tbody></table>`;
+}
+function renderPlayerStandings(){
+  const players=calculatePlayerStandings('all');
+  const groups=[['Male','Male'],['Female','Female'],['Male Senior','Male Senior'],['Female Senior','Female Senior']];
+  document.getElementById('standingsContent').innerHTML=groups.map(([g,lbl])=>{
+    const rows=players.filter(x=>x.gender===g);
+    return `<div class="card" style="box-shadow:none;margin-bottom:16px"><h3>${lbl} Division</h3>${rows.length?`<table><thead><tr><th>Pos</th><th>Player</th><th>Team</th><th>HDCP</th><th>Net Pinfall</th></tr></thead><tbody>
+      ${rows.map((x,i)=>`<tr><td><b>${i+1}</b></td><td><b>${esc(x.name)}</b></td><td>${esc(x.team)}</td><td>${x.handicap}</td><td style="color:var(--gold);font-weight:900">${x.netPinfall}</td></tr>`).join('')}</tbody></table>`:`<div class="empty">No players.</div>`}</div>`;
+  }).join('');
 }
 
-function renderCalcuttaCategory(title, data, category) {
-  let html = `<div style="margin-bottom:20px"><h3>${title}</h3><table style="font-size:0.85rem"><tr><th>Rank</th><th>Name</th><th>Buyer</th><th>Cost ($)</th></tr>`;
-  data.forEach((item, i) => {
-      const dbInfo = state.calcuttaData[category][item.id] || { buyer: '', cost: '' };
-      html += `<tr><td>${i+1}</td><td><b>${esc(item.name)}</b></td>
-          <td><input class="calc-input buyer-in" data-cat="${category}" data-id="${item.id}" type="text" value="${esc(dbInfo.buyer)}" ${calcuttaEditMode ? '' : 'disabled'}></td>
-          <td><input class="calc-input cost-in" data-cat="${category}" data-id="${item.id}" type="number" value="${dbInfo.cost}" ${calcuttaEditMode ? '' : 'disabled'}></td>
-      </tr>`;
-  });
-  return html + `</table></div>`;
+// Calcutta & Ledger
+function toggleCalcuttaEdit(){ calcuttaEditMode=!calcuttaEditMode; document.getElementById('calcEditBtn').textContent=calcuttaEditMode?"Lock Mode":"Edit Mode"; renderCalcutta(); }
+function renderCalcuttaCategory(title, data, cat){
+  let html=`<div style="margin-bottom:20px"><h3>${title}</h3><table style="font-size:0.85rem"><tr><th>Rank</th><th>Name</th><th>Buyer</th><th>Cost ($)</th></tr>`;
+  data.forEach((item,i)=>{
+    const dbI=state.calcuttaData[cat][item.id]||{buyer:'',cost:''};
+    html+=`<tr><td>${i+1}</td><td><b>${esc(item.name)}</b></td>
+      <td><input class="calc-input buyer-in" data-cat="${cat}" data-id="${item.id}" type="text" value="${esc(dbI.buyer)}" ${calcuttaEditMode?'':'disabled'}></td>
+      <td><input class="calc-input cost-in" data-cat="${cat}" data-id="${item.id}" type="number" value="${dbI.cost}" ${calcuttaEditMode?'':'disabled'}></td></tr>`;
+  }); return html+`</table></div>`;
+}
+function renderCalcutta(){
+  const standT=calculateTeamStandings('all'), players=calculatePlayerStandings('all'), men=players.filter(p=>p.gender==='Male'), w=players.filter(p=>p.gender!=='Male');
+  document.getElementById('calcuttaContent').innerHTML = renderCalcuttaCategory("Teams",standT,"teams")+renderCalcuttaCategory("Individuals - Men",men,"men")+renderCalcuttaCategory("Individuals - Seniors & Women",w,"womenSeniors");
+}
+function saveCalcutta(){
+  ['teams','men','womenSeniors'].forEach(cat=>{
+    document.querySelectorAll(`.calc-input[data-cat="${cat}"]`).forEach(inp=>{
+      const id=inp.dataset.id; if(!state.calcuttaData[cat][id]) state.calcuttaData[cat][id]={buyer:'',cost:0};
+      if(inp.classList.contains('buyer-in')) state.calcuttaData[cat][id].buyer=inp.value;
+      if(inp.classList.contains('cost-in')) state.calcuttaData[cat][id].cost=Number(inp.value)||0;
+    });
+  }); save(); toggleCalcuttaEdit();
 }
 
-function renderCalcutta() {
-  const standT = calculateTeamStandings('all');
-  const players = calculatePlayerStandings('all');
-  const men = players.filter(p => p.gender === 'Male');
-  const womenSeniors = players.filter(p => p.gender !== 'Male');
-
-  document.getElementById('calcuttaContent').innerHTML = 
-      renderCalcuttaCategory("Teams", standT, "teams") +
-      renderCalcuttaCategory("Individuals - Men", men, "men") +
-      renderCalcuttaCategory("Individuals - Seniors & Women", womenSeniors, "womenSeniors");
+function generateConfigUI(title, cat){
+  const c=state.calcuttaConfig[cat];
+  let html=`<label>${title} Purse ($)</label><input type="number" id="cc_p_${cat}" value="${c.purse}" onchange="updateCalcConfig('${cat}')"><label>Places</label><input type="number" id="cc_pl_${cat}" min="1" value="${c.places}" onchange="updateCalcConfig('${cat}')"><div style="margin-top:10px;font-size:0.8rem"><b>Payout %</b><div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px">`;
+  for(let i=0;i<c.places;i++) html+=`<div style="width:60px"><small>P${i+1}</small><input type="number" id="cc_perc_${cat}_${i}" value="${c.percents[i]||0}" onchange="updateCalcConfig('${cat}')" style="padding:4px"></div>`;
+  return html+`</div></div>`;
+}
+function updateCalcConfig(cat){
+  const purse=Number(document.getElementById(`cc_p_${cat}`).value), places=Number(document.getElementById(`cc_pl_${cat}`).value); let percents=[];
+  for(let i=0;i<places;i++){ const el=document.getElementById(`cc_perc_${cat}_${i}`); percents.push(el?Number(el.value):0); }
+  state.calcuttaConfig[cat]={purse,places,percents}; save(); renderCalcuttaResults();
+}
+function computePayouts(data, cat){
+  const conf=state.calcuttaConfig[cat], purse=conf.purse; let tg=[], payouts=Array(data.length).fill(0), rank=0;
+  data.forEach((item,idx)=>{ let s=item.net||item.netPinfall; let l=tg[tg.length-1]; if(l&&l.s===s)l.i.push(idx); else tg.push({s,i:[idx]}); });
+  tg.forEach(g=>{
+    let pool=0; for(let i=0;i<g.i.length;i++){ if((rank+i)<conf.places) pool+=conf.percents[rank+i]; }
+    let splitVal=(purse*(pool/100))/g.i.length; g.i.forEach(idx=>payouts[idx]=splitVal); rank+=g.i.length;
+  }); return payouts;
+}
+function renderCalcuttaResCat(title, data, cat){
+  const payouts=computePayouts(data, cat);
+  let html=`<div style="margin-bottom:20px"><h3>${title}</h3><table style="font-size:0.85rem"><tr><th>Rank (Ties)</th><th>Name</th><th>Net (Sun)</th><th>Buyer</th><th>Winnings</th></tr>`;
+  data.forEach((item,i)=>{ const b=state.calcuttaData[cat][item.id]?.buyer||'Unsold', w=payouts[i]||0;
+    if(i<10||w>0) html+=`<tr><td>${i+1}</td><td><b>${esc(item.name)}</b></td><td>${item.net||item.netPinfall}</td><td>${esc(b)}</td><td style="color:var(--ok);font-weight:800">$${w.toFixed(2)}</td></tr>`;
+  }); return html+`</table></div>`;
+}
+function renderCalcuttaResults(){
+  document.getElementById('calcConf_men').innerHTML=generateConfigUI("Men's", "men"); document.getElementById('calcConf_womenSeniors').innerHTML=generateConfigUI("Seniors+Women's", "womenSeniors"); document.getElementById('calcConf_teams').innerHTML=generateConfigUI("Team's", "teams");
+  const standT=calculateTeamStandings('sun'), players=calculatePlayerStandings('sun'), men=players.filter(p=>p.gender==='Male'), w=players.filter(p=>p.gender!=='Male');
+  document.getElementById('calcuttaResultsContent').innerHTML = renderCalcuttaResCat("Teams (Sunday)",standT,"teams")+renderCalcuttaResCat("Men (Sunday)",men,"men")+renderCalcuttaResCat("Seniors+Women (Sunday)",w,"womenSeniors");
 }
 
-// ---------------- CALCUTTA RESULTS TAB ----------------
-function generateConfigUI(title, category) {
-  const c = state.calcuttaConfig[category];
-  let html = `<label>${title} Purse ($)</label><input type="number" id="cc_purse_${category}" value="${c.purse}" onchange="updateCalcConfig('${category}')">
-      <label>Places to Pay</label><input type="number" id="cc_places_${category}" min="1" max="20" value="${c.places}" onchange="updateCalcConfig('${category}')">
-      <div style="margin-top:10px; font-size:0.8rem"><b>Payout Percentages (%)</b><div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px">`;
-  
-  for(let i=0; i<c.places; i++) {
-      html += `<div style="width:60px"><small>P${i+1}</small><input type="number" id="cc_perc_${category}_${i}" value="${c.percents[i]||0}" onchange="updateCalcConfig('${category}')" style="padding:4px"></div>`;
-  }
-  return html + `</div></div>`;
-}
-
-function updateCalcConfig(category) {
-  const purse = Number(document.getElementById(`cc_purse_${category}`).value);
-  const places = Number(document.getElementById(`cc_places_${category}`).value);
-  let percents = [];
-  for(let i=0; i<places; i++) {
-      const el = document.getElementById(`cc_perc_${category}_${i}`);
-      percents.push(el ? Number(el.value) : 0);
-  }
-  state.calcuttaConfig[category] = { purse, places, percents };
-  save();
-  renderCalcuttaResults(); 
-}
-
-function computeCalcuttaPayouts(data, category) {
-  const config = state.calcuttaConfig[category];
-  const totalPurse = config.purse;
-  let tiedGroups = [];
-  
-  data.forEach((item, idx) => {
-      let score = item.net || item.netPinfall;
-      let last = tiedGroups[tiedGroups.length - 1];
-      if(last && last.score === score) { last.indices.push(idx); }
-      else { tiedGroups.push({score: score, indices: [idx]}); }
-  });
-
-  let payouts = Array(data.length).fill(0);
-  let currentRank = 0;
-
-  tiedGroups.forEach(g => {
-      let pool = 0;
-      for(let i=0; i<g.indices.length; i++) {
-          if((currentRank + i) < config.places) {
-              pool += config.percents[currentRank + i];
-          }
+function exportCalcuttaLedger(){
+  let l={}; ['teams','men','womenSeniors'].forEach(cat=>{
+    Object.keys(state.calcuttaData[cat]).forEach(id=>{
+      let r=state.calcuttaData[cat][id]; if(r.buyer&&r.cost>0){
+        if(!l[r.buyer])l[r.buyer]={sum:0,items:[]}; l[r.buyer].sum+=r.cost; l[r.buyer].items.push(`${id.split('|').pop()} ($${r.cost})`);
       }
-      let splitVal = (totalPurse * (pool / 100)) / g.indices.length;
-      g.indices.forEach(idx => payouts[idx] = splitVal);
-      currentRank += g.indices.length;
+    });
   });
-
-  return payouts;
+  let html=`<html xmlns:x="urn:schemas-microsoft-com:office:excel"><body><table border="1"><tr><th colspan="3" style="background:#ddd;font-size:14pt">Calcutta Owed Ledger</th></tr><tr><th>Buyer</th><th>Items Bought</th><th>Total Owed</th></tr>`;
+  Object.keys(l).sort().forEach(b=>{ html+=`<tr><td><b>${esc(b)}</b></td><td>${l[b].items.join(', ')}</td><td style="color:red">$${l[b].sum}</td></tr>`; }); html+=`</table></body></html>`;
+  const blob=new Blob([html],{type:'application/vnd.ms-excel'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Calcutta_Ledger.xls'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
 
-function renderCalcuttaResultsCategory(title, data, category) {
-  const payouts = computeCalcuttaPayouts(data, category);
-  let html = `<div style="margin-bottom:20px"><h3>${title}</h3><table style="font-size:0.85rem"><tr><th>Rank (Ties)</th><th>Name</th><th>Net (Sunday)</th><th>Buyer</th><th>Winnings</th></tr>`;
-  data.forEach((item, i) => {
-      const dbInfo = state.calcuttaData[category][item.id] || { buyer: 'Unsold' };
-      const win = payouts[i] || 0;
-      if (i < 10 || win > 0) {
-          html += `<tr><td>${i+1}</td><td><b>${esc(item.name)}</b></td><td>${item.net || item.netPinfall}</td><td>${esc(dbInfo.buyer) || '-'}</td><td style="color:var(--ok);font-weight:800">$${win.toFixed(2)}</td></tr>`;
-      }
-  });
-  return html + `</table></div>`;
-}
-
-function renderCalcuttaResults() {
-  document.getElementById('calcConf_men').innerHTML = generateConfigUI("Men's", "men");
-  document.getElementById('calcConf_womenSeniors').innerHTML = generateConfigUI("Seniors+Women's", "womenSeniors");
-  document.getElementById('calcConf_teams').innerHTML = generateConfigUI("Team's", "teams");
-
-  const standT = calculateTeamStandings('sun');
-  const players = calculatePlayerStandings('sun');
-  const men = players.filter(p => p.gender === 'Male');
-  const womenSeniors = players.filter(p => p.gender !== 'Male');
-
-  document.getElementById('calcuttaResultsContent').innerHTML = 
-      renderCalcuttaResultsCategory("Teams (Sunday)", standT, "teams") +
-      renderCalcuttaResultsCategory("Individual - Men (Sunday)", men, "men") +
-      renderCalcuttaResultsCategory("Individual - Seniors & Women (Sunday)", womenSeniors, "womenSeniors");
-}
-
-function exportCalcuttaLedger() {
-  let ledger = {};
-  const cats = ['teams', 'men', 'womenSeniors'];
-  cats.forEach(cat => {
-      Object.keys(state.calcuttaData[cat]).forEach(id => {
-          let rec = state.calcuttaData[cat][id];
-          if(rec.buyer && rec.cost > 0) {
-              if(!ledger[rec.buyer]) ledger[rec.buyer] = { sum: 0, items: [] };
-              ledger[rec.buyer].sum += rec.cost;
-              let name = id.split('|').pop();
-              ledger[rec.buyer].items.push(`${name} ($${rec.cost})`);
-          }
-      });
-  });
-
-  let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"></head><body>`;
-  html += `<table border="1"><tr><th colspan="3" style="background:#ddd;font-size:14pt">Calcutta Owed Ledger</th></tr><tr><th>Buyer</th><th>Items Bought</th><th>Total Owed</th></tr>`;
-  
-  Object.keys(ledger).sort().forEach(buyer => {
-      html += `<tr><td><b>${esc(buyer)}</b></td><td>${ledger[buyer].items.join(', ')}</td><td style="color:red">$${ledger[buyer].sum}</td></tr>`;
-  });
-  html += `</table></body></html>`;
-
-  const blob = new Blob([html], { type: 'application/vnd.ms-excel' }); 
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Calcutta_Ledger.xls';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-}
-
-function renderAll(){
-  // Minimal refresh hook - normally triggers tabs
-}
-
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{ activateTab(b.dataset.tab); });
-window.onload = async () => { applyTranslations(); await loadStateFromCloud(); };
+function renderAll(){ renderTeams(); if(document.getElementById('game').classList.contains('active')) renderGame(); if(document.getElementById('standings').classList.contains('active')) renderStandings(); if(document.getElementById('calcutta').classList.contains('active')) renderCalcutta(); if(document.getElementById('calcutta-results').classList.contains('active')) renderCalcuttaResults(); }
+function activateTab(id){ document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id)); document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id)); renderAll(); }
+window.onload = async ()=>{ initBowlerForm(); applyTranslations(); await loadStateFromCloud(); setupRealtimeListener(); activateTab('game'); };
 </script>
 </body>
 </html>
