@@ -1406,7 +1406,7 @@ Object.assign(tDict, {
   'Sunday only: 3 games with handicap. Ties share the prizes for the places occupied.':'Solo domingo: 3 juegos con hándicap. Los empates comparten los premios de los lugares que ocupan.',
   'Provisional — all entrants must finish 3 Sunday games before payouts are final.':'Provisional — todos los participantes deben terminar los 3 juegos del domingo para finalizar los premios.',
   'Final results':'Resultados finales','Unallocated':'Sin asignar',
-  'Place percentages must total 100%.':'Los porcentajes por lugar deben sumar 100%.',
+  'Place percentages must total 100% or less.':'Los porcentajes por lugar deben sumar 100% o menos.',
   'Enter valid percentages (0–100) and 1–100 paid places.':'Introduce porcentajes válidos (0–100) y de 1 a 100 lugares premiados.',
   'Enter a purchaser and valid amounts. Paid cannot exceed cost.':'Introduce un comprador y montos válidos. Lo pagado no puede superar el costo.',
   'Not saved to the server. Keep this window open; export a backup before reloading.':'No guardado en el servidor. Mantén esta ventana abierta; exporta un respaldo antes de recargar.',
@@ -1528,7 +1528,7 @@ async function savePurse(group){
   if(!isAdmin)return;const draft=getPurseDraft(group),rate=Number(draft.rate),places=draft.places.map(Number);
   const count=Number(document.getElementById('cal-count-'+group).value);
   if(draft.rate===''||!Number.isFinite(rate)||rate<0||rate>100||!Number.isInteger(count)||count!==places.length||count<1||count>100||draft.places.some(p=>p==='')||places.some(p=>!Number.isFinite(p)||p<0||p>100)){calNotice('purse-message-'+group,t('Enter valid percentages (0–100) and 1–100 paid places.'));return;}
-  if(Math.abs(places.reduce((a,b)=>a+b,0)-100)>0.000001){calNotice('purse-message-'+group,t('Place percentages must total 100%.'));return;}
+  if(places.reduce((a,b)=>a+b,0)>100.000001){calNotice('purse-message-'+group,t('Place percentages must total 100% or less.'));return;}
   const previous=calState().purses[group];calState().purses[group]={rate,places};
   if(!await save()){if(previous)calState().purses[group]=previous;else delete calState().purses[group];return;}
   purseDrafts.delete(group);renderCalcuttaPayout();calNotice('purse-message-'+group,t('Saved'));
