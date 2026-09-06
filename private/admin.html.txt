@@ -1114,9 +1114,9 @@ function refreshMatchPreview(id){
     const pA = document.getElementById(`p_a_${id}_${pos}`);
     const pB = document.getElementById(`p_b_${id}_${pos}`);
     if(aInp?.value!=='' && bInp?.value!==''){
-      if(haTotal === hbTotal){ if(pA) pA.textContent = '🤝'; if(pB) pB.textContent = '🤝'; } 
-      else if(haTotal > hbTotal){ if(pA) pA.textContent = '🟢'; if(pB) pB.textContent = '❌'; } 
-      else { if(pA) pA.textContent = '❌'; if(pB) pB.textContent = '🟢'; }
+      if(haTotal === hbTotal){ if(pA) pA.textContent = '🟢'; if(pB) pB.textContent = '🟢'; } 
+      else if(haTotal > hbTotal){ if(pA) pA.textContent = '🟢🟢'; if(pB) pB.textContent = '❌❌'; }
+      else { if(pA) pA.textContent = '❌❌'; if(pB) pB.textContent = '🟢🟢'; }
     } else { if(pA) pA.textContent = ''; if(pB) pB.textContent = ''; }
   }
   
@@ -1134,10 +1134,10 @@ function refreshMatchPreview(id){
   if(totsAVal) totsAVal.textContent = ea?.value!=='' ? teamSumA : '—';
   if(totsBVal) totsBVal.textContent = eb?.value!=='' ? teamSumB : '—';
   
-  if(ea?.value!=='' && eb?.value!==''){
-    if(teamSumA === teamSumB){ if(tpA) tpA.textContent = '🤝'; if(tpB) tpB.textContent = '🤝'; } 
-    else if(teamSumA > teamSumB){ if(tpA) tpA.textContent = '🟢🟢'; if(tpB) tpB.textContent = '❌❌'; } 
-    else { if(tpA) tpA.textContent = '❌❌'; if(tpB) tpB.textContent = '🟢🟢'; }
+  if([0,1,2].every(pos=>['a','b'].every(side=>{const input=document.getElementById(`s_${id}_${side}_${pos}`);return input&&input.value!=='';}))){
+    if(teamSumA === teamSumB){ if(tpA) tpA.textContent = '🟢'; if(tpB) tpB.textContent = '🟢'; } 
+    else if(teamSumA > teamSumB){ if(tpA) tpA.textContent = '🟢🟢🟢🟢'; if(tpB) tpB.textContent = '❌❌❌❌'; } 
+    else { if(tpA) tpA.textContent = '❌❌❌❌'; if(tpB) tpB.textContent = '🟢🟢🟢🟢'; }
   } else { if(tpA) tpA.textContent = ''; if(tpB) tpB.textContent = ''; }
 }
 
