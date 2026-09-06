@@ -1156,12 +1156,13 @@ function saveMatch(id){
   m.bowlers=bowlers; m.teamScoreA=ta; m.teamScoreB=tb; m.completed=true; save(); renderGame();
 }
 
-function calculateTeamStandings(dayFilter = 'all', upToGameNo = 999, shiftFilter = 'all'){
+function calculateTeamStandings(dayFilter = 'all', upToGameNo = 999, shiftFilter = 'all', gameNumbers = null){
   const map=teamMap(), stats=state.teams.map(t=>({id:t.id,name:t.name,shift:t.shift||1,points:0,pinfall:0,highest:0,games:0}));
   const sm=Object.fromEntries(stats.map(s=>[s.id,s]));
   for(const g of state.games){
     if(!g) continue;
     if(g.number > upToGameNo) continue;
+    if(gameNumbers && !gameNumbers.includes(Number(g.number))) continue;
     if(dayFilter === 'sat' && g.number > state.settings.satGames) continue;
     if(dayFilter === 'sun' && g.number <= state.settings.satGames) continue;
     
@@ -1187,7 +1188,7 @@ function calculateTeamStandings(dayFilter = 'all', upToGameNo = 999, shiftFilter
   return res.sort((a,b)=>b.points-a.points||b.pinfall-a.pinfall||b.highest-a.highest||a.name.localeCompare(b.name));
 }
 
-function calculatePlayerStandings(dayFilter = 'all', upToGameNo = 999) {
+function calculatePlayerStandings(dayFilter = 'all', upToGameNo = 999, gameNumbers = null) {
   const map=teamMap(), players=[];
   state.teams.forEach(t=>t.bowlers.forEach((b,index)=>players.push({
     id: t.id+'|'+index, teamId:t.id, bowlerIndex:index, name: b.name, team: t.name, gender: b.gender, handicap: b.handicap, average: b.average, points: 0, scratchPinfall: 0, netPinfall: 0, highScratch: 0, highNet: 0, games: 0, scratchGames: {}, netGames: {}
@@ -1196,6 +1197,7 @@ function calculatePlayerStandings(dayFilter = 'all', upToGameNo = 999) {
   for(const g of state.games) {
     if(!g) continue;
     if(g.number > upToGameNo) continue;
+    if(gameNumbers && !gameNumbers.includes(Number(g.number))) continue;
     if(dayFilter === 'sat' && g.number > state.settings.satGames) continue;
     if(dayFilter === 'sun' && g.number <= state.settings.satGames) continue;
 
@@ -1403,7 +1405,7 @@ Object.assign(tDict, {
   'Place':'Lugar','Purse':'Bolsa','Prize':'Premio','Sunday HDCP total':'Total domingo con hándicap',
   'Games':'Juegos','No entries yet.':'Aún no hay participantes.',
   'All shifts • Current tournament standings':'Todos los turnos • Posiciones actuales del torneo',
-  'Sunday only: 3 games with handicap. Ties share the prizes for the places occupied.':'Solo domingo: 3 juegos con hándicap. Los empates comparten los premios de los lugares que ocupan.',
+  'Games 5, 6 and 7 only, with handicap. Ties share the prizes for the places occupied.':'Solo juegos 5, 6 y 7 con hándicap. Los empates comparten los premios de los lugares que ocupan.',
   'Provisional — all entrants must finish 3 Sunday games before payouts are final.':'Provisional — todos los participantes deben terminar los 3 juegos del domingo para finalizar los premios.',
   'Final results':'Resultados finales','Unallocated':'Sin asignar',
   'Place percentages must total 100% or less.':'Los porcentajes por lugar deben sumar 100% o menos.',
@@ -1417,6 +1419,9 @@ Object.assign(tDict, {
   'Install from the hosted HTTPS website.':'Instala desde el sitio publicado con HTTPS.',
   'Unsaved changes':'Cambios sin guardar','Configure and save the purse to calculate prizes.':'Configura y guarda la bolsa para calcular los premios.',
   'Prize estimates use saved purchases and settings. All amounts use the same currency.':'Los premios estimados usan compras y ajustes guardados. Todos los montos usan la misma moneda.',
+  'Scheduled payouts (MXN)':'Premios por lugar (MXN)',
+  'Each category uses its own saved auction costs, including unpaid balances. Place percentages apply to the purse after the payout percentage.':'Cada categoría usa sus propios costos de subasta guardados, incluidos los saldos pendientes. Los porcentajes por lugar se aplican a la bolsa después del porcentaje a repartir.',
+  'Center retention before place allocation':'Retención del centro antes de asignar lugares',
   'Rounding remainder':'Remanente por redondeo','Removed entry':'Participante eliminado',
   'Include Calcutta details in this admin backup. Keep the file private.':'Incluye detalles Calcutta en este respaldo de administrador. Mantén el archivo privado.'
 });
@@ -1430,13 +1435,13 @@ function calState(){
   return state.calcutta;
 }
 function calEntries(group,sunday=false){
-  const day=sunday?'sun':'all',limit=sunday?Number(state.settings.satGames)+3:999;
+  const day='all',limit=sunday?7:999,gameNumbers=sunday?[5,6,7]:null;
   if(group==='team'){
-    const rows=calculateTeamStandings(day,limit,'all').map(r=>({...r,key:'team:'+r.id,
+    const rows=calculateTeamStandings(day,limit,'all',gameNumbers).map(r=>({...r,key:'team:'+r.id,
       score:r.pinfall + r.games * teamTotals(state.teams.find(tm=>tm.id===r.id)).hdcp}));
     return sunday?rows.sort((a,b)=>b.score-a.score):rows;
   }
-  const rows=calculatePlayerStandings(day,limit).filter(p=>group==='men'?p.gender==='Male':p.gender!=='Male').map(p=>{
+  const rows=calculatePlayerStandings(day,limit,gameNumbers).filter(p=>group==='men'?p.gender==='Male':p.gender!=='Male').map(p=>{
     const tm=state.teams.find(tm=>tm.id===p.teamId);
     const index=p.bowlerIndex;
     return {...p,key:'player:'+tm.id+':'+(tm.bowlers[index].calcuttaId??index),shift:tm.shift||1,score:p.netPinfall};
@@ -1502,7 +1507,7 @@ function calPrizes(group){
 function renderCalcuttaPayout(){
   const el=document.getElementById('calcuttaPayoutContent');if(!isAdmin){el.replaceChildren();return;}
   calState();
-  el.innerHTML=`<div class="card cal-card"><h2>${t('Calcutta Payout')}</h2><p>${t('Sunday only: 3 games with handicap. Ties share the prizes for the places occupied.')}</p><p class="muted">${t('Prize estimates use saved purchases and settings. All amounts use the same currency.')}</p></div>`+
+  el.innerHTML=`<div class="card cal-card"><h2>${t('Calcutta Payout')}</h2><p>${t('Games 5, 6 and 7 only, with handicap. Ties share the prizes for the places occupied.')}</p><p class="muted">${t('Each category uses its own saved auction costs, including unpaid balances. Place percentages apply to the purse after the payout percentage.')}</p></div>`+
   // All purse controls are at the beginning of this tab.
   ['men','combined','team'].map(group=>{
     const label=calGroups.find(([g])=>g===group)[1],stored=calState().purses[group],draft=purseDrafts.get(group),cfg=draft||stored||{rate:100,places:[100]};
@@ -1511,8 +1516,8 @@ function renderCalcuttaPayout(){
     cfg.places.map((p,i)=>`<div><label for="cal-place-${group}-${i}">${t('Place')} ${i+1} (%)</label><input id="cal-place-${group}-${i}" type="number" min="0" max="100" step="0.01" value="${esc(String(p))}" ${editable?'':'disabled'} oninput="updatePurseDraft('${group}',${i},this.value)"></div>`).join('')+
     `</div><div class="actions"><button class="btn-primary" onclick="savePurse('${group}')" ${editable?'':'disabled'}>${t('Save')}</button><button class="btn-secondary" onclick="editPurse('${group}')" ${editable?'disabled':''}>${t('Edit')}</button>${draft?`<button class="btn-ghost" onclick="purseDrafts.delete('${group}');renderCalcuttaPayout()">${t('Cancel')}</button>`:''}</div><div id="purse-message-${group}" class="cal-message" role="status"></div></div>`;
   }).join('')+['men','combined','team'].map(group=>{
-    const label=calGroups.find(([g])=>g===group)[1],result=calPrizes(group);
-    return `<div class="card cal-card"><h3>${t(label)}</h3><p>${t(result.ready?'Final results':'Provisional — all entrants must finish 3 Sunday games before payouts are final.')}</p><p>${t('Purse')}: ${money(result.purse)} · ${t('Unallocated')}: ${money(result.unallocated)}</p>${result.configured?'':`<p>${t('Configure and save the purse to calculate prizes.')}</p>`}<div class="cal-table"><table><thead><tr><th>${t('Place')}</th><th>${t(group==='team'?'Team':'Bowler')}</th><th>${t('Games')}</th><th>${t('Sunday HDCP total')}</th><th>${t('Purchaser')}</th><th>${t('Prize')}</th></tr></thead><tbody>`+
+    const label=calGroups.find(([g])=>g===group)[1],result=calPrizes(group),cfg=calState().purses[group];
+    return `<div class="card cal-card"><h3>${t(label)}</h3><p>${t(result.ready?'Final results':'Provisional — all entrants must finish 3 Sunday games before payouts are final.')}</p><p>${t('Auction total')}: MXN ${money(result.total)} · ${t('Purse')}: MXN ${money(result.purse)} · ${t('Unallocated')}: MXN ${money(result.unallocated)}</p>${cfg?`<p>${t('Center retention before place allocation')}: MXN ${money(result.total-result.purse)}</p><h4>${t('Scheduled payouts (MXN)')}</h4><div class="cal-table"><table><thead><tr><th>${t('Place')}</th><th>%</th><th>${t('Prize')} (MXN)</th></tr></thead><tbody>${cfg.places.map((percent,index)=>`<tr><td>${index+1}</td><td>${percent}%</td><td>${money(Math.floor((Math.round(result.purse*100)*Number(percent)/100)+1e-7)/100)}</td></tr>`).join('')}</tbody></table></div>`:''}${result.configured?'':`<p>${t('Configure and save the purse to calculate prizes.')}</p>`}<div class="cal-table"><table><thead><tr><th>${t('Place')}</th><th>${t(group==='team'?'Team':'Bowler')}</th><th>${t('Games')}</th><th>${t('Sunday HDCP total')}</th><th>${t('Purchaser')}</th><th>${t('Prize')}</th></tr></thead><tbody>`+
       result.rows.map(r=>`<tr><td>${r.games?r.rank:'—'}</td><td>${esc(r.name)}</td><td>${r.games}/3</td><td>${r.score}</td><td>${esc(calState().sales[r.key]?.buyer||'—')}</td><td>${money(r.prize)}</td></tr>`).join('')+`</tbody></table></div></div>`;
   }).join('');
 }
