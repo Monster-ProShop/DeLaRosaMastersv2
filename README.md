@@ -34,7 +34,7 @@ For local development put those keys in an untracked .dev.vars file and run npm 
 - Public English/Spanish results, team and individual standings, matches, finals, and mobile installation. iPhone/iPad: Safari Share > Add to Home Screen. Android: Install App prompt or browser install menu.
 - Admin login by password and Enter; email code after SMTP setup; logout; expired session.
 - Two shifts, registration, edits, seven matches, zero scores and ties, score corrections and exports.
-- Each Calcutta category: buyer/cost/paid, Save/Edit/Cancel, debts CSV, payout percentages summing to 100%, Sunday ties sharing occupied places.
+- Each Calcutta category: buyer/cost/paid, Save/Edit/Cancel, debts CSV, payout percentages summing to 100% or less, Sunday ties sharing occupied places.
 - Individual finals: top 10/10/6, cutoff selections, handicap elimination, 5/5/3 stepladders, winner changes resetting later rounds.
 - Team finals: two shift seeds, 16 other teams, Baker 16-to-8-to-4; the last six format remains intentionally pending.
 - Two admin windows: a stale save must be rejected rather than overwriting changes. Export edits before reloading after a conflict.
