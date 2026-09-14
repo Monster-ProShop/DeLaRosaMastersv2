@@ -36,7 +36,7 @@ For local development put those keys in an untracked .dev.vars file and run npm 
 - Two shifts, registration, edits, seven matches, zero scores and ties, score corrections and exports.
 - Each Calcutta category: buyer/cost/paid, Save/Edit/Cancel, debts CSV, payout percentages summing to 100% or less, Sunday ties sharing occupied places.
 - Individual finals: top 10/10/6, cutoff selections, handicap elimination, 5/5/3 stepladders, winner changes resetting later rounds.
-- Team finals: two shift seeds, 16 other teams, Baker 16-to-8-to-4; the last six format remains intentionally pending.
+- Team finals: one shift seeds its leader and qualifies 10 others (10-to-5); two shifts seed both leaders and qualify 16 others (16-to-8-to-4). All six survivors play one new Baker game. Every Baker game uses Math.round(team handicap * 0.33). Final-game ties share a place. Regenerate legacy scratch-format team finals to apply these rules.
 - Two admin windows: a stale save must be rejected rather than overwriting changes. Export edits before reloading after a conflict.
 
 ## Security boundaries
