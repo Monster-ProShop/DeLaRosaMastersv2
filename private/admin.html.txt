@@ -454,7 +454,7 @@ input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
 <script>
 let isAdmin = true;
 let editingTeamId = null;
-let currentLang = localStorage.getItem('dlr_lang') || 'en';
+let currentLang = localStorage.getItem('dlr_lang') || 'es';
 
 let state = {
   settings: { satGames: 4, sunGames: 3 },
