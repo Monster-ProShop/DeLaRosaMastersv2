@@ -10,7 +10,7 @@ const name=e=>e?.name?`${e.seed?'#'+e.seed+' ':''}${e.name}`:tbd();
 return table([tr('Match','Partida'),'HDCP',tr('Scratch','Scratch'),tr('Total + HDCP','Total + HDCP'),tr('Winner','Ganador')],(matches||[]).map((m,i)=>[`${i+1}. ${name(m.a)} vs ${name(m.b)}`,`${m.a?handicap?(m.a.handicap||0):0:tbd()} / ${m.b?handicap?(m.b.handicap||0):0:tbd()}`,`${m.aScore??tbd()} / ${m.bScore??tbd()}`,`${m.aScore==null?tbd():m.aScore+(handicap?(m.a?.handicap||0):0)} / ${m.bScore==null?tbd():m.bScore+(handicap?(m.b?.handicap||0):0)}`,m.winner&&m.winner===m.a?.key?m.a.name:m.winner&&m.winner===m.b?.key?m.b.name:tbd()]));}
 function publicLadder(e,count){
 const seeds=e.ladder?.seeds||[],matches=e.ladder?.matches||[];
-let html='<h3>'+tr('Stepladder seeds','Siembras de escalera')+'</h3>'+table([tr('Seed','Siembra'),tr('Bowler','Jugador'),'HDCP'],Array.from({length:count},(_,i)=>[i+1,seeds[i]?.name||tbd(),seeds[i]?.handicap??tbd()]));
+let html='<h3>'+tr('Stepladder seeds','Sembrados')+'</h3>'+table([tr('Seed','Sembrado'),tr('Bowler','Jugador'),'HDCP'],Array.from({length:count},(_,i)=>[i+1,seeds[i]?.name||tbd(),seeds[i]?.handicap??tbd()]));
 const planned=Array.from({length:count-1},(_,i)=>matches[i]||{a:i===0?seeds[count-1]:null,b:seeds[count-2-i]});
 return html+'<h3>'+tr('Stepladder','Escalera')+'</h3>'+bracket(planned);
 }
@@ -35,7 +35,7 @@ html+=publicLadder(e,key==='women'?3:5);
 }else{
 const modern=e.rulesVersion===2,one=e.shiftCount===1;
 if(!modern)html+='<p>'+tr('Results awaiting review.','Resultados pendientes de revisión.')+'</p>';
-for(const field of ['seeded','field'])html+='<h3>'+tr(field==='seeded'?'Seeded directly into final six':'Baker qualifiers',field==='seeded'?'Sembrados directamente a los seis finalistas':'Clasificados Baker')+'</h3>'+table([tr('Seed / Shift','Siembra / Turno'),tr('Team','Equipo'),'Baker HDCP',tr('Regular points','Puntos regulares')],(e[field]||[]).map(p=>[field==='seeded'?p.shift:p.seed,p.name,p.handicap??0,p.score]));
+for(const field of ['seeded','field'])html+='<h3>'+tr(field==='seeded'?'Seeded directly into final six':'Baker qualifiers',field==='seeded'?'Sembrados Directo a la Final':'Clasificados Baker')+'</h3>'+table([tr('Seed / Shift','Sembrado / Turno'),tr('Team','Equipo'),'Baker HDCP',tr('Regular points','Puntos regulares')],(e[field]||[]).map(p=>[field==='seeded'?p.shift:p.seed,p.name,p.handicap??0,p.score]));
 const first=one?'round10':'round16';html+='<h3>'+tr('Baker round of ','Ronda Baker de ')+(one?10:16)+'</h3>'+bracket(e[first]||[],modern);
 if(!one)html+='<h3>'+tr('Baker round of 8','Ronda Baker de 8')+'</h3>'+bracket(e.round8||Array.from({length:4},()=>({})),modern);
 const six=e.lastSix||[...(e.seeded||[]),...Array.from({length:6-(e.seeded?.length||0)},()=>({name:tbd()}))];
