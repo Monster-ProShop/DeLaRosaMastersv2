@@ -1,4 +1,7 @@
-const CACHE='dlr-secure-calcutta-v7',FILES=['/','/index.html','/app.js','/style.css','/logo.png','/favicon.png','/apple-touch-icon.png','/manifest.webmanifest','/icon-finals-192.png','/icon-finals-512.png','/icon-finals-maskable.png'];
+const CACHE='dlr-secure-push-v8',FILES=['/','/index.html','/app.js','/style.css','/logo.png','/favicon.png','/apple-touch-icon.png','/manifest.webmanifest','/icon-finals-192.png','/icon-finals-512.png','/icon-finals-maskable.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE&&k.startsWith('dlr')).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch',event=>{const u=new URL(event.request.url);if(event.request.method!=='GET'||u.origin!==self.location.origin||!FILES.includes(u.pathname))return;event.respondWith(fetch(event.request).catch(()=>caches.match(event.request).then(r=>r||Response.error())));});
+
+self.addEventListener('push',event=>event.waitUntil(self.registration.showNotification('De La Rosa Masters',{body:'Resultados se han actualizado!',icon:'/icon-finals-192.png',badge:'/favicon.png',tag:'dlr-results',data:{url:'/'}})));
+self.addEventListener('notificationclick',event=>{event.notification.close();event.waitUntil((async()=>{const windows=await clients.matchAll({type:'window',includeUncontrolled:true});const existing=windows.find(c=>new URL(c.url).origin===self.location.origin&&['/','/index.html'].includes(new URL(c.url).pathname));if(existing){existing.postMessage({type:'RESULTS_UPDATED'});return existing.focus();}return clients.openWindow('/');})());});

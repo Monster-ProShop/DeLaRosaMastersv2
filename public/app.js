@@ -1,9 +1,9 @@
 let selectedMatchGame=null;
-let lang=localStorage.getItem('dlr_public_language')||'en',data=null,promptInstall=null;
+let lang=localStorage.getItem('dlr_public_language')||'es',data=null,promptInstall=null;
 const $=id=>document.getElementById(id),tr=(en,es)=>lang==='es'?es:en,esc=v=>String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const table=(headers,rows)=>'<div class="table"><table><thead><tr>'+headers.map(x=>'<th>'+esc(x)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map(x=>'<td>'+esc(x)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
 const titles=()=>({matches:tr('Matches','Partidas'),teams:tr('Team standings','Posiciones por Equipo'),players:tr('Individual standings','Posiciones Individuales'),finals:tr('Finals','Finales'),calcuttaAuction:tr('Calcutta Auction','Calcutta Subasta'),calcuttaWinners:tr('Calcutta Winners','Calcutta Ganadores')});
-function language(){document.documentElement.lang=lang;$('subtitle').textContent=tr('View Results','Ver Resultados');$('language').textContent=tr('Español','English');const selected=$('navigation').value;$('navigation').innerHTML=Object.entries(titles()).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');$('navigation').value=selected||'matches';$('refresh').textContent=tr('Refresh','Actualizar');$('adminLink').textContent=tr('Admin Access','Acceso administrador');$('back').textContent=tr('View Results','Ver Resultados');$('submit').textContent=tr('Sign in','Iniciar sesión');$('sendCode').textContent=tr('Send code','Enviar código');$('install').textContent=tr('Install App','Instalar App');render();}
+function language(){document.documentElement.lang=lang;document.title=tr('De La Rosa Masters — View Results','De La Rosa Masters — Ver Resultados');$('navigation').setAttribute('aria-label',tr('Section','Sección'));$('email').parentElement.firstChild.textContent=tr('Email','Correo electrónico');$('methodLabel').firstChild.textContent=tr('Sign-in method','Método de acceso');$('passwordLabel').firstChild.textContent=tr('Password','Contraseña');$('codeLabel').firstChild.textContent=tr('Email code','Código por correo');$('method').options[0].textContent=tr('Password','Contraseña');$('method').options[1].textContent=tr('Email code','Código por correo');$('subtitle').textContent=tr('View Results','Ver Resultados');$('language').textContent=tr('Español','English');const selected=$('navigation').value;$('navigation').innerHTML=Object.entries(titles()).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');$('navigation').value=selected||'matches';$('refresh').textContent=tr('Refresh','Actualizar');$('adminLink').textContent=tr('Admin Access','Acceso administrador');$('back').textContent=tr('View Results','Ver Resultados');$('submit').textContent=tr('Sign in','Iniciar sesión');$('sendCode').textContent=tr('Send code','Enviar código');$('install').textContent=tr('Install App','Instalar App');deviceLabels();render();}
 const tbd=()=>tr('TBD','Por Definir');
 function bracket(matches,handicap=true){
 const name=e=>e?.name?`${e.seed?'#'+e.seed+' ':''}${e.name}`:tbd();
@@ -72,7 +72,33 @@ $('loginForm').addEventListener('submit',async event=>{event.preventDefault();$(
 $('sendCode').onclick=async()=>{$('sendCode').disabled=true;try{await auth('code',{email:$('email').value});$('status').textContent=tr('Check your email for the code.','Busca el código en tu correo.');}catch(e){$('status').textContent=e.message;}finally{$('sendCode').disabled=false;}};
 $('method').onchange=()=>{const code=$('method').value==='code';$('passwordLabel').hidden=code;$('password').required=!code;$('codeLabel').hidden=!code;$('code').required=code;$('sendCode').hidden=!code;};$('method').onchange();
 $('navigation').onchange=render;$('refresh').onclick=refresh;$('language').onclick=()=>{lang=lang==='en'?'es':'en';localStorage.setItem('dlr_public_language',lang);language();};
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();promptInstall=e;$('install').hidden=false;});$('install').onclick=async()=>{if(promptInstall){await promptInstall.prompt();promptInstall=null;$('install').hidden=true;}};
+const appleDevice=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+let pushKey=null,pushRegistration=null,pushSubscription=null;
+function deviceLabels(){
+$('install').hidden=standalone();$('notifications').hidden=location.pathname==='/login';
+$('notifications').textContent=pushSubscription?tr('Disable notifications','Desactivar notificaciones'):tr('Enable notifications','Activar notificaciones');
+$('installHelp').textContent=appleDevice?tr('On iPhone/iPad: open this page in Safari, tap Share, then Add to Home Screen and Add. Open the app from its new icon. Notifications require iOS/iPadOS 16.4 or later and permission inside the installed app.','En iPhone/iPad: abre esta página en Safari, toca Compartir, luego Agregar a pantalla de inicio y Agregar. Abre la app desde su nuevo icono. Las notificaciones requieren iOS/iPadOS 16.4 o posterior y permiso dentro de la app instalada.'):tr('Use your browser menu and select Install app or Add to Home Screen.','Usa el menú de tu navegador y selecciona Instalar app o Agregar a pantalla de inicio.');
+}
+window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();promptInstall=event;deviceLabels();});
+window.addEventListener('appinstalled',()=>{$('install').hidden=true;$('installHelp').hidden=true;});
+$('install').onclick=async()=>{if(promptInstall){await promptInstall.prompt();promptInstall=null;}else $('installHelp').hidden=!$('installHelp').hidden;};
+async function pushRequest(path,payload){const response=await fetch('/api/push/'+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!response.ok)throw Error(tr('Notifications could not be saved. Please try again.','No se pudieron guardar las notificaciones. Intenta de nuevo.'));}
+async function prepareNotifications(){if(!('serviceWorker'in navigator)||!('PushManager'in window)||!('Notification'in window))return;try{pushRegistration=await navigator.serviceWorker.ready;const response=await fetch('/api/push/config');if(!response.ok)throw Error();pushKey=(await response.json()).publicKey;pushSubscription=await pushRegistration.pushManager.getSubscription();if(pushSubscription)await pushRequest('subscribe',{endpoint:pushSubscription.endpoint});deviceLabels();}catch{$('notificationStatus').textContent=tr('Notifications are temporarily unavailable. Reload to retry.','Las notificaciones no están disponibles temporalmente. Recarga para reintentar.');}}
+$('notifications').onclick=async()=>{
+if(appleDevice&&!standalone()){$('installHelp').hidden=false;return;}
+if(!('PushManager'in window)||!('Notification'in window)){$('notificationStatus').textContent=tr('This browser does not support notifications. On iPhone, install from Safari and use iOS 16.4 or later.','Este navegador no admite notificaciones. En iPhone, instala desde Safari y usa iOS 16.4 o posterior.');return;}
+if(!pushRegistration||!pushKey){$('notificationStatus').textContent=tr('Preparing notifications. Please try again shortly.','Preparando notificaciones. Intenta de nuevo en un momento.');prepareNotifications();return;}
+$('notifications').disabled=true;
+try{
+if(pushSubscription){await pushRequest('unsubscribe',{endpoint:pushSubscription.endpoint});await pushSubscription.unsubscribe();pushSubscription=null;$('notificationStatus').textContent=tr('Notifications disabled.','Notificaciones desactivadas.');}
+else{const permission=await Notification.requestPermission();if(permission!=='granted'){$('notificationStatus').textContent=tr('Notifications were not allowed. You can change this in your browser or device settings.','No se permitieron las notificaciones. Puedes cambiarlo en la configuración de tu navegador o dispositivo.');return;}
+const raw=atob(pushKey.replace(/-/g,'+').replace(/_/g,'/'));const sub=await pushRegistration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:Uint8Array.from(raw,c=>c.charCodeAt(0))});try{await pushRequest('subscribe',{endpoint:sub.endpoint});pushSubscription=sub;}catch(error){await sub.unsubscribe();throw error;}$('notificationStatus').textContent=tr('Notifications enabled.','Notificaciones activadas.');}
+deviceLabels();
+}catch(error){$('notificationStatus').textContent=error.message||tr('Unable to enable notifications.','No se pudieron activar las notificaciones.');}finally{$('notifications').disabled=false;}
+};
+if('serviceWorker'in navigator){navigator.serviceWorker.addEventListener('message',event=>{if(event.data?.type==='RESULTS_UPDATED'&&location.pathname!=='/login'){$('navigation').value='matches';refresh();}});if(location.pathname!=='/login')prepareNotifications();}
+
 for(const k of ['dlr_local_cache','dlr_pending_sync'])localStorage.removeItem(k);
 language();if(location.pathname==='/login'){$('login').hidden=false;document.querySelector('nav').hidden=true;$('content').hidden=true;}else{refresh();setInterval(()=>{if(!document.hidden)refresh();},30000);}
 if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});

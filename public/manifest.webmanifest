@@ -2,7 +2,7 @@
   "id": "/",
   "name": "De La Rosa Masters",
   "short_name": "DLR Masters",
-  "description": "De La Rosa Masters · Two shifts, tournament standings and championship finals",
+  "description": "De La Rosa Masters · Resultados del torneo y finales",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -27,5 +27,6 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "lang": "es"
 }
