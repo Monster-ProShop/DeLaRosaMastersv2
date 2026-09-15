@@ -1,11 +1,12 @@
 'use strict';
 Object.assign(tDict,{'Finals':'Finales','Tournament center':'Centro del torneo','Go to section':'Ir a sección','Resolve legacy shift 3 before continuing.':'Resuelve los datos del turno 3 antes de continuar.'});
+Object.assign(tDict,{'Tournament Setup':'Configuración de Torneo','Team Registration':'Registro de equipos','Registered Teams':'Equipos Registrados','Standings':'Posiciones','Calcutta Payout':'Premiación Calcutta','Export Data (XLS)':'Exportar Datos'});
 const L=(en,es)=>currentLang==='es'?es:en;
 const finalsDrafts=new Map(),finalsEditing=new Set();
 let finalsView='overall',finalsMessage='';
 const finalTypes={overall:{en:'Individual Overall',es:'Individual General',qualify:10,advance:5},seniors:{en:'Seniors Final',es:'Final Seniors',qualify:10,advance:5},women:{en:"Women’s Final",es:'Final Femenil',qualify:6,advance:3},team:{en:'Team Finals',es:'Finales por Equipos'}};
 const finalName=type=>L(finalTypes[type].en,finalTypes[type].es);
-const sectionItems=[['game','Matches',false],['teamlist','Registered Teams',false],['standings','Standings',false],['finals','Finals',false],['registration','Team Registration',true],['setup','Tournament Setup',true],['calcutta','Calcutta',true],['calcuttaPayout','Calcutta Payout',true],['export','Export Data (XLS)',true]];
+const sectionItems=[['setup','Tournament Setup',true],['registration','Team Registration',true],['teamlist','Registered Teams',false],['game','Matches',false],['standings','Standings',false],['calcutta','Calcutta',true],['calcuttaPayout','Calcutta Payout',true],['finals','Finals',false],['export','Export Data (XLS)',true]];
 function syncNavigation(){
   const menu=document.getElementById('sectionSelect');if(!menu)return;
   let active=document.querySelector('.panel.active')?.id||'game';
