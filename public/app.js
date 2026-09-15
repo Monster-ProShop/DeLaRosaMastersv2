@@ -14,17 +14,27 @@ let html='<h3>'+tr('Stepladder seeds','Siembras de escalera')+'</h3>'+table([tr(
 const planned=Array.from({length:count-1},(_,i)=>matches[i]||{a:i===0?seeds[count-1]:null,b:seeds[count-2-i]});
 return html+'<h3>'+tr('Stepladder','Escalera')+'</h3>'+bracket(planned);
 }
+function championDisplay(key,e){
+if(e.outdated)return '';
+const winners=key==='team'&&e.finalResults?.length?e.finalResults.filter(r=>r.rank===1):e.champion?[e.champion]:[];
+if(!winners.length)return '';
+const label=tr(winners.length>1?'Champions':'Champion',winners.length>1?'Campeones':key==='women'?'Campeona':'Campeón');
+let html='<div class="champion-banner"><p class="champion-label">'+label+'</p>'+winners.map(w=>'<div class="champion-title"><span aria-hidden="true">★</span><strong>'+esc(w.name)+'</strong><span aria-hidden="true">★</span></div>').join('')+'</div>';
+if(key==='team'&&e.finalResults?.length){const top=e.finalResults.filter(r=>r.rank<=3),ordered=top.length===3&&new Set(top.map(r=>r.rank)).size===3?[top[1],top[0],top[2]]:top;
+html+='<div class="team-podium" aria-label="'+tr('Team podium','Podio por equipos')+'">'+ordered.map(r=>{const members=data.teams?.find(t=>t.id===r.key)?.bowlers||[];return '<section class="podium-place podium-'+r.rank+'"><div class="podium-team"><span class="podium-medal" aria-hidden="true">'+({1:'🥇',2:'🥈',3:'🥉'}[r.rank])+'</span><h3>'+esc(r.name)+'</h3><ul>'+members.map(b=>'<li>'+esc(b.name)+'</li>').join('')+'</ul><p class="podium-score">'+esc(r.score)+' '+tr('pins','pinos')+'</p></div><div class="podium-step"><span>'+r.rank+'</span><small>'+tr('Place','Lugar')+'</small></div></section>';}).join('')+'</div>';}
+return html;
+}
 function renderPublicFinals(){
 let html='';const names={overall:tr('Individual Overall','Individual General'),seniors:tr('Seniors Final','Final Seniors'),women:tr('Women’s Final','Final Femenina'),team:tr('Team Finals','Finales por Equipo')};
 for(const [key,e] of Object.entries(data.finals)){
 html+=`<article><h2>${names[key]}</h2>${e.outdated?'<p>'+tr('Qualifying scores changed. Admin review pending.','Cambió la clasificación. Pendiente de revisión del administrador.')+'</p>':''}`;
+html+=championDisplay(key,e);
 if(key!=='team'){
 const entries=e.qualifiers||e.pool||[];html+='<h3>'+tr(e.qualifiers?'Qualifiers / Elimination':'Qualification — cutoff decision pending',e.qualifiers?'Clasificados / Eliminación':'Clasificación — desempate pendiente')+'</h3>'+table([tr('Name','Nombre'),'HDCP',tr('Qualifying total','Total clasificatorio'),tr('Elimination + HDCP','Eliminación + HDCP')],entries.map(p=>[p.name,p.handicap,p.score,p.eliminationScratch==null?tbd():p.eliminationScratch+(p.handicap||0)]));
 html+=publicLadder(e,key==='women'?3:5);
 }else{
 const modern=e.rulesVersion===2,one=e.shiftCount===1;
-html+='<p>'+tr('One shift: one seeded team plus 10 teams in the Baker bracket (1 vs 10, 2 vs 9…). Two shifts: two seeded teams plus 16 teams (1 vs 16, 2 vs 15…), then eight winners reseeded by their previous Baker total (1 vs 8, 2 vs 7…). The final six play one new Baker game for final places. Every Baker game adds 33% of team handicap, rounded to the nearest whole pin.','Un turno: un equipo sembrado y 10 equipos en el cuadro Baker (1 vs 10, 2 vs 9…). Dos turnos: dos equipos sembrados y 16 equipos (1 vs 16, 2 vs 15…), luego ocho ganadores sembrados por su total Baker anterior (1 vs 8, 2 vs 7…). Los seis finalistas juegan un nuevo juego Baker para los lugares finales. Cada juego Baker suma el 33% del hándicap del equipo redondeado al entero más cercano.')+'</p>';
-if(!modern)html+='<p>'+tr('Previous scratch-format results; administrator must regenerate to apply the new rules.','Resultados del formato scratch anterior; el administrador debe regenerar para aplicar las nuevas reglas.')+'</p>';
+if(!modern)html+='<p>'+tr('Results awaiting review.','Resultados pendientes de revisión.')+'</p>';
 for(const field of ['seeded','field'])html+='<h3>'+tr(field==='seeded'?'Seeded directly into final six':'Baker qualifiers',field==='seeded'?'Sembrados directamente a los seis finalistas':'Clasificados Baker')+'</h3>'+table([tr('Seed / Shift','Siembra / Turno'),tr('Team','Equipo'),'Baker HDCP',tr('Regular points','Puntos regulares')],(e[field]||[]).map(p=>[field==='seeded'?p.shift:p.seed,p.name,p.handicap??0,p.score]));
 const first=one?'round10':'round16';html+='<h3>'+tr('Baker round of ','Ronda Baker de ')+(one?10:16)+'</h3>'+bracket(e[first]||[],modern);
 if(!one)html+='<h3>'+tr('Baker round of 8','Ronda Baker de 8')+'</h3>'+bracket(e.round8||Array.from({length:4},()=>({})),modern);
@@ -32,7 +42,7 @@ const six=e.lastSix||[...(e.seeded||[]),...Array.from({length:6-(e.seeded?.lengt
 html+='<h3>'+tr('Final six — one Baker game + handicap','Seis finalistas — un juego Baker + hándicap')+'</h3>'+table([tr('Team','Equipo'),'Baker HDCP',tr('Status','Estado')],six.map(p=>[p.name,p.handicap??tbd(),e.seeded?.some(q=>q.key===p.key)?tr('Seeded','Sembrado'):p.key?tr('Qualified','Clasificado'):tbd()]));
 if(e.finalResults?.length)html+='<h3>'+tr('Final standings','Posiciones finales')+'</h3>'+table([tr('Place','Lugar'),tr('Team','Equipo'),'Scratch','HDCP',tr('Total','Total')],e.finalResults.map(p=>[p.rank,p.name,p.scratch,p.handicap,p.score]))+'<p>'+tr('Equal totals share the same place.','Los totales empatados comparten el mismo lugar.')+'</p>';
 }
-if(e.champion)html+=`<p class="winner">${tr('Winner','Ganador')}: ${esc(e.champion.name)}</p>`;html+='</article>';
+html+='</article>';
 }return html;
 }
 
