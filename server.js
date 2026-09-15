@@ -8,10 +8,10 @@ function cookie(token,age){return `${COOKIE}=${token}; Path=/; HttpOnly; Secure;
 function writeOrigin(request){const origin=request.headers.get('Origin');if(origin!==new URL(request.url).origin)throw new HTTPError(403,'Origin not allowed.');if(!request.headers.get('Content-Type')?.startsWith('application/json'))throw new HTTPError(415,'JSON required.');}
 async function body(request,max=4*1024*1024){if(Number(request.headers.get('Content-Length'))>max)throw new HTTPError(413,'Request is too large.');const reader=request.body?.getReader();if(!reader)throw new HTTPError(400,'JSON required.');let size=0,parts=[];while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>max){await reader.cancel();throw new HTTPError(413,'Request is too large.');}parts.push(value);}const bytes=new Uint8Array(size);let offset=0;for(const p of parts){bytes.set(p,offset);offset+=p.length;}try{return JSON.parse(new TextDecoder().decode(bytes));}catch{throw new HTTPError(400,'Invalid JSON.');}}
 export function createHandler(assets={},fetcher=fetch){
-  async function upstream(env,path,{method='GET',data,admin=false,token}={}){
+  async function upstream(env,path,{method='GET',data,admin=false,token,prefer}={}){
     const key=admin?env.SUPABASE_SERVICE_ROLE_KEY:env.SUPABASE_PUBLISHABLE_KEY;
     if(!key||!env.SUPABASE_URL)throw new HTTPError(503,'Server setup is incomplete.');
-    const response=await fetcher(env.SUPABASE_URL+path,{method,headers:{apikey:key,...(token?{Authorization:'Bearer '+token}:admin&&key.startsWith('eyJ')?{Authorization:'Bearer '+key}:{}),'Content-Type':'application/json'},body:data===undefined?undefined:JSON.stringify(data),signal:AbortSignal.timeout(15000)});
+    const response=await fetcher(env.SUPABASE_URL+path,{method,headers:{apikey:key,...(prefer?{Prefer:prefer}:{}),...(token?{Authorization:'Bearer '+token}:admin&&key.startsWith('eyJ')?{Authorization:'Bearer '+key}:{}),'Content-Type':'application/json'},body:data===undefined?undefined:JSON.stringify(data),signal:AbortSignal.timeout(15000)});
     let result;try{result=await response.json();}catch{result=null;}
     return {ok:response.ok,status:response.status,data:result};
   }
@@ -26,16 +26,22 @@ export function createHandler(assets={},fetcher=fetch){
   async function rateLimit(env,request,route){
     const input=(request.headers.get('CF-Connecting-IP')||'local')+'|'+route;
     const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(input)))).map(b=>b.toString(16).padStart(2,'0')).join('');
-    for(const [bucket,limit,window] of [[hash,route==='code'?3:10,600],['admin-global-'+route,route==='code'?10:60,600]]){
+    for(const [bucket,limit,window] of [[hash,route==='code'?3:route==='push'?300:10,600],['admin-global-'+route,route==='code'?10:route==='push'?3000:60,600]]){
       const r=await upstream(env,'/rest/v1/rpc/tournament_auth_attempt',{method:'POST',admin:true,data:{p_bucket:bucket,p_limit:limit,p_window_seconds:window}});
       if(!r.ok)throw new HTTPError(503,'Authentication setup is incomplete.');if(r.data!==true)throw new HTTPError(429,'Too many attempts. Try again in 10 minutes.');
     }
   }
   async function load(env){const r=await upstream(env,'/rest/v1/tournament_data?select=state,revision,updated_at&id=eq.'+encodeURIComponent(env.TOURNAMENT_ID),{admin:true});if(!r.ok)throw new HTTPError(503,'Tournament database is unavailable.');return r.data?.[0]||{state:emptyState(),revision:-1,updated_at:null};}
-  return async function handle(request,env){
+  const push=createPushService(upstream,fetcher);
+  return async function handle(request,env,ctx){
     try{
       const url=new URL(request.url),path=url.pathname;
       if(path.startsWith('/api/')&&request.method==='POST')writeOrigin(request);
+      if(path==='/api/push/config'&&request.method==='GET'){const c=await push.config(env);return json({publicKey:c.publicKey});}
+      if(['/api/push/subscribe','/api/push/unsubscribe'].includes(path)&&request.method==='POST'){
+        await rateLimit(env,request,'push');const b=await body(request,8192);if(!validPushEndpoint(b.endpoint))throw new HTTPError(400,'Invalid push endpoint.');
+        if(path.endsWith('/unsubscribe'))await push.unsubscribe(env,b.endpoint);else await push.subscribe(env,b.endpoint);return json({ok:true});
+      }
       if(path==='/api/auth/code'&&request.method==='POST'){
         await rateLimit(env,request,'code');const b=await body(request,4096);
         if(String(b.email||'').trim().toLowerCase()!==env.ADMIN_EMAIL.toLowerCase())throw new HTTPError(401,'Administrator sign-in required.');
@@ -61,8 +67,12 @@ export function createHandler(assets={},fetcher=fetch){
         if(request.method==='POST'){
           const b=await body(request);if(!Number.isSafeInteger(b.revision)||b.revision< -1)throw new HTTPError(400,'Invalid revision.');
           try{validateState(b.state);}catch(e){throw new HTTPError(400,e.message);}
+          const previous=await load(env);
           const r=await upstream(env,'/rest/v1/rpc/save_tournament_state',{method:'POST',admin:true,data:{p_id:env.TOURNAMENT_ID,p_state:b.state,p_expected_revision:b.revision}});
-          if(!r.ok)throw new HTTPError(503,'Could not save. Keep this window open and export a backup.');if(r.data?.conflict)throw new HTTPError(409,'Another session changed the tournament. Export your edits, then reload before continuing.');return json({revision:r.data.revision});
+          if(!r.ok)throw new HTTPError(503,'Could not save. Keep this window open and export a backup.');if(r.data?.conflict)throw new HTTPError(409,'Another session changed the tournament. Export your edits, then reload before continuing.');if(previous.revision===b.revision&&scoreVersion(previous.state)!==scoreVersion(b.state)){
+            const send=push.broadcast(env).then(result=>{if(result.failed)console.warn('Push delivery failures:',result.failed);}).catch(()=>console.warn('Push notification delivery unavailable'));
+            if(ctx?.waitUntil)ctx.waitUntil(send);else await send;
+          }return json({revision:r.data.revision});
         }
         throw new HTTPError(405,'Method not allowed.');
       }
@@ -81,4 +91,28 @@ export function createHandler(assets={},fetcher=fetch){
       if(path==='/sw.js')headers.set('Service-Worker-Allowed','/');return new Response(response.body,{status:response.status,headers});
     }catch(error){return json({error:error.status?error.message:'Service temporarily unavailable.'},error.status||503);}
   };
+}
+
+// Web Push uses a fixed service-worker message and an authenticated, empty payload.
+const pushEncoder=new TextEncoder();
+const pushB64=bytes=>btoa(String.fromCharCode(...new Uint8Array(bytes))).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
+export function validPushEndpoint(value){try{const u=new URL(value);return value.length<=4096&&u.protocol==='https:'&&!u.username&&!u.password&&!u.port&&!u.hash&&(u.hostname==='fcm.googleapis.com'||u.hostname==='updates.push.services.mozilla.com'||u.hostname.endsWith('.push.services.mozilla.com')||u.hostname==='web.push.apple.com'||u.hostname.endsWith('.notify.windows.com'));}catch{return false;}}
+export function scoreVersion(state){
+  const regular=(state.games||[]).filter(Boolean).map(g=>({number:g.number,matches:(g.matches||[]).filter(m=>m.completed).map(m=>({id:m.id,aId:m.aId,bId:m.bId,scores:[...(m.bowlers||[])].sort((a,b)=>a.pos-b.pos).map(b=>[b.pos,b.a,b.b])})).sort((a,b)=>a.id.localeCompare(b.id))})).filter(g=>g.matches.length).sort((a,b)=>a.number-b.number);
+  const finals=Object.entries(state.finals?.events||{}).sort().map(([type,e])=>({type,scores:Object.entries(e.scores||{}).sort(),finalScores:Object.entries(e.finalScores||{}).sort(),matches:[...(e.ladder?.matches||[]),...(e.round10||[]),...(e.round16||[]),...(e.round8||[])].filter(m=>m.winner||m.aScore!=null||m.bScore!=null).map(m=>[m.a?.key,m.b?.key,m.aScore??null,m.bScore??null,m.winner??null])})).filter(e=>e.scores.length||e.finalScores.length||e.matches.length);
+  return JSON.stringify({regular,finals});
+}
+export function createPushService(upstream,fetcher=fetch){
+  const configs=new Map();
+  const prefix=env=>'push-sub:'+env.TOURNAMENT_ID+':';
+  async function getRow(env,id){const r=await upstream(env,'/rest/v1/tournament_data?select=state&id=eq.'+encodeURIComponent(id),{admin:true});if(!r.ok)throw Error('Push storage unavailable');return r.data?.[0]?.state;}
+  async function put(env,id,state){const r=await upstream(env,'/rest/v1/tournament_data?on_conflict=id',{admin:true,method:'POST',prefer:'resolution=merge-duplicates,return=minimal',data:{id,state,updated_at:new Date().toISOString()}});if(!r.ok)throw Error('Push storage unavailable');}
+  async function config(env){const cacheKey=env.SUPABASE_URL+'|'+env.TOURNAMENT_ID;if(!configs.has(cacheKey))configs.set(cacheKey,(async()=>{const id='push-config:'+env.TOURNAMENT_ID;let stored=await getRow(env,id);if(!stored){const pair=await crypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-256'},true,['sign','verify']);const generated={kind:'push-config',publicKey:pushB64(await crypto.subtle.exportKey('raw',pair.publicKey)),privateKey:await crypto.subtle.exportKey('jwk',pair.privateKey)};const r=await upstream(env,'/rest/v1/rpc/save_tournament_state',{admin:true,method:'POST',data:{p_id:id,p_state:generated,p_expected_revision:-1}});if(!r.ok)throw Error('Push setup unavailable');stored=await getRow(env,id);}if(!stored?.privateKey||!stored.publicKey)throw Error('Push setup unavailable');return stored;})().catch(e=>{configs.delete(cacheKey);throw e;}));return configs.get(cacheKey);}
+  async function subId(env,endpoint){return prefix(env)+pushB64(await crypto.subtle.digest('SHA-256',pushEncoder.encode(endpoint)));}
+  async function subscribe(env,endpoint){if(!validPushEndpoint(endpoint))throw Error('Invalid push endpoint');await config(env);await put(env,await subId(env,endpoint),{kind:'push-sub',active:true,endpoint});}
+  async function unsubscribe(env,endpoint){if(!validPushEndpoint(endpoint))throw Error('Invalid push endpoint');await put(env,await subId(env,endpoint),{kind:'push-sub',active:false});}
+  async function authorization(env,endpoint){const c=await config(env),header=pushB64(pushEncoder.encode(JSON.stringify({typ:'JWT',alg:'ES256'}))),claims=pushB64(pushEncoder.encode(JSON.stringify({aud:new URL(endpoint).origin,exp:Math.floor(Date.now()/1000)+3600,sub:'mailto:'+env.ADMIN_EMAIL}))),input=header+'.'+claims,key=await crypto.subtle.importKey('jwk',c.privateKey,{name:'ECDSA',namedCurve:'P-256'},false,['sign']);const sig=await crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},key,pushEncoder.encode(input));return 'vapid t='+input+'.'+pushB64(sig)+', k='+c.publicKey;}
+  async function broadcast(env){let after=null;const summary={sent:0,failed:0,expired:0};for(;;){const r=await upstream(env,'/rest/v1/tournament_data?select=id,state&id=like.'+encodeURIComponent(prefix(env)+'*')+'&state->>active=eq.true&order=id&limit=100'+(after?'&id=gt.'+encodeURIComponent(after):''),{admin:true});if(!r.ok)throw Error('Push subscribers unavailable');const entries=r.data||[];if(!entries.length)break;for(let start=0;start<entries.length;start+=10)await Promise.all(entries.slice(start,start+10).map(async row=>{try{const endpoint=row.state.endpoint;if(!validPushEndpoint(endpoint)){summary.failed++;return;}const response=await fetcher(endpoint,{method:'POST',headers:{Authorization:await authorization(env,endpoint),TTL:'300',Urgency:'normal',Topic:'dlr-results'},redirect:'error',signal:AbortSignal.timeout(8000)});await response.arrayBuffer();if(response.ok)summary.sent++;else if([404,410].includes(response.status)){await put(env,row.id,{kind:'push-sub',active:false});summary.expired++;}else summary.failed++;}catch{summary.failed++;}}));if(entries.length<100)break;after=entries[entries.length-1].id;}
+  return summary;}
+  return {config,subscribe,unsubscribe,broadcast};
 }

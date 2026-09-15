@@ -43,3 +43,14 @@ For local development put those keys in an untracked .dev.vars file and run npm 
 Public HTML, styles, logo and rendering JavaScript remain inspectable, as on any website. Private admin code is accessible to a signed-in administrator, and the repository must be private to hide its source. Server credentials never reach the browser. The server verifies both the Supabase account and its admin UUID on each protected request, validates regular scores/handicap and computes public standings. Admin finals and Calcutta calculations still run in the authenticated editor; this does not conceal them from an authorized administrator.
 
 Admin requires a network connection. Sessions last at most one hour; export unsaved edits before signing in again. Public results refresh every 30 seconds. Only the public shell is cached offline, not private records or results API responses.
+## Spanish, installation and score notifications
+
+New visitors start in Spanish. An explicitly saved English/Spanish preference is retained.
+
+On iPhone/iPad, open the site in Safari, choose Share > Add to Home Screen > Add, then open the new icon. Web Push requires iOS/iPadOS 16.4 or later and notification permission inside the installed app. Android visitors can use Install App or the browser installation menu. The app includes its tournament icon and visible installation guidance.
+
+Visitors opt in using Activar notificaciones. A successful admin save that changes completed match scores or recorded finals scores sends the fixed message `Resultados se han actualizado!`. Repeated unchanged saves and rejected stale saves do not send. Delivery is best effort and depends on device/browser permission and connectivity. Tapping the notification opens or refreshes public Matches. Existing installations need to reopen online to receive the updated service worker and opt in.
+
+No additional deployment secret or SQL migration is required for this feature with the existing secure schema. The Worker generates its VAPID signing key in the protected tournament_data row `push-config:<tournament id>` and keeps subscriptions in separate `push-sub:<tournament id>:<endpoint hash>` rows. These rows are accessible only through the existing service-role connection and are excluded from public results and tournament exports. The public configuration endpoint returns only the public application-server key. Expired subscriptions are deactivated. Preserve the push-config row to preserve existing device subscriptions.
+
+Fourteen automated backend tests cover existing authorization/privacy plus VAPID signatures, subscription persistence, expired-subscription pagination, score-change detection and successful-save-only dispatch. Browser regression checks cover Spanish defaults, public menus, admin Enter login, save/reload and responsive layouts. Physical iPhone/Android notification receipt still needs a device acceptance test with an opted-in installation.
