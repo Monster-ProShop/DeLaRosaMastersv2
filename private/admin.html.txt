@@ -314,7 +314,7 @@ input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
     <div class="grid">
       <div class="card span12">
         <h2 data-i18n="Tournament Setup & Assignment Engine">Tournament Setup & Assignment Engine</h2>
-        <p class="muted" data-i18n="setup_desc">Generate matchups shift-by-shift to accommodate different play times. Specify the lane boundaries (Pool Start/End) to control where the shift bowls, and designate which lane the 1st place team starts on. Game 1 is random. Games 2-4 are positional. Game 5 merges shifts into an overall position round. Games 6-7 maintain the Game 5 matchup and move 2 pairs to the right.</p>
+        <p class="muted" data-i18n="setup_desc">Generate matchups shift-by-shift to accommodate different play times. Specify the lane boundaries (Pool Start/End) to control where the shift bowls, and designate which lane the 1st place team starts on. Game 1 is random. Games 2-7 are position rounds (1 vs 2, 3 vs 4) using cumulative standings before each game. After game 4, two shifts are regrouped: the lower half bowls shift 1 and the upper half bowls shift 2. Shift 1 receives the extra pair when needed (42 teams: 22 / 20). Sunday shift assignments then stay fixed.</p>
         
         <div class="row" style="align-items:end; margin-bottom:16px; margin-top:16px;">
           <div>
@@ -325,8 +325,8 @@ input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
               <option value="3" data-i18n="Game 3 (Positional)">Game 3 (Positional)</option>
               <option value="4" data-i18n="Game 4 (Positional)">Game 4 (Positional)</option>
               <option value="5" data-i18n="Game 5 (Overall Positional)">Game 5 (Overall Positional)</option>
-              <option value="6" data-i18n="Game 6 (+2 Pairs Right)">Game 6 (+2 Pairs Right)</option>
-              <option value="7" data-i18n="Game 7 (+2 Pairs Right)">Game 7 (+2 Pairs Right)</option>
+              <option value="6" data-i18n="Game 6 (Positional)">Game 6 (Positional)</option>
+              <option value="7" data-i18n="Game 7 (Positional)">Game 7 (Positional)</option>
             </select>
           </div>
           <div>
@@ -555,15 +555,15 @@ const tDict = {
   "Generate Dummy Teams": "Generar Equipos de Prueba",
   "Registered Teams Roster": "Padrón de Equipos",
   "Tournament Setup & Assignment Engine": "Configuración y Motor de Asignación",
-  "setup_desc": "Genera enfrentamientos por turno. Especifica los límites de pistas (Inicio/Fin) y la pista del 1er Lugar. Juego 1 es aleatorio. Juegos 2-4 por Posiciones. Juego 5 es Posición General. Juegos 6-7 recorren 2 pares a la derecha.",
+  "setup_desc": "Genera enfrentamientos por turno. Especifica los límites de pistas (Inicio/Fin) y la pista del 1er Lugar. Juego 1 es aleatorio. Juegos 2-7 por posiciones (1 vs 2, 3 vs 4), con las posiciones acumuladas antes de cada juego. Después del juego 4 se reorganizan los dos turnos: mitad inferior al turno 1 y mitad superior al turno 2. El turno 1 recibe el par adicional cuando sea necesario (42 equipos: 22 / 20). Los turnos del domingo permanecen fijos.",
   "Target Game": "Juego Destino",
   "Game 1": "Juego 1",
   "Game 2 (Positional)": "Juego 2 (Posiciones)",
   "Game 3 (Positional)": "Juego 3 (Posiciones)",
   "Game 4 (Positional)": "Juego 4 (Posiciones)",
   "Game 5 (Overall Positional)": "Juego 5 (Posiciones Generales)",
-  "Game 6 (+2 Pairs Right)": "Juego 6 (+2 Pares a la Derecha)",
-  "Game 7 (+2 Pairs Right)": "Juego 7 (+2 Pares a la Derecha)",
+  "Game 6 (Positional)": "Juego 6 (Por Posiciones)",
+  "Game 7 (Positional)": "Juego 7 (Por Posiciones)",
   "Pool Start Lane (e.g. 4)": "Pista Inicial (ej. 4)",
   "Pool End Lane (e.g. 26)": "Pista Final (ej. 26)",
   "1st Place Lane (e.g. 12)": "Pista 1er Lugar (ej. 12)",
@@ -851,107 +851,74 @@ function buildMatchObj(gameNo, shift, aId, bId, laneA) {
   return { id: crypto.randomUUID(), shift: shift, aId: aId, bId: bId, laneA: laneA, laneB: laneA + 1, completed: false, teamScoreA: null, teamScoreB: null, bowlers: [] };
 }
 
-function generateSpecificGame() {
+function sundayShiftAssignments(standings) {
+  const active = [...new Set(state.teams.map(team => Number(team.shift || 1)))];
+  const assignments = new Map();
+  // Keep complete pairs together; an odd pair goes to the earlier/lower shift.
+  const topCount = active.length === 2 ? 2 * Math.floor(standings.length / 4) : 0;
+  standings.forEach((team,index) => assignments.set(team.id,active.length === 2 ? (index < topCount ? 2 : 1) : active[0]));
+  return assignments;
+}
+
+async function generateSpecificGame() {
   if(!isAdmin) return;
   const gameNo = Number(document.getElementById('genGameSelect').value);
   const shift = Number(document.getElementById('genShiftSelect').value);
+  const message = (en,es) => currentLang === 'es' ? es : en;
   if(![1,2].includes(shift)||hasLegacyShift()) {alert(t('Resolve legacy shift 3 before continuing.'));return;}
+  if(!Number.isInteger(gameNo)||gameNo<1||gameNo>7)return;
   let poolStart = Number(document.getElementById('genPoolStart').value) || 1;
   let poolEnd = Number(document.getElementById('genPoolEnd').value) || 30;
   let topSeedLane = Number(document.getElementById('genTopSeedLane').value) || poolStart;
-
   poolStart = poolStart % 2 === 0 ? poolStart - 1 : poolStart;
-  poolEnd = poolEnd % 2 !== 0 ? poolEnd + 1 : poolEnd; 
+  poolEnd = poolEnd % 2 !== 0 ? poolEnd + 1 : poolEnd;
   topSeedLane = topSeedLane % 2 === 0 ? topSeedLane - 1 : topSeedLane;
-
-  let availablePairs = [];
-  for (let i = poolStart; i <= poolEnd; i += 2) availablePairs.push(i);
-  let startIndex = availablePairs.indexOf(topSeedLane);
-  if (startIndex === -1) startIndex = 0; 
-
-  function getLaneForMatch(idx) { return availablePairs[(startIndex + idx) % availablePairs.length]; }
-  
-  if(!state.games[gameNo-1]) {
-     state.games[gameNo-1] = { number: gameNo, day: gameNo <= state.settings.satGames ? 'Saturday' : 'Sunday', matches: [] };
-  } else if (state.games[gameNo-1].matches.some(m => m.shift === shift)) {
-     if(!confirm(`Game ${gameNo} already generated for Shift ${shift}. This will overwrite it. Continue?`)) return;
-     state.games[gameNo-1].matches = state.games[gameNo-1].matches.filter(m => m.shift !== shift);
+  if(![poolStart,poolEnd,topSeedLane].every(Number.isInteger)||poolStart<1||poolEnd<poolStart||poolEnd>1000){alert(message('Invalid lane range.','Rango de pistas inválido.'));return;}
+  const availablePairs=[];
+  for(let lane=poolStart;lane<poolEnd;lane+=2)availablePairs.push(lane);
+  let startIndex=availablePairs.indexOf(topSeedLane);if(startIndex<0)startIndex=0;
+  let assignments=null,ids;
+  const allStandings=calculateTeamStandings('all',gameNo-1,'all');
+  if(gameNo===5){
+    // Both Saturday shifts must finish every game before the combined split.
+    const complete=state.teams.every(team=>[1,2,3,4].every(n=>{
+      const matches=(state.games.find(g=>g&&g.number===n)?.matches||[]).filter(m=>m.aId===team.id||m.bId===team.id);
+      return matches.length===1&&matches[0].completed;
+    }));
+    if(!complete){alert(message('Complete games 1-4 for every team before assigning Sunday shifts.','Completa los juegos 1-4 de todos los equipos antes de asignar los turnos del domingo.'));return;}
+    assignments=sundayShiftAssignments(allStandings);
+    const incompatible=(state.games.find(g=>g&&g.number===5)?.matches||[]).some(m=>m.shift!==shift&&[m.aId,m.bId].filter(Boolean).some(id=>assignments.get(id)!==Number(m.shift)));
+    if(incompatible){alert(message('Existing Sunday matches use different shift assignments. Keep a backup and resolve those matches before regrouping.','Las partidas del domingo existentes tienen otra asignación de turnos. Guarda un respaldo y resuelve esas partidas antes de reorganizar.'));return;}
+    ids=allStandings.filter(team=>assignments.get(team.id)===shift).map(team=>team.id);
+  } else {
+    const shiftTeams=state.teams.filter(team=>Number(team.shift||1)===shift);
+    ids=gameNo===1?randomizeTeamsForShift(shiftTeams):allStandings.filter(team=>Number(team.shift)===shift).map(team=>team.id);
+    if(gameNo>=6){
+      const previous=state.games.find(g=>g&&g.number===gameNo-1);
+      if(!ids.every(id=>{const matches=(previous?.matches||[]).filter(m=>Number(m.shift)===shift&&(m.aId===id||m.bId===id));return matches.length===1&&matches[0].completed;})){
+        alert(message('Complete the previous game for this shift before generating its next position round.','Completa el juego anterior de este turno antes de generar su siguiente ronda por posiciones.'));return;
+      }
+    }
   }
-
-  let matches = [];
-  
-  if (gameNo === 1) {
-    const shiftTeams = state.teams.filter(t => (t.shift || 1) === shift);
-    if(shiftTeams.length < 2) { alert(`Not enough teams in Shift ${shift}.`); return; }
-    let ids = randomizeTeamsForShift(shiftTeams);
-    if(ids.length % 2 !== 0) ids.push(null);
-    for(let i=0; i<ids.length; i+=2) {
-       if(!ids[i]) continue;
-       matches.push(buildMatchObj(gameNo, shift, ids[i], ids[i+1], getLaneForMatch(i/2)));
-    }
-  } 
-  else if (gameNo >= 2 && gameNo <= 4) {
-    let standings = calculateTeamStandings('all', gameNo - 1, shift);
-    if(standings.length < 2) { alert(`Not enough data from previous games for Shift ${shift}.`); return; }
-    let ids = standings.map(s => s.id);
-    if(ids.length % 2 !== 0) ids.push(null);
-    for(let i=0; i<ids.length; i+=2) {
-       if(!ids[i]) continue;
-       matches.push(buildMatchObj(gameNo, shift, ids[i], ids[i+1], getLaneForMatch(i/2)));
-    }
-  } 
-  else if (gameNo === 5) {
-    let overallStandings = calculateTeamStandings('all', 4, 'all');
-    if(overallStandings.length < 2) { alert('Not enough team data from Games 1-4.'); return; }
-    let allIds = overallStandings.map(s => s.id);
-    if(allIds.length % 2 !== 0) allIds.push(null);
-    
-    let activeShifts = [...new Set(state.teams.map(t=>t.shift))].sort((a,b)=>b-a); 
-    if(activeShifts.length === 0) activeShifts = [1];
-    
-    let totalPairsCount = allIds.length / 2;
-    let pairsPerShift = Math.ceil(totalPairsCount / activeShifts.length);
-    let shiftChunks = {};
-    let currentIdx = 0;
-    for(let i=0; i<activeShifts.length; i++) {
-        let s = activeShifts[i];
-        let pairs = (i === activeShifts.length - 1) ? (totalPairsCount - (currentIdx/2)) : pairsPerShift;
-        shiftChunks[s] = allIds.slice(currentIdx, currentIdx + (pairs * 2));
-        currentIdx += pairs * 2;
-    }
-    
-    let idsForThisShift = shiftChunks[shift];
-    if(!idsForThisShift || idsForThisShift.length === 0) { alert(`No overall standing segment mapped to Shift ${shift} for Game 5.`); return; }
-    for(let i=0; i<idsForThisShift.length; i+=2) {
-       if(!idsForThisShift[i]) continue;
-       matches.push(buildMatchObj(gameNo, shift, idsForThisShift[i], idsForThisShift[i+1], getLaneForMatch(i/2)));
-       let tA = state.teams.find(t=>t.id===idsForThisShift[i]); if(tA) tA.shift = shift;
-       let tB = state.teams.find(t=>t.id===idsForThisShift[i+1]); if(tB) tB.shift = shift;
-    }
-  } 
-  else if (gameNo > 5) {
-    const prevGame = state.games[gameNo - 2];
-    if(!prevGame) { alert(`Game ${gameNo-1} is missing.`); return; }
-    const prevMatches = prevGame.matches.filter(m => m.shift === shift);
-    if(prevMatches.length === 0) { alert(`No previous matches found for Shift ${shift}.`); return; }
-    prevMatches.sort((a,b) => a.laneA - b.laneA).forEach(prevM => {
-       let currentPairIdx = availablePairs.indexOf(prevM.laneA);
-       if (currentPairIdx === -1) currentPairIdx = 0;
-       let newPairIdx = (currentPairIdx + 2) % availablePairs.length;
-       matches.push(buildMatchObj(gameNo, shift, prevM.aId, prevM.bId, availablePairs[newPairIdx]));
-    });
+  if(ids.length<2){alert(message('Not enough teams in this shift.','No hay suficientes equipos en este turno.'));return;}
+  if(Math.ceil(ids.length/2)>availablePairs.length){alert(message('Select enough lane pairs for every matchup in this shift.','Selecciona suficientes pares de pistas para todas las partidas de este turno.'));return;}
+  if(state.games.some(g=>g&&g.number>gameNo&&(g.matches||[]).some(m=>gameNo<=4||Number(m.shift)===shift))){
+    alert(message('Later games already exist. Keep a backup and resolve them before regenerating an earlier round.','Ya existen juegos posteriores. Guarda un respaldo y resuélvelos antes de regenerar una ronda anterior.'));return;
   }
-  
-  state.games[gameNo-1].matches.push(...matches);
-  state.currentGame = gameNo;
-  state.started = true;
-  save();
-  alert(`Game ${gameNo} Generated & Assigned for Shift ${shift}.`);
-  activateTab('game');
-  document.getElementById('auditGameSelect').value = gameNo;
-  document.getElementById('auditShiftFilter').value = shift;
-  renderGame();
+  const existing=state.games.find(g=>g&&g.number===gameNo);
+  if(existing?.matches.some(m=>Number(m.shift)===shift)&&!confirm(message(`Replace game ${gameNo}, shift ${shift}? Its existing scores will be removed.`,`¿Reemplazar el juego ${gameNo}, turno ${shift}? Se eliminarán sus puntuaciones existentes.`)))return;
+  const matches=[];if(ids.length%2)ids.push(null);
+  for(let i=0;i<ids.length;i+=2)matches.push(buildMatchObj(gameNo,shift,ids[i],ids[i+1],availablePairs[(startIndex+i/2)%availablePairs.length]));
+  // Apply only after all validation succeeds; assign BOTH Sunday shifts together.
+  if(assignments)state.teams.forEach(team=>{team.shift=assignments.get(team.id);});
+  if(!existing)state.games[gameNo-1]={number:gameNo,day:gameNo<=4?'Saturday':'Sunday',matches:[]};
+  const game=existing||state.games[gameNo-1];game.matches=game.matches.filter(m=>Number(m.shift)!==shift).concat(matches);
+  state.currentGame=gameNo;state.started=true;
+  if(!await save())return;
+  alert(message(`Game ${gameNo} generated for shift ${shift}.`,`Juego ${gameNo} generado para el turno ${shift}.`));
+  activateTab('game');document.getElementById('auditGameSelect').value=gameNo;document.getElementById('auditShiftFilter').value=shift;renderGame();
 }
+
 
 function resetGames(){
   if(!isAdmin) return;
