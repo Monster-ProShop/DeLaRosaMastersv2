@@ -689,6 +689,7 @@ function initBowlerForm(){
       <div><label>${t('Bowler')} ${i+1} ${t('Name').toLowerCase()}</label><input class="bn" data-i="${i}" placeholder="${t('Name')}"></div>
       <div><label>${t('Average')}</label><input class="ba" data-i="${i}" type="number" min="0" step="1" placeholder="0"></div>
       <div><label>${t('Gender')}</label><select class="bg" data-i="${i}">${genders.map(g=>`<option value="${g.v}">${g.l}</option>`).join('')}</select></div>
+      <div><label>Super Senior</label><select class="bss" data-i="${i}" aria-label="Super Senior ${i+1}"><option value="no">${currentLang==='es'?'No':'No'}</option><option value="yes">${currentLang==='es'?'Sí':'Yes'}</option></select></div>
       <div><label>${t('Handicap')}</label><input class="bh" data-i="${i}" readonly value="0"></div>
       <div><label>${t('Order')}</label><input class="bo" data-i="${i}" readonly value="${i+1}"></div>
       <div><label>${t('Preview')}</label><div class="small muted" id="prev${i}">-</div></div>
@@ -732,7 +733,8 @@ function registerTeam(){
     calcuttaId: editingTeamId ? (state.teams.find(tm=>tm.id===editingTeamId)?.bowlers[i]?.calcuttaId ?? i) : i,
     name:document.querySelector(`.bn[data-i="${i}"]`).value.trim(),
     average:Number(document.querySelector(`.ba[data-i="${i}"]`).value),
-    gender:document.querySelector(`.bg[data-i="${i}"]`).value
+    gender:document.querySelector(`.bg[data-i="${i}"]`).value,
+    superSenior:document.querySelector(`.bss[data-i="${i}"]`).value==='yes'
   }));
   if(!name){return showTeamAlert('Please enter a team name.','danger')}
   if(bowlers.some(b=>!b.name || !Number.isFinite(b.average))){return showTeamAlert('Please enter all 3 bowler names and averages.','danger')}
@@ -767,6 +769,7 @@ function editTeam(id) {
     document.querySelector(`.bn[data-i="${i}"]`).value = b.name;
     document.querySelector(`.ba[data-i="${i}"]`).value = b.average;
     document.querySelector(`.bg[data-i="${i}"]`).value = b.gender;
+    document.querySelector(`.bss[data-i="${i}"]`).value = b.superSenior===true?'yes':'no';
   });
   
   updateFormPreview();
@@ -823,7 +826,7 @@ function renderTeams(){
   document.getElementById('teamCountBadge').textContent=`${state.teams.length} ${t('Team').toLowerCase()}${state.teams.length===1?'':'s'}`;
   const tableHtml = !state.teams.length ? `<div class="empty">${t('No teams registered yet.')}</div>` : `<table><thead><tr><th>#</th><th>${t('Team')}</th><th>${t('Shift')}</th><th>${t('Bowler 1')}</th><th>${t('Bowler 2')}</th><th>${t('Bowler 3')}</th><th>${t('Avg Total')}</th><th>${t('HDCP Total')}</th>${isAdmin ? `<th>${t('Actions')}</th>` : ''}</tr></thead><tbody>${
     state.teams.map((tItem,i)=>`<tr><td>${i+1}</td><td><b>${esc(tItem.name)}</b><div class="small muted">${esc(tItem.contact||'')}</div></td><td>${t('Shift')} ${tItem.shift||1}</td>${
-      tItem.bowlers.map(b=>`<td>${esc(b.name)}<br><span class="small muted">${b.average} avg • ${b.handicap} hdcp</span></td>`).join('')
+      tItem.bowlers.map(b=>`<td>${esc(b.name)}${b.superSenior?'<br><span class="badge">Super Senior</span>':''}<br><span class="small muted">${b.average} avg • ${b.handicap} hdcp</span></td>`).join('')
     }<td>${totalAvg(tItem)}</td><td>${tItem.bowlers.reduce((a,b)=>a+b.handicap,0)}</td>
     ${isAdmin ? `<td><div style="display:flex;gap:4px;flex-direction:column;"><button class="btn-ghost" style="width:100%; border-color:var(--ok); color:var(--ok);" onclick="editTeam('${tItem.id}')">${t('Edit')}</button><button class="btn-ghost" style="width:100%; border-color:var(--line);" onclick="removeTeam('${tItem.id}')">${t('Remove')}</button></div></td>` : ''}</tr>`).join('')
   }</tbody></table>`;
