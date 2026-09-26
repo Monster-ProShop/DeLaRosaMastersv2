@@ -36,13 +36,13 @@ const finalists=e.lastThree||Array.from({length:3},()=>({name:tbd()}));html+='<h
 if(e.finalResults?.length)html+='<h3>'+tr('Final standings','Posiciones finales')+'</h3>'+table([tr('Place','Lugar'),tr('Bowler','Jugador'),'Scratch','HDCP',tr('Total','Total')],e.finalResults.map(p=>[p.rank,p.name,p.scratch,p.handicap,p.score]));else if(e.stage==='finalTie')html+='<p>'+tr('Final places pending a rollout decision.','Lugares finales pendientes de desempate.')+'</p>';
 }else html+=publicLadder(e,key==='women'?3:5);
 }else{
-const modern=e.rulesVersion===2,one=e.shiftCount===1;
+const modern=[2,3].includes(e.rulesVersion),one=e.shiftCount===1,count=one&&e.rulesVersion===3?5:6;
 if(!modern)html+='<p>'+tr('Results awaiting review.','Resultados pendientes de revisión.')+'</p>';
-for(const field of ['seeded','field'])html+='<h3>'+tr(field==='seeded'?'Seeded directly into final six':'Baker qualifiers',field==='seeded'?'Sembrados Directo a la Final':'Clasificados Baker')+'</h3>'+table([tr('Seed / Shift','Sembrado / Turno'),tr('Team','Equipo'),'Baker HDCP',tr('Regular points','Puntos regulares')],(e[field]||[]).map(p=>[field==='seeded'?p.shift:p.seed,p.name,p.handicap??0,p.score]));
-const first=one?'round10':'round16';html+='<h3>'+tr('Baker round of ','Ronda Baker de ')+(one?10:16)+'</h3>'+bracket(e[first]||[],modern);
+for(const field of ['seeded','field'])html+='<h3>'+tr(field==='seeded'?'Seeded directly into final':'Baker qualifiers',field==='seeded'?'Sembrados Directo a la Final':'Clasificados Baker')+'</h3>'+table([tr('Seed / Shift','Sembrado / Turno'),tr('Team','Equipo'),'Baker HDCP',tr('Regular points','Puntos regulares')],(e[field]||[]).map(p=>[field==='seeded'?p.shift:p.seed,p.name,p.handicap??0,p.score]));
+const first=one?(e.rulesVersion===3?'round8':'round10'):'round16';html+='<h3>'+tr('Baker round of ','Ronda Baker de ')+(one?(e.rulesVersion===3?8:10):16)+'</h3>'+bracket(e[first]||[],modern);
 if(!one)html+='<h3>'+tr('Baker round of 8','Ronda Baker de 8')+'</h3>'+bracket(e.round8||Array.from({length:4},()=>({})),modern);
-const six=e.lastSix||[...(e.seeded||[]),...Array.from({length:6-(e.seeded?.length||0)},()=>({name:tbd()}))];
-html+='<h3>'+tr('Final six — one Baker game + handicap','Seis finalistas — un juego Baker + hándicap')+'</h3>'+table([tr('Team','Equipo'),'Baker HDCP',tr('Status','Estado')],six.map(p=>[p.name,p.handicap??tbd(),e.seeded?.some(q=>q.key===p.key)?tr('Seeded','Sembrado'):p.key?tr('Qualified','Clasificado'):tbd()]));
+const six=e.lastSix||[...(e.seeded||[]),...Array.from({length:count-(e.seeded?.length||0)},()=>({name:tbd()}))];
+html+='<h3>'+tr(count===5?'Final five — one Baker game + handicap':'Final six — one Baker game + handicap',count===5?'Cinco finalistas — un juego Baker + hándicap':'Seis finalistas — un juego Baker + hándicap')+'</h3>'+table([tr('Team','Equipo'),'Baker HDCP',tr('Status','Estado')],six.map(p=>[p.name,p.handicap??tbd(),e.seeded?.some(q=>q.key===p.key)?tr('Seeded','Sembrado'):p.key?tr('Qualified','Clasificado'):tbd()]));
 if(e.finalResults?.length)html+='<h3>'+tr('Final standings','Posiciones finales')+'</h3>'+table([tr('Place','Lugar'),tr('Team','Equipo'),'Scratch','HDCP',tr('Total','Total')],e.finalResults.map(p=>[p.rank,p.name,p.scratch,p.handicap,p.score]))+'<p>'+tr('Equal totals share the same place.','Los totales empatados comparten el mismo lugar.')+'</p>';
 }
 html+='</article>';
