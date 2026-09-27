@@ -31,10 +31,10 @@ html+=`<article><h2>${names[key]}</h2>${e.outdated?'<p>'+tr('Qualifying scores c
 html+=championDisplay(key,e);
 if(key!=='team'){
 const entries=e.qualifiers||e.pool||[];html+='<h3>'+tr(e.qualifiers?'Qualifiers / Elimination':'Qualification — cutoff decision pending',e.qualifiers?'Clasificados / Eliminación':'Clasificación — desempate pendiente')+'</h3>'+table([tr('Name','Nombre'),'HDCP',tr('Qualifying total','Total clasificatorio'),tr('Elimination + HDCP','Eliminación + HDCP')],entries.map(p=>[p.name,p.handicap,p.score,p.eliminationScratch==null?tbd():p.eliminationScratch+(p.handicap||0)]));
-if(key==='superSeniors'){
+if(key==='superSeniors'&&e.format!=='stepladder'&&!e.ladder){
 const finalists=e.lastThree||Array.from({length:3},()=>({name:tbd()}));html+='<h3>'+tr('Top three — final game','Tres finalistas — juego final')+'</h3>'+table([tr('Bowler','Jugador'),'Scratch','HDCP',tr('Total + HDCP','Total + HDCP')],finalists.map(p=>[p.name,p.finalScratch??tbd(),p.handicap??tbd(),p.finalScratch==null?tbd():p.finalScratch+p.handicap]));
 if(e.finalResults?.length)html+='<h3>'+tr('Final standings','Posiciones finales')+'</h3>'+table([tr('Place','Lugar'),tr('Bowler','Jugador'),'Scratch','HDCP',tr('Total','Total')],e.finalResults.map(p=>[p.rank,p.name,p.scratch,p.handicap,p.score]));else if(e.stage==='finalTie')html+='<p>'+tr('Final places pending a rollout decision.','Lugares finales pendientes de desempate.')+'</p>';
-}else html+=publicLadder(e,key==='women'?3:5);
+}else html+=publicLadder(e,['women','superSeniors'].includes(key)?3:5);
 }else{
 const modern=[2,3].includes(e.rulesVersion),one=e.shiftCount===1,count=one&&e.rulesVersion===3?5:6;
 if(!modern)html+='<p>'+tr('Results awaiting review.','Resultados pendientes de revisión.')+'</p>';
