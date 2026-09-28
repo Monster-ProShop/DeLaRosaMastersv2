@@ -683,13 +683,12 @@ function hardResetTournament() {
 }
 
 function initBowlerForm(){
-  const genders=[{v:'Male',l:t('Male')}, {v:'Female',l:t('Female')}, {v:'Male Senior',l:t('Male Senior')}, {v:'Female Senior',l:t('Female Senior')}];
+  const genders=[{v:'Male',l:t('Male')}, {v:'Female',l:t('Female')}, {v:'Male Senior',l:t('Male Senior')}, {v:'Female Senior',l:t('Female Senior')}, {v:'Super Senior',l:'Super Senior'}];
   document.getElementById('bowlerInputs').innerHTML=[0,1,2].map(i=>`
     <div class="bowler-row">
       <div><label>${t('Bowler')} ${i+1} ${t('Name').toLowerCase()}</label><input class="bn" data-i="${i}" placeholder="${t('Name')}"></div>
       <div><label>${t('Average')}</label><input class="ba" data-i="${i}" type="number" min="0" step="1" placeholder="0"></div>
       <div><label>${t('Gender')}</label><select class="bg" data-i="${i}">${genders.map(g=>`<option value="${g.v}">${g.l}</option>`).join('')}</select></div>
-      <div><label>Super Senior</label><select class="bss" data-i="${i}" aria-label="Super Senior ${i+1}"><option value="no">${currentLang==='es'?'No':'No'}</option><option value="yes">${currentLang==='es'?'Sí':'Yes'}</option></select></div>
       <div><label>${t('Handicap')}</label><input class="bh" data-i="${i}" readonly value="0"></div>
       <div><label>${t('Order')}</label><input class="bo" data-i="${i}" readonly value="${i+1}"></div>
       <div><label>${t('Preview')}</label><div class="small muted" id="prev${i}">-</div></div>
@@ -702,7 +701,7 @@ function updateFormPreview(){
   const bs=[0,1,2].map(i=>{
     const avg=Number(document.querySelector(`.ba[data-i="${i}"]`).value)||0;
     const g=document.querySelector(`.bg[data-i="${i}"]`).value;
-    return {i,avg,g,h:handicap(avg,g)};
+    const base=g==='Super Senior'?(editingTeamId?state.teams.find(tm=>tm.id===editingTeamId)?.bowlers[i]?.gender||'Male Senior':'Male Senior'):g;return {i,avg,g,h:handicap(avg,base)};
   });
   const sorted=[...bs].sort((a,b)=>a.avg-b.avg||a.i-b.i);
   sorted.forEach((b,idx)=>{
@@ -733,8 +732,8 @@ function registerTeam(){
     calcuttaId: editingTeamId ? (state.teams.find(tm=>tm.id===editingTeamId)?.bowlers[i]?.calcuttaId ?? i) : i,
     name:document.querySelector(`.bn[data-i="${i}"]`).value.trim(),
     average:Number(document.querySelector(`.ba[data-i="${i}"]`).value),
-    gender:document.querySelector(`.bg[data-i="${i}"]`).value,
-    superSenior:document.querySelector(`.bss[data-i="${i}"]`).value==='yes'
+    gender:document.querySelector(`.bg[data-i="${i}"]`).value==='Super Senior'?(editingTeamId?state.teams.find(tm=>tm.id===editingTeamId)?.bowlers[i]?.gender||'Male Senior':'Male Senior'):document.querySelector(`.bg[data-i="${i}"]`).value,
+    superSenior:document.querySelector(`.bg[data-i="${i}"]`).value==='Super Senior'
   }));
   if(!name){return showTeamAlert('Please enter a team name.','danger')}
   if(bowlers.some(b=>!b.name || !Number.isFinite(b.average))){return showTeamAlert('Please enter all 3 bowler names and averages.','danger')}
@@ -768,8 +767,7 @@ function editTeam(id) {
   t.bowlers.forEach((b, i) => {
     document.querySelector(`.bn[data-i="${i}"]`).value = b.name;
     document.querySelector(`.ba[data-i="${i}"]`).value = b.average;
-    document.querySelector(`.bg[data-i="${i}"]`).value = b.gender;
-    document.querySelector(`.bss[data-i="${i}"]`).value = b.superSenior===true?'yes':'no';
+    document.querySelector(`.bg[data-i="${i}"]`).value = b.superSenior===true?'Super Senior':b.gender;
   });
   
   updateFormPreview();
