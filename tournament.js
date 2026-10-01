@@ -59,7 +59,7 @@ function calculateTeamStandings(dayFilter = 'all', upToGameNo = 999, shiftFilter
 function calculatePlayerStandings(dayFilter = 'all', upToGameNo = 999) {
   const map=teamMap(), players=[];
   state.teams.forEach(t=>t.bowlers.forEach((b,index)=>players.push({
-    id: t.id+'|'+index, teamId:t.id, bowlerIndex:index, name: b.name, team: t.name, gender: b.gender, handicap: b.handicap, average: b.average, points: 0, scratchPinfall: 0, netPinfall: 0, highScratch: 0, highNet: 0, games: 0, scratchGames: {}, netGames: {}
+    id: t.id+'|'+index, teamId:t.id, bowlerIndex:index, name: b.name, team: t.name, gender: b.gender, superSenior:b.superSenior===true, handicap: b.handicap, average: b.average, points: 0, scratchPinfall: 0, netPinfall: 0, highScratch: 0, highNet: 0, games: 0, scratchGames: {}, netGames: {}
   })));
   const sm=Object.fromEntries(players.map(p=>[p.id,p]));
   for(const g of state.games) {

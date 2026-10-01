@@ -37,12 +37,12 @@ For local development put those keys in an untracked .dev.vars file and run npm 
 - Each Calcutta category: buyer/cost/paid, Save/Edit/Cancel, debts CSV, payout percentages summing to 100% or less, Sunday ties sharing occupied places.
 - Individual finals: top 10/10/6, cutoff selections, handicap elimination, 5/5/3 stepladders, winner changes resetting later rounds.
 - Team finals: one shift seeds its leader and qualifies 10 others (10-to-5); two shifts seed both leaders and qualify 16 others (16-to-8-to-4). All six survivors play one new Baker game. Every Baker game uses Math.round(team handicap * 0.33). Final-game ties share a place. Regenerate legacy scratch-format team finals to apply these rules.
-- Two admin windows: a stale save must be rejected rather than overwriting changes. Export edits before reloading after a conflict.
+- Two admin windows: independent regular-match scores merge safely with revision checks. Conflicting changes to the same match or tournament setup are rejected without silently overwriting either device. Admin views check for updates every 10 seconds when there are no unsaved form edits. Export edits before reloading after a conflict.
 
 ## Security boundaries
 Public HTML, styles, logo and rendering JavaScript remain inspectable, as on any website. Private admin code is accessible to a signed-in administrator, and the repository must be private to hide its source. Server credentials never reach the browser. The server verifies both the Supabase account and its admin UUID on each protected request, validates regular scores/handicap and computes public standings. Admin finals and Calcutta calculations still run in the authenticated editor; this does not conceal them from an authorized administrator.
 
-Admin requires a network connection. Sessions last at most one hour; export unsaved edits before signing in again. Public results refresh every 30 seconds. Only the public shell is cached offline, not private records or results API responses.
+Admin requires a network connection. Sessions renew automatically using a persistent HttpOnly refresh cookie. Sign out affects only the current device. Existing users must sign in once after this update to receive the refresh cookie; revoked sessions or cleared browser data still require sign-in. Public results refresh every 30 seconds. Only the public shell is cached offline, not private records or results API responses.
 ## Spanish, installation and score notifications
 
 New visitors start in Spanish. An explicitly saved English/Spanish preference is retained.
@@ -54,3 +54,7 @@ Visitors opt in using Activar notificaciones. A successful admin save that chang
 No additional deployment secret or SQL migration is required for this feature with the existing secure schema. The Worker generates its VAPID signing key in the protected tournament_data row `push-config:<tournament id>` and keeps subscriptions in separate `push-sub:<tournament id>:<endpoint hash>` rows. These rows are accessible only through the existing service-role connection and are excluded from public results and tournament exports. The public configuration endpoint returns only the public application-server key. Expired subscriptions are deactivated. Preserve the push-config row to preserve existing device subscriptions.
 
 Fourteen automated backend tests cover existing authorization/privacy plus VAPID signatures, subscription persistence, expired-subscription pagination, score-change detection and successful-save-only dispatch. Browser regression checks cover Spanish defaults, public menus, admin Enter login, save/reload and responsive layouts. Physical iPhone/Android notification receipt still needs a device acceptance test with an opted-in installation.
+
+## September 30 update verification
+
+Super Senior appears in public and admin standings, using its registration flag. Tests cover renewed sessions, refresh-service outages, local logout, independent concurrent match saves, conflicting edits, and public eligibility. Browser checks cover two signed-in sessions, merged scores, admin synchronization, page reload and public Super Senior standings. These auth tests use simulated Supabase responses; no production scores are changed by the tests.

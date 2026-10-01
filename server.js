@@ -1,10 +1,27 @@
 import {publicResults,validateState,emptyState} from './tournament.js';
 const COOKIE='__Host-dlr_session';
+const REFRESH_COOKIE='__Host-dlr_refresh';
 class HTTPError extends Error{constructor(status,message){super(message);this.status=status;}}
+// Merge only independent regular-match score edits; never overwrite a changed match or pairing.
+export function mergeMatchScores(base,proposed,current){
+  if(!base)return null;
+  const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+  const scores=m=>({bowlers:m.bowlers,completed:m.completed,teamScoreA:m.teamScoreA,teamScoreB:m.teamScoreB});
+  const structure=s=>{const c=structuredClone(s);delete c.currentGame;for(const g of c.games||[])if(g)for(const m of g.matches){delete m.bowlers;delete m.completed;delete m.teamScoreA;delete m.teamScoreB;}return c;};
+  if(!equal(structure(base),structure(proposed))||!equal(base.teams,current.teams)||!equal(base.settings,current.settings))return null;
+  const next=structuredClone(current);
+  for(const game of proposed.games){if(!game)continue;const oldGame=base.games.find(g=>g?.number===game.number),nowGame=next.games.find(g=>g?.number===game.number);if(!oldGame||!nowGame)return null;
+    for(const match of game.matches){const old=oldGame.matches.find(m=>m.id===match.id);if(!old)return null;if(equal(scores(old),scores(match)))continue;
+      const now=nowGame.matches.find(m=>m.id===match.id);if(!now||now.aId!==old.aId||now.bId!==old.bId||(!equal(scores(now),scores(old))&&!equal(scores(now),scores(match))))return null;
+      Object.assign(now,structuredClone(scores(match)));
+    }
+  }
+  return next;
+}
 const baseHeaders={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'same-origin','X-Frame-Options':'DENY'};
 function json(value,status=200,extra={}){return new Response(JSON.stringify(value),{status,headers:{...baseHeaders,'Content-Type':'application/json; charset=utf-8',...extra}});}
-function tokenFrom(request){return (request.headers.get('Cookie')||'').split(';').map(s=>s.trim()).find(s=>s.startsWith(COOKIE+'='))?.slice(COOKIE.length+1);}
-function cookie(token,age){return `${COOKIE}=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${Math.max(0,Math.min(age,3600))}`;}
+function tokenFrom(request,name=COOKIE){return (request.headers.get('Cookie')||'').split(';').map(s=>s.trim()).find(s=>s.startsWith(name+'='))?.slice(name.length+1);}
+function cookie(token,age,name=COOKIE){return `${name}=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${Math.max(0,Math.min(age,34560000))}`;}
 function writeOrigin(request){const origin=request.headers.get('Origin');if(origin!==new URL(request.url).origin)throw new HTTPError(403,'Origin not allowed.');if(!request.headers.get('Content-Type')?.startsWith('application/json'))throw new HTTPError(415,'JSON required.');}
 async function body(request,max=4*1024*1024){if(Number(request.headers.get('Content-Length'))>max)throw new HTTPError(413,'Request is too large.');const reader=request.body?.getReader();if(!reader)throw new HTTPError(400,'JSON required.');let size=0,parts=[];while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>max){await reader.cancel();throw new HTTPError(413,'Request is too large.');}parts.push(value);}const bytes=new Uint8Array(size);let offset=0;for(const p of parts){bytes.set(p,offset);offset+=p.length;}try{return JSON.parse(new TextDecoder().decode(bytes));}catch{throw new HTTPError(400,'Invalid JSON.');}}
 export function createHandler(assets={},fetcher=fetch){
@@ -18,6 +35,7 @@ export function createHandler(assets={},fetcher=fetch){
   async function authorize(env,token){
     if(!token||token.length>12000)throw new HTTPError(401,'Please sign in again.');
     const response=await upstream(env,'/auth/v1/user',{token});const user=response.data;
+    if(response.status>=500)throw new HTTPError(503,'Sign-in service temporarily unavailable. Please retry.');
     if(!response.ok||!user?.id||!user.email_confirmed_at||String(user.email).toLowerCase()!==env.ADMIN_EMAIL.toLowerCase())throw new HTTPError(401,'Administrator sign-in required.');
     const membership=await upstream(env,'/rest/v1/tournament_admins?select=user_id&user_id=eq.'+encodeURIComponent(user.id),{admin:true});
     if(!membership.ok)throw new HTTPError(503,'Administrator permissions are not configured.');
@@ -33,7 +51,28 @@ export function createHandler(assets={},fetcher=fetch){
   }
   async function load(env){const r=await upstream(env,'/rest/v1/tournament_data?select=state,revision,updated_at&id=eq.'+encodeURIComponent(env.TOURNAMENT_ID),{admin:true});if(!r.ok)throw new HTTPError(503,'Tournament database is unavailable.');return r.data?.[0]||{state:emptyState(),revision:-1,updated_at:null};}
   const push=createPushService(upstream,fetcher);
+  const refreshing=new Map();
   return async function handle(request,env,ctx){
+    const cookies=[];
+    const setSession=data=>{cookies.push(cookie(data.access_token,data.expires_in||3600));if(data.refresh_token)cookies.push(cookie(data.refresh_token,34560000,REFRESH_COOKIE));};
+    const clearSession=()=>{cookies.length=0;cookies.push(cookie('',0),cookie('',0,REFRESH_COOKIE));};
+    async function authenticatedToken(){
+      const token=tokenFrom(request);
+      try{await authorize(env,token);return token;}catch(e){if(e.status!==401)throw e;}
+      const refresh=tokenFrom(request,REFRESH_COOKIE);
+      if(!refresh||refresh.length>12000)throw new HTTPError(401,'Please sign in again.');
+      const key=env.SUPABASE_URL+'|'+refresh;
+      if(!refreshing.has(key))refreshing.set(key,upstream(env,'/auth/v1/token?grant_type=refresh_token',{method:'POST',data:{refresh_token:refresh}}).finally(()=>refreshing.delete(key)));
+      const r=await refreshing.get(key);
+      if(!r.ok){if(r.status>=500||r.status===429)throw new HTTPError(503,'Sign-in service temporarily unavailable. Please retry.');clearSession();throw new HTTPError(401,'Please sign in again.');}
+      if(!r.data?.access_token||!r.data?.refresh_token)throw new HTTPError(503,'Could not renew sign-in. Please retry.');
+      await authorize(env,r.data.access_token);setSession(r.data);return r.data.access_token;
+    }
+    const response=await route();
+    if(!cookies.length)return response;
+    const headers=new Headers(response.headers);headers.delete('Set-Cookie');for(const value of cookies)headers.append('Set-Cookie',value);
+    return new Response(response.body,{status:response.status,headers});
+    async function route(){
     try{
       const url=new URL(request.url),path=url.pathname;
       if(path.startsWith('/api/')&&request.method==='POST')writeOrigin(request);
@@ -55,31 +94,43 @@ export function createHandler(assets={},fetcher=fetch){
         if(!isCode&&(typeof b.password!=='string'||b.password.length<1||b.password.length>512))throw new HTTPError(400,'Enter your password.');
         const r=await upstream(env,isCode?'/auth/v1/verify':'/auth/v1/token?grant_type=password',{method:'POST',data:isCode?{email:env.ADMIN_EMAIL,token:b.code,type:'email'}:{email:env.ADMIN_EMAIL,password:b.password}});
         if(!r.ok||!r.data?.access_token)throw new HTTPError(401,'Sign-in failed. Check your details and try again.');
-        await authorize(env,r.data.access_token);return json({ok:true},200,{'Set-Cookie':cookie(r.data.access_token,r.data.expires_in||3600)});
+        await authorize(env,r.data.access_token);setSession(r.data);return json({ok:true});
       }
       if(path==='/api/auth/logout'&&request.method==='POST'){
-        const token=tokenFrom(request);if(token)await upstream(env,'/auth/v1/logout',{method:'POST',token}).catch(()=>{});return json({ok:true},200,{'Set-Cookie':cookie('',0)});
+        let token;try{token=await authenticatedToken();}catch(e){if(e.status!==401)throw e;}
+        if(token){const r=await upstream(env,'/auth/v1/logout?scope=local',{method:'POST',token});if(!r.ok&&r.status!==401)throw new HTTPError(503,'Could not sign out. Please retry.');}
+        clearSession();return json({ok:true});
       }
       if(path==='/api/results'&&request.method==='GET'){const row=await load(env);return json({revision:row.revision,updatedAt:row.updated_at,...publicResults(row.state)});}
       if(path==='/api/admin/state'){
-        await authorize(env,tokenFrom(request));
+        await authenticatedToken();
         if(request.method==='GET')return json(await load(env));
         if(request.method==='POST'){
           const b=await body(request);if(!Number.isSafeInteger(b.revision)||b.revision< -1)throw new HTTPError(400,'Invalid revision.');
           try{validateState(b.state);}catch(e){throw new HTTPError(400,e.message);}
-          const previous=await load(env);
-          const r=await upstream(env,'/rest/v1/rpc/save_tournament_state',{method:'POST',admin:true,data:{p_id:env.TOURNAMENT_ID,p_state:b.state,p_expected_revision:b.revision}});
-          if(!r.ok)throw new HTTPError(503,'Could not save. Keep this window open and export a backup.');if(r.data?.conflict)throw new HTTPError(409,'Another session changed the tournament. Export your edits, then reload before continuing.');if(previous.revision===b.revision&&scoreVersion(previous.state)!==scoreVersion(b.state)){
+          if(b.baseState){try{validateState(b.baseState);}catch{throw new HTTPError(400,'Invalid original tournament.');}}
+          let previous,next,r;
+          for(let attempt=0;attempt<4;attempt++){
+            previous=await load(env);
+            next=previous.revision===b.revision?b.state:mergeMatchScores(b.baseState,b.state,previous.state);
+            if(!next)throw new HTTPError(409,'Another device changed this match or tournament setup. Your edits are still here. Export a backup, then reload and review before saving.');
+            validateState(next);
+            r=await upstream(env,'/rest/v1/rpc/save_tournament_state',{method:'POST',admin:true,data:{p_id:env.TOURNAMENT_ID,p_state:next,p_expected_revision:previous.revision}});
+            if(!r.ok)throw new HTTPError(503,'Could not save. Keep this window open and export a backup.');
+            if(!r.data?.conflict)break;
+          }
+          if(r.data?.conflict)throw new HTTPError(409,'The tournament is busy. Your edits are still here; retry saving.');
+          if(scoreVersion(previous.state)!==scoreVersion(next)){
             const send=push.broadcast(env).then(result=>{if(result.failed)console.warn('Push delivery failures:',result.failed);}).catch(()=>console.warn('Push notification delivery unavailable'));
             if(ctx?.waitUntil)ctx.waitUntil(send);else await send;
-          }return json({revision:r.data.revision});
+          }return json({revision:r.data.revision,state:next});
         }
         throw new HTTPError(405,'Method not allowed.');
       }
       if(path.startsWith('/api/'))throw new HTTPError(404,'Not found.');
       if(path==='/admin')return Response.redirect(url.origin+'/admin/',302);
       if(path.startsWith('/admin/')){
-        try{await authorize(env,tokenFrom(request));}catch(e){if(e.status===401||e.status===403){if(path==='/admin/')return new Response(null,{status:302,headers:{...baseHeaders,Location:'/login','Set-Cookie':cookie('',0)}});}throw e;}
+        try{await authenticatedToken();}catch(e){if(e.status===401||e.status===403){if(path==='/admin/'){clearSession();return new Response(null,{status:302,headers:{...baseHeaders,Location:'/login'}});}}throw e;}
         const map={'/admin/':[assets.adminHTML,'text/html'],'/admin/finals.js':[assets.adminFinals,'application/javascript'],'/admin/finals.css':[assets.adminStyle,'text/css']};
         if(!map[path])throw new HTTPError(404,'Not found.');return new Response(map[path][0],{headers:{...baseHeaders,'Content-Type':map[path][1]+'; charset=utf-8','Content-Security-Policy':"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"}});
       }
@@ -90,6 +141,7 @@ export function createHandler(assets={},fetcher=fetch){
       for(const [k,v]of Object.entries(baseHeaders))headers.set(k,v);headers.set('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
       if(path==='/sw.js')headers.set('Service-Worker-Allowed','/');return new Response(response.body,{status:response.status,headers});
     }catch(error){return json({error:error.status?error.message:'Service temporarily unavailable.'},error.status||503);}
+    }
   };
 }
 
