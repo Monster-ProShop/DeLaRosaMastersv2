@@ -464,28 +464,39 @@ let state = {
   currentGame: 1
 };
 
+let secureBase=null,secureFormDirty=false,secureEditEpoch=0,securePolling=false;
 let secureRevision=null,secureQueue=Promise.resolve(),secureDirty=false,secureBlocked=false,secureSessionLost=false;
 // Private tournament data stays in memory; never persist it in browser storage.
 for(const key of ['dlr_local_cache','dlr_pending_sync'])localStorage.removeItem(key);
 async function save(){
   if(!isAdmin||secureSessionLost||secureRevision===null){alert('Save unavailable. Export your edits before signing in again.');return false;}
-  const snapshot=JSON.parse(JSON.stringify(state));secureDirty=true;
+  const snapshot=JSON.parse(JSON.stringify(state)),baseState=secureBase?structuredClone(secureBase):null,revision=secureRevision,epoch=secureEditEpoch;secureDirty=true;
   const run=async()=>{
     if(secureBlocked)return false;
     try{
-      const response=await fetch('/api/admin/state',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({state:snapshot,revision:secureRevision})});
+      const response=await fetch('/api/admin/state',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({state:snapshot,baseState,revision})});
       const result=await response.json();
       if(!response.ok){if(response.status===401||response.status===403){secureSessionLost=true;}secureBlocked=response.status===409||secureSessionLost;throw Error(result.error||'Save failed');}
-      secureRevision=result.revision;secureDirty=false;setSyncStatus(true);return true;
+      secureRevision=result.revision;secureBase=structuredClone(result.state||snapshot);
+      const unchanged=JSON.stringify(state)===JSON.stringify(snapshot);
+      if(unchanged){const selected=state.currentGame;state=structuredClone(secureBase);state.currentGame=selected;secureDirty=false;if(epoch===secureEditEpoch)secureFormDirty=false;if(!secureFormDirty){renderAll();}}
+      setSyncStatus(!secureDirty);return true;
     }catch(error){setSyncStatus(false);alert(error.message+'\n'+(currentLang==='es'?'Exporta un respaldo antes de recargar.':'Export a backup before reloading.'));return false;}
   };
   const result=secureQueue.then(run);secureQueue=result.catch(()=>false);return result;
 }
 async function loadStateFromCloud(){
-  try{const response=await fetch('/api/admin/state',{cache:'no-store',credentials:'same-origin'});if(response.status===401||response.status===403){location.replace('/login');return;}const result=await response.json();if(!response.ok)throw Error(result.error);state=result.state;secureRevision=result.revision;secureBlocked=false;secureDirty=false;renderAll();}
+  try{const response=await fetch('/api/admin/state',{cache:'no-store',credentials:'same-origin'});if(response.status===401||response.status===403){location.replace('/login');return;}const result=await response.json();if(!response.ok)throw Error(result.error);state=result.state;secureBase=structuredClone(result.state);secureRevision=result.revision;secureBlocked=false;secureDirty=false;renderAll();}
   catch(error){secureRevision=null;alert('Could not load the tournament. '+error.message);}
 }
-function setupRealtimeListener(){} // Explicit reload + revision checks protects unsaved forms.
+document.addEventListener('input',event=>{if(event.target.matches('input,textarea')){secureFormDirty=true;secureEditEpoch++;}});
+function setupRealtimeListener(){setInterval(syncRemoteState,10000);window.addEventListener('focus',syncRemoteState);}
+async function syncRemoteState(){
+  if(securePolling||secureDirty||secureFormDirty||secureBlocked||document.hidden||calDrafts.size||finalsDrafts.size||purseDrafts.size)return;
+  securePolling=true;
+  try{const response=await fetch('/api/admin/state',{cache:'no-store',credentials:'same-origin'});if(!response.ok)return;const result=await response.json();if(secureDirty||secureFormDirty||calDrafts.size||finalsDrafts.size||purseDrafts.size)return;if(result.revision!==secureRevision){const selected=state.currentGame;state=result.state;secureBase=structuredClone(result.state);secureRevision=result.revision;state.currentGame=selected;renderAll();}}
+  catch{}finally{securePolling=false;}
+}
 async function secureLogout(){
   if((secureDirty||calDrafts.size||finalsDrafts.size||purseDrafts.size)&&!confirm(currentLang==='es'?'¿Salir y descartar cambios sin guardar?':'Sign out and discard unsaved changes?'))return;
   const response=await fetch('/api/auth/logout',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});if(!response.ok){alert('Could not sign out. Try again.');return;}
@@ -1159,7 +1170,7 @@ function calculateTeamStandings(dayFilter = 'all', upToGameNo = 999, shiftFilter
 function calculatePlayerStandings(dayFilter = 'all', upToGameNo = 999, gameNumbers = null) {
   const map=teamMap(), players=[];
   state.teams.forEach(t=>t.bowlers.forEach((b,index)=>players.push({
-    id: t.id+'|'+index, teamId:t.id, bowlerIndex:index, name: b.name, team: t.name, gender: b.gender, handicap: b.handicap, average: b.average, points: 0, scratchPinfall: 0, netPinfall: 0, highScratch: 0, highNet: 0, games: 0, scratchGames: {}, netGames: {}
+    id: t.id+'|'+index, teamId:t.id, bowlerIndex:index, name: b.name, team: t.name, gender: b.gender, superSenior:b.superSenior===true, handicap: b.handicap, average: b.average, points: 0, scratchPinfall: 0, netPinfall: 0, highScratch: 0, highNet: 0, games: 0, scratchGames: {}, netGames: {}
   })));
   const sm=Object.fromEntries(players.map(p=>[p.id,p]));
   for(const g of state.games) {
@@ -1223,12 +1234,12 @@ function renderPlayerStandings() {
   document.querySelectorAll('.view-team-btn').forEach(b => { b.classList.add('btn-secondary'); b.classList.remove('btn-primary'); });
   if(!state.teams.length){document.getElementById('standingsContent').innerHTML=`<div class="empty">${t('No teams registered yet.')}</div>`;return}
   
-  const groups=[['Male', t('Male')],['Female', t('Female')],['Male Senior', t('Male Senior')],['Female Senior', t('Female Senior')]];
+  const groups=[['Male', t('Male')],['Female', t('Female')],['Male Senior', t('Male Senior')],['Female Senior', t('Female Senior')],['Super Senior','Super Senior']];
   const players=calculatePlayerStandings('all');
   const totalGamesCount = state.games.length || (state.settings.satGames + state.settings.sunGames);
 
   document.getElementById('standingsContent').innerHTML=groups.map(([g,label])=>{
-    const rows=players.filter(x=>x.gender===g);
+    const rows=players.filter(x=>g==='Super Senior'?x.superSenior:x.gender===g);
     const gameHeaders = Array.from({length: totalGamesCount}, (_, i) => `<th class="center">G${i+1}</th>`).join('');
     return `<div class="card" style="box-shadow:none;margin-bottom:16px">
       <h3>${label} ${t('Division')}</h3>
