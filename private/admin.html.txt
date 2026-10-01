@@ -203,6 +203,7 @@ body .panel:not(.active),body.is-admin .panel.admin-only:not(.active){display:no
 body.is-admin .panel.admin-only.active{display:block!important}
 body:not(.is-admin) .panel.admin-only{display:none!important}
 [hidden]{display:none!important}
+body.is-admin .admin-only[hidden]{display:none!important}
 .cal-table{overflow-x:auto;margin-top:14px}
 .cal-table table{min-width:720px}
 .cal-table input{min-width:110px;border-radius:8px}
