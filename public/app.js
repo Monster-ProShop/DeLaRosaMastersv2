@@ -59,7 +59,7 @@ html+='</article>';}return html;
 }
 
 function render(){if(!data)return;let html='';const section=$('navigation').value;if(section==='teams')html=table(['#',tr('Team','Equipo'),tr('Shift','Turno'),tr('Points','Puntos'),tr('Scratch pins','Pinos sin hándicap'),tr('Games','Juegos')],data.standings.teams.map((t,i)=>[i+1,t.name,t.shift,t.points,t.pinfall,t.games]));
-if(section==='players'){for(const [name,filter]of [[tr('Open Standings','Libre'),()=>true],[tr('Seniors','Seniors'),p=>p.gender.includes('Senior')],[tr('Women','Mujeres'),p=>p.gender.includes('Female')]])html+=`<h2>${name}</h2>`+table(['#',tr('Bowler','Jugador'),tr('Team','Equipo'),'HDCP',tr('Total + HDCP','Total + HDCP'),tr('Games','Juegos')],data.standings.players.filter(filter).map((p,i)=>[i+1,p.name,p.team,p.handicap,p.netPinfall,p.games]));}
+if(section==='players'){for(const [name,filter]of [[tr('Open Standings','Libre'),()=>true],[tr('Seniors','Seniors'),p=>p.gender.includes('Senior')],[tr('Women','Mujeres'),p=>p.gender.includes('Female')],['Super Senior',p=>p.superSenior===true]])html+=`<h2>${name}</h2>`+table(['#',tr('Bowler','Jugador'),tr('Team','Equipo'),'HDCP',tr('Total + HDCP','Total + HDCP'),tr('Games','Juegos')],data.standings.players.filter(filter).map((p,i)=>[i+1,p.name,p.team,p.handicap,p.netPinfall,p.games]));}
 if(section==='matches'){
 const games=[...data.games].sort((a,b)=>a.number-b.number);
 if(!games.some(g=>String(g.number)===selectedMatchGame))selectedMatchGame=games.length?String(games[games.length-1].number):null;
