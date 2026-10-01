@@ -493,8 +493,8 @@ document.addEventListener('input',event=>{if(event.target.matches('input,textare
 function setupRealtimeListener(){setInterval(syncRemoteState,10000);window.addEventListener('focus',syncRemoteState);}
 async function syncRemoteState(){
   if(securePolling||secureDirty||secureFormDirty||secureBlocked||document.hidden||calDrafts.size||finalsDrafts.size||purseDrafts.size)return;
-  securePolling=true;
-  try{const response=await fetch('/api/admin/state',{cache:'no-store',credentials:'same-origin'});if(!response.ok)return;const result=await response.json();if(secureDirty||secureFormDirty||calDrafts.size||finalsDrafts.size||purseDrafts.size)return;if(result.revision!==secureRevision){const selected=state.currentGame;state=result.state;secureBase=structuredClone(result.state);secureRevision=result.revision;state.currentGame=selected;renderAll();}}
+  securePolling=true;const startedRevision=secureRevision;
+  try{const response=await fetch('/api/admin/state',{cache:'no-store',credentials:'same-origin'});if(!response.ok)return;const result=await response.json();if(secureRevision!==startedRevision||secureDirty||secureFormDirty||calDrafts.size||finalsDrafts.size||purseDrafts.size)return;if(result.revision!==secureRevision){const selected=state.currentGame;state=result.state;secureBase=structuredClone(result.state);secureRevision=result.revision;state.currentGame=selected;renderAll();}}
   catch{}finally{securePolling=false;}
 }
 async function secureLogout(){
