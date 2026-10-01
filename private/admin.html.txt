@@ -507,7 +507,12 @@ window.addEventListener('beforeunload',event=>{if(secureDirty){event.preventDefa
 function handicap(avg, gender) {
   return Math.min(String(gender).startsWith('Female')?40:35,Math.max(0,Math.round((210-avg)*0.8)));
 }
-function registrationGender(i){const g=document.querySelector('.bg[data-i="'+i+'"]').value;return g==='Super Senior'?document.querySelector('.bsex[data-i="'+i+'"]').value:g;}
+function registrationGender(i){
+  const g=document.querySelector('.bg[data-i="'+i+'"]').value;if(g!=='Super Senior')return g;
+  const selected=document.querySelector('.bsex[data-i="'+i+'"]').value;
+  const original=editingTeamId?state.teams.find(tm=>tm.id===editingTeamId)?.bowlers[i]?.gender:null;
+  return original&&original.startsWith('Female')===selected.startsWith('Female')?original:selected;
+}
 
 function esc(str) { 
   if (!str) return '';
