@@ -1,4 +1,4 @@
-import {publicResults,validateState,emptyState} from './tournament.js';
+import {publicResults,validateState,emptyState,applyHandicapRule} from './tournament.js';
 const COOKIE='__Host-dlr_session';
 const REFRESH_COOKIE='__Host-dlr_refresh';
 class HTTPError extends Error{constructor(status,message){super(message);this.status=status;}}
@@ -49,7 +49,7 @@ export function createHandler(assets={},fetcher=fetch){
       if(!r.ok)throw new HTTPError(503,'Authentication setup is incomplete.');if(r.data!==true)throw new HTTPError(429,'Too many attempts. Try again in 10 minutes.');
     }
   }
-  async function load(env){const r=await upstream(env,'/rest/v1/tournament_data?select=state,revision,updated_at&id=eq.'+encodeURIComponent(env.TOURNAMENT_ID),{admin:true});if(!r.ok)throw new HTTPError(503,'Tournament database is unavailable.');return r.data?.[0]||{state:emptyState(),revision:-1,updated_at:null};}
+  async function load(env){const r=await upstream(env,'/rest/v1/tournament_data?select=state,revision,updated_at&id=eq.'+encodeURIComponent(env.TOURNAMENT_ID),{admin:true});if(!r.ok)throw new HTTPError(503,'Tournament database is unavailable.');const row=r.data?.[0]||{state:emptyState(),revision:-1,updated_at:null};return {...row,state:applyHandicapRule(row.state)};}
   const push=createPushService(upstream,fetcher);
   const refreshing=new Map();
   return async function handle(request,env,ctx){
