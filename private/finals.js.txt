@@ -4,7 +4,7 @@ Object.assign(tDict,{'Tournament Setup':'Configuración de Torneo','Team Registr
 const L=(en,es)=>currentLang==='es'?es:en;
 const finalsDrafts=new Map(),finalsEditing=new Set();
 let finalsView='overall',finalsMessage='';
-const finalTypes={overall:{en:'Individual Overall',es:'Individual General',qualify:10,advance:5},seniors:{en:'Seniors Final',es:'Final Seniors',qualify:10,advance:5},women:{en:"Women’s Final",es:'Final Femenil',qualify:6,advance:3},superSeniors:{en:'Super Senior Final',es:'Final Super Senior',qualify:6,advance:3},team:{en:'Team Finals',es:'Finales por Equipos'}};
+const finalTypes={overall:{en:'Open Final',es:'Final Libre',qualify:10,advance:5},seniors:{en:'Seniors Final',es:'Final Seniors',qualify:10,advance:5},women:{en:"Women’s Final",es:'Final Femenil',qualify:6,advance:3},superSeniors:{en:'Super Senior Final',es:'Final Super Senior',qualify:6,advance:3},team:{en:'Team Finals',es:'Finales por Equipos'}};
 const finalName=type=>L(finalTypes[type].en,finalTypes[type].es);
 const sectionItems=[['setup','Tournament Setup',true],['registration','Team Registration',true],['teamlist','Registered Teams',false],['game','Matches',false],['standings','Standings',false],['calcutta','Calcutta',true],['calcuttaPayout','Calcutta Payout',true],['finals','Finals',false],['export','Export Data (XLS)',true]];
 function syncNavigation(){
@@ -40,13 +40,13 @@ function finalReadiness(){
   return {ready:done===state.teams.length*7&&!hasLegacyShift(),done,total:state.teams.length*7};
 }
 function finalEvent(type){return state.finals?.events?.[type];}
-function finalStale(event){return event&&event.source!==finalFingerprint();}
+function finalStale(event){return event&&(event.source!==finalFingerprint()||(!event.seeded&&event.eligibilityVersion!==1));}
 function currentTeamRules(ev){return ev&&[2,3].includes(ev.rulesVersion)&&!(ev.shiftCount===1&&ev.rulesVersion!==3);}
 function bakerFinalCount(ev){return ev.shiftCount===1&&ev.rulesVersion===3?5:6;}
 function finalCanWrite(type){if(!isAdmin)return false;if(type==='superSeniors'&&finalEvent(type)?.format!=='stepladder'){finalAlert(L('Regenerate this Super Senior final to use the stepladder format.','Regenera esta final Super Senior para usar el formato de escalera.'));return false;}if(type==='team'&&!currentTeamRules(finalEvent(type))){finalAlert(L('Regenerate team finals to apply the new Baker format. Existing results remain visible until then.','Regenera las finales por equipos para aplicar el nuevo formato Baker. Los resultados anteriores permanecen visibles mientras tanto.'));return false;}if(!finalReadiness().ready||finalStale(finalEvent(type))){finalAlert(L('Complete regular play and regenerate stale finals before saving.','Completa las partidas regulares y regenera las finales desactualizadas antes de guardar.'));return false;}return true;}
 function finalAlert(message){finalsMessage=message;const el=document.getElementById('finalMessage');if(el)el.textContent=message;}
 async function finalPersist(prefixes=[]){const saved=await save();if(saved){for(const key of finalsDrafts.keys())if(prefixes.some(p=>key.startsWith(p)))finalsDrafts.delete(key);for(const key of finalsEditing)if(prefixes.some(p=>key.startsWith(p)))finalsEditing.delete(key);finalsMessage=L('Saved. Public results updated.','Guardado. Resultados públicos actualizados.');renderFinals();}return saved;}
-function finalIndividuals(type){return calculatePlayerStandings('all',7).filter(p=>type==='overall'||(type==='superSeniors'?state.teams.find(tm=>tm.id===p.teamId)?.bowlers[p.bowlerIndex]?.superSenior===true:type==='seniors'?['Male Senior','Female Senior'].includes(p.gender):['Female','Female Senior'].includes(p.gender))).map(p=>({key:p.id,name:p.name,team:p.team,handicap:p.handicap,score:p.netPinfall,games:p.games})).sort((a,b)=>b.score-a.score);}
+function finalIndividuals(type){return calculatePlayerStandings('all',7).filter(p=>{const b=state.teams.find(tm=>tm.id===p.teamId)?.bowlers[p.bowlerIndex]||p;const division=b.superSenior===true?'superSeniors':String(p.gender).includes('Senior')?'seniors':p.gender==='Female'?'women':'overall';return division===type;}).map(p=>({key:p.id,name:p.name,team:p.team,handicap:p.handicap,score:p.netPinfall,games:p.games})).sort((a,b)=>b.score-a.score);}
 // Cutoff ties require the rollout decision. Seeding ties also require an explicit order.
 function finalRankPlan(rows,limit,allTies=false){
   const sorted=[...rows].sort((a,b)=>b.score-a.score),slots=[];
@@ -79,7 +79,7 @@ async function generateFinal(type){
     const rows=finalIndividuals(type),spec=finalTypes[type];
     if(rows.length<spec.qualify){finalAlert(L('This event requires at least '+spec.qualify+' eligible bowlers.','Este evento requiere al menos '+spec.qualify+' jugadores elegibles.'));return;}
     const slots=finalRankPlan(rows,spec.qualify),qualifiers=finalSelected(slots,{});
-    event={format:'stepladder',source:finalFingerprint(),createdAt:new Date().toISOString(),pool:rows,qualifiers,scores:null,stage:qualifiers?'elimination':'qualification'};
+    event={eligibilityVersion:1,format:'stepladder',source:finalFingerprint(),createdAt:new Date().toISOString(),pool:rows,qualifiers,scores:null,stage:qualifiers?'elimination':'qualification'};
   }
   state.finals||={version:1,events:{}};state.finals.events||={};state.finals.events[type]=event;await finalPersist(type==='team'?['baker-']:['qual-'+type,'elim-'+type,'ladder-'+type,'step-'+type,...(type==='superSeniors'?['super-final','super-place']:[])]);
 }

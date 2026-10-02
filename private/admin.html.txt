@@ -1254,17 +1254,18 @@ function renderStandings(){
     </table>`;
 }
 
+function individualDivision(b){return b.superSenior===true?'superSeniors':String(b.gender).includes('Senior')?'seniors':b.gender==='Female'?'women':'overall';}
 function renderPlayerStandings() {
   document.querySelectorAll('.view-player-btn').forEach(b => { b.classList.add('btn-primary'); b.classList.remove('btn-secondary'); });
   document.querySelectorAll('.view-team-btn').forEach(b => { b.classList.add('btn-secondary'); b.classList.remove('btn-primary'); });
   if(!state.teams.length){document.getElementById('standingsContent').innerHTML=`<div class="empty">${t('No teams registered yet.')}</div>`;return}
   
-  const groups=[['Male', t('Male')],['Female', t('Female')],['Male Senior', t('Male Senior')],['Female Senior', t('Female Senior')],['Super Senior','Super Senior']];
+  const groups=[['overall',currentLang==='es'?'Libre':'Open'],['women',currentLang==='es'?'Femenil':'Women'],['seniors','Senior'],['superSeniors','Super Senior']];
   const players=calculatePlayerStandings('all');
   const totalGamesCount = state.games.length || (state.settings.satGames + state.settings.sunGames);
 
   document.getElementById('standingsContent').innerHTML=groups.map(([g,label])=>{
-    const rows=players.filter(x=>g==='Super Senior'?x.superSenior:x.gender===g);
+    const rows=players.filter(x=>individualDivision(x)===g);
     const gameHeaders = Array.from({length: totalGamesCount}, (_, i) => `<th class="center">G${i+1}</th>`).join('');
     return `<div class="card" style="box-shadow:none;margin-bottom:16px">
       <h3>${label} ${t('Division')}</h3>
