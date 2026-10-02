@@ -1,3 +1,4 @@
+function individualDivision(b){return b.superSenior===true?'superSeniors':String(b.gender).includes('Senior')?'seniors':b.gender==='Female'?'women':'overall';}
 let selectedMatchGame=null;
 let lang=localStorage.getItem('dlr_public_language')||'es',data=null,promptInstall=null;
 const $=id=>document.getElementById(id),tr=(en,es)=>lang==='es'?es:en,esc=v=>String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -25,9 +26,10 @@ html+='<div class="team-podium" aria-label="'+tr('Team podium','Podio por equipo
 return html;
 }
 function renderPublicFinals(){
-let html='';const names={overall:tr('Individual Overall','Individual General'),seniors:tr('Seniors Final','Final Seniors'),women:tr('Women’s Final','Final Femenina'),superSeniors:tr('Super Senior Final','Final Super Senior'),team:tr('Team Finals','Finales por Equipo')};
+let html='';const names={overall:tr('Open Final','Final Libre'),seniors:tr('Seniors Final','Final Seniors'),women:tr('Women’s Final','Final Femenina'),superSeniors:tr('Super Senior Final','Final Super Senior'),team:tr('Team Finals','Finales por Equipo')};
 for(const [key,e] of Object.entries(data.finals)){
 html+=`<article><h2>${names[key]}</h2>${e.outdated?'<p>'+tr('Qualifying scores changed. Admin review pending.','Cambió la clasificación. Pendiente de revisión del administrador.')+'</p>':''}`;
+if(e.categoryReviewRequired){html+='<p>'+tr('This final needs to be regenerated for exclusive categories.','Esta final debe regenerarse para aplicar las categorías exclusivas.')+'</p></article>';continue;}
 html+=championDisplay(key,e);
 if(key!=='team'){
 const entries=e.qualifiers||e.pool||[];html+='<h3>'+tr(e.qualifiers?'Qualifiers / Elimination':'Qualification — cutoff decision pending',e.qualifiers?'Clasificados / Eliminación':'Clasificación — desempate pendiente')+'</h3>'+table([tr('Name','Nombre'),'HDCP',tr('Qualifying total','Total clasificatorio'),tr('Elimination + HDCP','Eliminación + HDCP')],entries.map(p=>[p.name,p.handicap,p.score,p.eliminationScratch==null?tbd():p.eliminationScratch+(p.handicap||0)]));
@@ -59,7 +61,7 @@ html+='</article>';}return html;
 }
 
 function render(){if(!data)return;let html='';const section=$('navigation').value;if(section==='teams')html=table(['#',tr('Team','Equipo'),tr('Shift','Turno'),tr('Points','Puntos'),tr('Scratch pins','Pinos sin hándicap'),tr('Games','Juegos')],data.standings.teams.map((t,i)=>[i+1,t.name,t.shift,t.points,t.pinfall,t.games]));
-if(section==='players'){for(const [name,filter]of [[tr('Open Standings','Libre'),()=>true],[tr('Seniors','Seniors'),p=>p.gender.includes('Senior')],[tr('Women','Mujeres'),p=>p.gender.includes('Female')],['Super Senior',p=>p.superSenior===true]])html+=`<h2>${name}</h2>`+table(['#',tr('Bowler','Jugador'),tr('Team','Equipo'),'HDCP',tr('Total + HDCP','Total + HDCP'),tr('Games','Juegos')],data.standings.players.filter(filter).map((p,i)=>[i+1,p.name,p.team,p.handicap,p.netPinfall,p.games]));}
+if(section==='players'){for(const [name,filter]of [[tr('Open','Libre'),p=>individualDivision(p)==='overall'],[tr('Women','Femenil'),p=>individualDivision(p)==='women'],['Senior',p=>individualDivision(p)==='seniors'],['Super Senior',p=>individualDivision(p)==='superSeniors']])html+=`<h2>${name}</h2>`+table(['#',tr('Bowler','Jugador'),tr('Team','Equipo'),'HDCP',tr('Total + HDCP','Total + HDCP'),tr('Games','Juegos')],data.standings.players.filter(filter).map((p,i)=>[i+1,p.name,p.team,p.handicap,p.netPinfall,p.games]));}
 if(section==='matches'){
 const games=[...data.games].sort((a,b)=>a.number-b.number);
 if(!games.some(g=>String(g.number)===selectedMatchGame))selectedMatchGame=games.length?String(games[games.length-1].number):null;
