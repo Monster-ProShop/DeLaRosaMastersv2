@@ -704,23 +704,38 @@ function initBowlerForm(){
       <div><label>${t('Average')}</label><input class="ba" data-i="${i}" type="number" min="0" step="1" placeholder="0"></div>
       <div><label>${t('Gender')}</label><select class="bg" data-i="${i}">${genders.map(g=>`<option value="${g.v}">${g.l}</option>`).join('')}</select><label class="bsex-label" data-i="${i}" hidden>${t('Gender')} — Super Senior<select class="bsex" data-i="${i}" aria-label="Super Senior ${i+1}"><option value="Male Senior">${t('Male')}</option><option value="Female Senior">${t('Female')}</option></select></label></div>
       <div><label>${t('Handicap')}</label><input class="bh" data-i="${i}" readonly value="0"></div>
-      <div><label>${t('Order')}</label><input class="bo" data-i="${i}" readonly value="${i+1}"></div>
+      <div><label>${t('Order')}</label><select class="bo" data-i="${i}" aria-label="${t('Order')} ${i+1}" onchange="chooseBowlerPosition(${i},this.value)"><option value="${i+1}">${i+1}</option></select></div>
       <div><label>${t('Preview')}</label><div class="small muted" id="prev${i}">-</div></div>
     </div>`).join('');
   document.querySelectorAll('.ba,.bg,.bsex').forEach(el=>el.addEventListener('input', updateFormPreview));
   updateFormPreview();
 }
 
+function teamOrderLocked(){return !!editingTeamId&&state.games.some(g=>g?.matches.some(m=>(m.aId===editingTeamId||m.bId===editingTeamId)&&(m.completed||m.bowlers?.length)));}
+function chooseBowlerPosition(i,value){
+  if(!isAdmin||teamOrderLocked())return;
+  const chosen=document.querySelector('.bo[data-i="'+i+'"]'),old=chosen.dataset.position;
+  const average=document.querySelector('.ba[data-i="'+i+'"]')?.value;
+  for(let j=0;j<3;j++)if(j!==i&&Number(document.querySelector('.ba[data-i="'+j+'"]')?.value)===Number(average)){
+    const other=document.querySelector('.bo[data-i="'+j+'"]');if(other.value===value)other.value=old;
+  }
+  secureFormDirty=true;secureEditEpoch++;updateFormPreview();
+}
 function updateFormPreview(){
   const bs=[0,1,2].map(i=>{
     const avg=Number(document.querySelector(`.ba[data-i="${i}"]`).value)||0;
     const g=document.querySelector(`.bg[data-i="${i}"]`).value;
     document.querySelector('.bsex-label[data-i="'+i+'"]').hidden=g!=='Super Senior';return {i,avg,g,h:handicap(avg,registrationGender(i))};
   });
-  const sorted=[...bs].sort((a,b)=>a.avg-b.avg||a.i-b.i);
+  const previous=i=>Number(document.querySelector('.bo[data-i="'+i+'"]')?.value)||i+1;
+  const sorted=[...bs].sort((a,b)=>a.avg-b.avg||previous(a.i)-previous(b.i)||a.i-b.i);
   sorted.forEach((b,idx)=>{
     document.querySelector(`.bh[data-i="${b.i}"]`).value=b.h;
-    document.querySelector(`.bo[data-i="${b.i}"]`).value=idx+1;
+    const order=document.querySelector(`.bo[data-i="${b.i}"]`);
+    const first=sorted.findIndex(x=>x.avg===b.avg)+1,count=sorted.filter(x=>x.avg===b.avg).length;
+    order.innerHTML=Array.from({length:count},(_,n)=>'<option value="'+(first+n)+'">'+(first+n)+'</option>').join('');
+    order.value=idx+1;order.dataset.position=idx+1;order.disabled=count===1||teamOrderLocked();
+    order.title=teamOrderLocked()?(currentLang==='es'?'El orden se fija al registrar puntajes.':'Order is locked once scores are recorded.'):(currentLang==='es'?'Elige el orden entre jugadores con el mismo promedio.':'Choose the order among bowlers with equal averages.');
     document.getElementById(`prev${b.i}`).textContent=`HDCP ${b.h} • Pos ${idx+1}`;
   });
   const sum=bs.reduce((a,b)=>a+b.avg,0);
@@ -743,6 +758,8 @@ function registerTeam(){
   const name=document.getElementById('teamName').value.trim();
   const contact=document.getElementById('teamCaptain').value.trim();
   const bowlers=[0,1,2].map(i=>({
+    _position:Number(document.querySelector(`.bo[data-i="${i}"]`).value),
+    _sourceIndex:i,
     calcuttaId: editingTeamId ? (state.teams.find(tm=>tm.id===editingTeamId)?.bowlers[i]?.calcuttaId ?? i) : i,
     name:document.querySelector(`.bn[data-i="${i}"]`).value.trim(),
     average:Number(document.querySelector(`.ba[data-i="${i}"]`).value),
@@ -754,7 +771,10 @@ function registerTeam(){
   if(bowlers.some(b=>b.average<0)){return showTeamAlert('Average cannot be negative.','danger')}
   const sum=bowlers.reduce((a,b)=>a+b.average,0);
   if(sum>630){return showTeamAlert(`ERROR: Team average is ${sum}. Maximum is 630.`,'danger')}
-  const sorted=bowlers.sort((a,b)=>a.average-b.average);
+  if(new Set(bowlers.map(b=>b._position)).size!==3||bowlers.some(b=>{const first=bowlers.filter(x=>x.average<b.average).length+1,count=bowlers.filter(x=>x.average===b.average).length;return !Number.isInteger(b._position)||b._position<first||b._position>=first+count;}))return showTeamAlert(currentLang==='es'?'Elige posiciones únicas dentro de cada grupo con el mismo promedio.':'Choose unique positions within each equal-average group.','danger');
+  const sorted=bowlers.sort((a,b)=>a.average-b.average||a._position-b._position);
+  if(teamOrderLocked()&&sorted.some((b,i)=>b._sourceIndex!==i))return showTeamAlert(currentLang==='es'?'No se puede cambiar el orden después de registrar puntajes.':'Order cannot change after scores have been recorded.','danger');
+  sorted.forEach(b=>{delete b._position;delete b._sourceIndex;});
   sorted.forEach((b,idx)=>b.handicap=handicap(b.average,b.gender));
   
   if (editingTeamId) {
@@ -779,6 +799,7 @@ function editTeam(id) {
   document.getElementById('teamShiftSelect').value = t.shift || 1;
   
   t.bowlers.forEach((b, i) => {
+    const order=document.querySelector(`.bo[data-i="${i}"]`);order.innerHTML='<option value="'+(i+1)+'">'+(i+1)+'</option>';order.value=i+1;
     document.querySelector(`.bn[data-i="${i}"]`).value = b.name;
     document.querySelector(`.ba[data-i="${i}"]`).value = b.average;
     document.querySelector(`.bg[data-i="${i}"]`).value = b.superSenior===true?'Super Senior':b.gender;
