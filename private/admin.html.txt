@@ -494,13 +494,13 @@ async function loadStateFromCloud(){
 document.addEventListener('input',event=>{if(event.target.matches('input,textarea')){secureFormDirty=true;secureEditEpoch++;}});
 function setupRealtimeListener(){setInterval(syncRemoteState,10000);window.addEventListener('focus',syncRemoteState);}
 async function syncRemoteState(){
-  if(securePolling||secureDirty||secureFormDirty||secureBlocked||document.hidden||calDrafts.size||finalsDrafts.size||purseDrafts.size)return;
+  if(securePolling||secureDirty||secureFormDirty||secureBlocked||document.hidden||calDrafts.size||finalsDrafts.size||purseDrafts.size||editingMatches.size)return;
   securePolling=true;const startedRevision=secureRevision;
-  try{const response=await fetch('/api/admin/state',{cache:'no-store',credentials:'same-origin'});if(!response.ok)return;const result=await response.json();if(secureRevision!==startedRevision||secureDirty||secureFormDirty||calDrafts.size||finalsDrafts.size||purseDrafts.size)return;if(result.revision!==secureRevision){const selected=state.currentGame;state=result.state;secureBase=structuredClone(result.state);secureRevision=result.revision;state.currentGame=selected;renderAll();}}
+  try{const response=await fetch('/api/admin/state',{cache:'no-store',credentials:'same-origin'});if(!response.ok)return;const result=await response.json();if(secureRevision!==startedRevision||secureDirty||secureFormDirty||calDrafts.size||finalsDrafts.size||purseDrafts.size||editingMatches.size)return;if(result.revision!==secureRevision){const selected=state.currentGame;state=result.state;secureBase=structuredClone(result.state);secureRevision=result.revision;state.currentGame=selected;renderAll();}}
   catch{}finally{securePolling=false;}
 }
 async function secureLogout(){
-  if((secureDirty||calDrafts.size||finalsDrafts.size||purseDrafts.size)&&!confirm(currentLang==='es'?'¿Salir y descartar cambios sin guardar?':'Sign out and discard unsaved changes?'))return;
+  if((secureDirty||calDrafts.size||finalsDrafts.size||purseDrafts.size||editingMatches.size)&&!confirm(currentLang==='es'?'¿Salir y descartar cambios sin guardar?':'Sign out and discard unsaved changes?'))return;
   const response=await fetch('/api/auth/logout',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});if(!response.ok){alert('Could not sign out. Try again.');return;}
   secureDirty=false;calDrafts.clear();finalsDrafts.clear();purseDrafts.clear();state={settings:{satGames:4,sunGames:3},teams:[],games:[],started:false,currentGame:1};isAdmin=false;location.replace('/');
 }
@@ -1055,10 +1055,13 @@ function renderGame(){
   game.matches.forEach(m=>refreshMatchPreview(m.id));
 }
 
+const editingMatches=new Set();
+function editSavedMatch(id){if(!isAdmin)return;editingMatches.add(id);renderGame();}
+function cancelMatchEdit(id){if(!isAdmin)return;editingMatches.delete(id);document.querySelectorAll('.match-card[data-match-id="'+id+'"] input[id^="s_"]').forEach(input=>input.disabled=true);renderGame();}
 function renderMatch(m,map){
   const A=map[m.aId], B=map[m.bId]; if(!A||!B)return '';
   const as=playerOrder(A), bs=playerOrder(B);
-  const canEdit = isAdmin && !m.completed;
+  const canEdit = isAdmin && (!m.completed || editingMatches.has(m.id));
   
   return `<div class="card match-card" data-match-id="${m.id}"><div class="match-head"><div><b>${t('Shift')} ${m.shift} • Lanes ${m.laneA} & ${m.laneB}</b><div class="small muted">${esc(A.name)} vs ${esc(B.name)}</div></div><span class="badge">${m.completed ? t('Complete') : t('In progress')}</span></div><div class="match-body">
     <div class="score-grid" style="font-weight:800;margin-bottom:8px">
@@ -1097,7 +1100,7 @@ function renderMatch(m,map){
         <div class="center" id="tp_${m.id}" style="font-size:1.2rem;"></div>
       </div>
     </div>
-    <div class="actions" style="justify-content:flex-end;margin-top:10px">${canEdit?`<button class="btn-primary" onclick="saveMatch('${m.id}')">${t('Save Match')}</button>`:''}</div>
+    <div class="actions" style="justify-content:flex-end;margin-top:10px">${canEdit?`<button class="btn-primary" onclick="saveMatch('${m.id}')">${t('Save Match')}</button>${m.completed?`<button onclick="cancelMatchEdit('${m.id}')">${t('Cancel')}</button>`:''}`:isAdmin?`<button onclick="editSavedMatch('${m.id}')">${t('Edit')}</button>`:''}</div>
   </div></div>`;
 }
 
@@ -1183,7 +1186,7 @@ function refreshMatchPreview(id){
   } else { if(tpA) tpA.textContent = ''; if(tpB) tpB.textContent = ''; }
 }
 
-function saveMatch(id){
+async function saveMatch(id){
   if(!isAdmin) return;
   const game=state.games.find(g=>g && g.number===state.currentGame), m=game.matches.find(x=>x.id===id);
   const bowlers=[];
@@ -1195,7 +1198,7 @@ function saveMatch(id){
     bowlers.push({pos,a,b});
   }
   const ta=bowlers.reduce((sum,o)=>sum+o.a,0), tb=bowlers.reduce((sum,o)=>sum+o.b,0);
-  m.bowlers=bowlers; m.teamScoreA=ta; m.teamScoreB=tb; m.completed=true; save(); renderGame();
+  m.bowlers=bowlers; m.teamScoreA=ta; m.teamScoreB=tb; m.completed=true; if(!await save())return; editingMatches.delete(id); renderAll();
 }
 
 function calculateTeamStandings(dayFilter = 'all', upToGameNo = 999, shiftFilter = 'all', gameNumbers = null){
