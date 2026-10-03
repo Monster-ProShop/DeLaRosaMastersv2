@@ -60,7 +60,7 @@ html+=table([tr('Place','Lugar'),tr('Team / Bowler','Equipo / Jugador'),tr('Team
 html+='</article>';}return html;
 }
 
-function render(){if(!data)return;let html='';const section=$('navigation').value;if(section==='teams')html=table(['#',tr('Team','Equipo'),tr('Shift','Turno'),tr('Points','Puntos'),tr('Scratch pins','Pinos sin hándicap'),tr('Games','Juegos')],data.standings.teams.map((t,i)=>[i+1,t.name,t.shift,t.points,t.pinfall,t.games]));
+function render(){if(!data)return;let html='';const section=$('navigation').value;if(section==='teams')html=table(['#',tr('Team','Equipo'),tr('Shift','Turno'),tr('Points','Puntos'),tr('Total + HDCP','Total + HDCP'),tr('Games','Juegos')],data.standings.teams.map((t,i)=>[i+1,t.name,t.shift,t.points,t.netPinfall,t.games]));
 if(section==='players'){for(const [name,filter]of [[tr('Open','Libre'),p=>individualDivision(p)==='overall'],[tr('Women','Femenil'),p=>individualDivision(p)==='women'],['Senior',p=>individualDivision(p)==='seniors'],['Super Senior',p=>individualDivision(p)==='superSeniors']])html+=`<h2>${name}</h2>`+table(['#',tr('Bowler','Jugador'),tr('Team','Equipo'),'HDCP',tr('Total + HDCP','Total + HDCP'),tr('Games','Juegos')],data.standings.players.filter(filter).map((p,i)=>[i+1,p.name,p.team,p.handicap,p.netPinfall,p.games]));}
 if(section==='matches'){
 const games=[...data.games].sort((a,b)=>a.number-b.number);
