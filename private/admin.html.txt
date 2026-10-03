@@ -1199,7 +1199,7 @@ function saveMatch(id){
 }
 
 function calculateTeamStandings(dayFilter = 'all', upToGameNo = 999, shiftFilter = 'all', gameNumbers = null){
-  const map=teamMap(), stats=state.teams.map(t=>({id:t.id,name:t.name,shift:t.shift||1,points:0,pinfall:0,highest:0,games:0}));
+  const map=teamMap(), stats=state.teams.map(t=>({id:t.id,name:t.name,shift:t.shift||1,points:0,pinfall:0,netPinfall:0,highest:0,games:0}));
   const sm=Object.fromEntries(stats.map(s=>[s.id,s]));
   for(const g of state.games){
     if(!g) continue;
@@ -1218,6 +1218,7 @@ function calculateTeamStandings(dayFilter = 'all', upToGameNo = 999, shiftFilter
         const aa=o.a+(as[pos]?.handicap||0), bb=o.b+(bs[pos]?.handicap||0);
         if(aa>bb)ap+=2; else if(aa<bb)bp+=2; else {ap+=1;bp+=1;}
         sa.pinfall+=o.a; sb.pinfall+=o.b;
+        sa.netPinfall+=aa; sb.netPinfall+=bb;
       });
       sa.highest=Math.max(sa.highest,m.teamScoreA); sb.highest=Math.max(sb.highest,m.teamScoreB);
       const ha=m.teamScoreA+teamTotals(A).hdcp, hb=m.teamScoreB+teamTotals(B).hdcp;
@@ -1227,7 +1228,7 @@ function calculateTeamStandings(dayFilter = 'all', upToGameNo = 999, shiftFilter
   }
   let res = stats;
   if(shiftFilter !== 'all') res = res.filter(s => String(s.shift) === String(shiftFilter));
-  return res.sort((a,b)=>b.points-a.points||b.pinfall-a.pinfall||b.highest-a.highest||a.name.localeCompare(b.name));
+  return res.sort((a,b)=>b.points-a.points||b.netPinfall-a.netPinfall||b.highest-a.highest||a.name.localeCompare(b.name));
 }
 
 function calculatePlayerStandings(dayFilter = 'all', upToGameNo = 999, gameNumbers = null) {
@@ -1284,10 +1285,10 @@ function renderStandings(){
     </div>
     <table>
       <thead>
-        <tr><th>${t('Pos')}</th><th>${t('Team')}</th><th>${t('Shift')}</th><th>${t('Points')}</th><th>${t('Pinfall')}</th><th>${t('Highest Game')}</th><th>${t('Games')}</th></tr>
+        <tr><th>${t('Pos')}</th><th>${t('Team')}</th><th>${t('Shift')}</th><th>${t('Points')}</th><th>${t('Total + HDCP')}</th><th>${t('Highest Game')}</th><th>${t('Games')}</th></tr>
       </thead>
       <tbody>
-        ${standT.map((x,i)=>`<tr><td><b>${i === 0 ? '🥇 1' : i === 1 ? '🥈 2' : i === 2 ? '🥉 3' : (i + 1)}</b></td><td><b>${esc(x.name)}</b></td><td>${t('Shift')} ${x.shift}</td><td><b>${x.points}</b></td><td>${x.pinfall}</td><td>${x.highest}</td><td>${x.games}</td></tr>`).join('')}
+        ${standT.map((x,i)=>`<tr><td><b>${i === 0 ? '🥇 1' : i === 1 ? '🥈 2' : i === 2 ? '🥉 3' : (i + 1)}</b></td><td><b>${esc(x.name)}</b></td><td>${t('Shift')} ${x.shift}</td><td><b>${x.points}</b></td><td>${x.netPinfall}</td><td>${x.highest}</td><td>${x.games}</td></tr>`).join('')}
       </tbody>
     </table>`;
 }
@@ -1349,7 +1350,7 @@ function exportStandings(type, dayFilter) {
   if (type === 'team') {
     const data = calculateTeamStandings(dayFilter);
     html += '<tr><th>Pos</th><th>Team</th><th>Shift</th><th>Points</th><th>Pinfall</th><th>Highest Game</th><th>Games Played</th></tr>';
-    data.forEach((x, i) => { html += `<tr><td>${i+1}</td><td>${esc(x.name)}</td><td>${x.shift}</td><td>${x.points}</td><td>${x.pinfall}</td><td>${x.highest}</td><td>${x.games}</td></tr>`; });
+    data.forEach((x, i) => { html += `<tr><td>${i+1}</td><td>${esc(x.name)}</td><td>${x.shift}</td><td>${x.points}</td><td>${x.netPinfall}</td><td>${x.highest}</td><td>${x.games}</td></tr>`; });
   } else {
     const data = calculatePlayerStandings(dayFilter);
     html += '<tr><th>Pos</th><th>Player</th><th>Team</th><th>Gender</th><th>HDCP</th><th>Scratch Total</th><th>HDCP Total</th><th>Net Pinfall</th><th>High Scratch</th><th>High Net</th></tr>';
