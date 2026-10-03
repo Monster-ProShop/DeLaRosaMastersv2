@@ -315,12 +315,12 @@ input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
     <div class="grid">
       <div class="card span12">
         <h2 data-i18n="Tournament Setup & Assignment Engine">Tournament Setup & Assignment Engine</h2>
-        <p class="muted" data-i18n="setup_desc">Generate matchups shift-by-shift to accommodate different play times. Specify the lane boundaries (Pool Start/End) to control where the shift bowls, and designate which lane the 1st place team starts on. Game 1 is random. Games 2-7 are position rounds (1 vs 2, 3 vs 4) using cumulative standings before each game. After game 4, two shifts are regrouped: the lower half bowls shift 1 and the upper half bowls shift 2. Shift 1 receives the extra pair when needed (42 teams: 22 / 20). Sunday shift assignments then stay fixed.</p>
+        <p class="muted" data-i18n="setup_desc">Generate matchups shift-by-shift to accommodate different play times. Specify the lane boundaries (Pool Start/End) to control where the shift bowls, and designate which lane the 1st place team starts on. Game 1 uses your hand-drawn opponents and lane assignments. Games 2-7 are position rounds (1 vs 2, 3 vs 4) using cumulative standings before each game. After game 4, two shifts are regrouped: the lower half bowls shift 1 and the upper half bowls shift 2. Shift 1 receives the extra pair when needed (42 teams: 22 / 20). Sunday shift assignments then stay fixed.</p>
         
         <div class="row" style="align-items:end; margin-bottom:16px; margin-top:16px;">
           <div>
             <label for="genGameSelect" data-i18n="Target Game">Target Game</label>
-            <select id="genGameSelect">
+            <select id="genGameSelect" onchange="clearManualFirstGame()">
               <option value="1" data-i18n="Game 1">Game 1</option>
               <option value="2" data-i18n="Game 2 (Positional)">Game 2 (Positional)</option>
               <option value="3" data-i18n="Game 3 (Positional)">Game 3 (Positional)</option>
@@ -332,7 +332,7 @@ input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
           </div>
           <div>
             <label for="genShiftSelect" data-i18n="Target Shift">Target Shift</label>
-            <select id="genShiftSelect">
+            <select id="genShiftSelect" onchange="clearManualFirstGame()">
               <option value="1">Shift 1</option>
               <option value="2">Shift 2</option>
               
@@ -351,10 +351,11 @@ input:disabled{opacity:.75}button:disabled{opacity:.5;cursor:default}
             <input type="number" id="genTopSeedLane" value="1" min="1" max="100">
           </div>
           <div>
-            <button class="btn-primary" style="width:100%" onclick="generateSpecificGame()" data-i18n="Generate Matchups">Generate Matchups</button>
+            <button class="btn-primary" style="width:100%" onclick="generateSpecificGame()" data-i18n="Prepare Matchups">Prepare Matchups</button>
           </div>
         </div>
       </div>
+      <div id="manualFirstGame" hidden></div>
     </div>
   </section>
 
@@ -569,7 +570,7 @@ const tDict = {
   "Generate Dummy Teams": "Generar Equipos de Prueba",
   "Registered Teams Roster": "Padrón de Equipos",
   "Tournament Setup & Assignment Engine": "Configuración y Motor de Asignación",
-  "setup_desc": "Genera enfrentamientos por turno. Especifica los límites de pistas (Inicio/Fin) y la pista del 1er Lugar. Juego 1 es aleatorio. Juegos 2-7 por posiciones (1 vs 2, 3 vs 4), con las posiciones acumuladas antes de cada juego. Después del juego 4 se reorganizan los dos turnos: mitad inferior al turno 1 y mitad superior al turno 2. El turno 1 recibe el par adicional cuando sea necesario (42 equipos: 22 / 20). Los turnos del domingo permanecen fijos.",
+  "setup_desc": "Genera enfrentamientos por turno. Especifica los límites de pistas (Inicio/Fin) y la pista del 1er Lugar. El juego 1 utiliza los rivales y las pistas del sorteo manual. Juegos 2-7 por posiciones (1 vs 2, 3 vs 4), con las posiciones acumuladas antes de cada juego. Después del juego 4 se reorganizan los dos turnos: mitad inferior al turno 1 y mitad superior al turno 2. El turno 1 recibe el par adicional cuando sea necesario (42 equipos: 22 / 20). Los turnos del domingo permanecen fijos.",
   "Target Game": "Juego Destino",
   "Game 1": "Juego 1",
   "Game 2 (Positional)": "Juego 2 (Posiciones)",
@@ -897,6 +898,42 @@ function sundayShiftAssignments(standings) {
   return assignments;
 }
 
+
+let manualFirstDraft=null;
+function clearManualFirstGame(){manualFirstDraft=null;document.getElementById('manualFirstGame').hidden=true;}
+function prepareManualFirstGame(shift){
+  const msg=(en,es)=>currentLang==='es'?es:en;
+  const teams=state.teams.filter(team=>Number(team.shift||1)===shift);
+  if(teams.length<2||teams.length%2){alert(msg('Game 1 requires an even number of teams in this shift.','El juego 1 requiere un número par de equipos en este turno.'));return;}
+  const existing=state.games.find(g=>g&&g.number===1)?.matches.filter(m=>Number(m.shift)===shift)||[];
+  if(existing.some(m=>m.completed||m.bowlers?.length)||state.games.some(g=>g&&g.number>1&&g.matches?.length)){alert(msg('Game 1 cannot be replaced after scores or later games have been entered.','No se puede reemplazar el juego 1 después de ingresar puntuaciones o juegos posteriores.'));return;}
+  manualFirstDraft={shift,ids:teams.map(t=>t.id)};
+  const options='<option value="">'+msg('Select team','Selecciona equipo')+'</option>'+teams.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+'</option>').join('');
+  const el=document.getElementById('manualFirstGame');el.hidden=false;
+  el.innerHTML='<h3>'+msg('Game 1 — manual draw','Juego 1 — sorteo manual')+'</h3><p>'+msg('Select each team once and its lane pair. Team A bowls on the first lane; Team B on the next. Save when all matchups are ready.','Selecciona cada equipo una vez y su par de pistas. El equipo A juega en la primera pista; el equipo B en la siguiente. Guarda al terminar todos los enfrentamientos.')+'</p>'+Array.from({length:teams.length/2},(_,i)=>'<div class="row manual-first-row"><div><label>'+msg('Team A','Equipo A')+'</label><select class="manual-a" aria-label="'+msg('Team A','Equipo A')+' '+(i+1)+'">'+options+'</select></div><div><label>'+msg('Team B','Equipo B')+'</label><select class="manual-b" aria-label="'+msg('Team B','Equipo B')+' '+(i+1)+'">'+options+'</select></div><div><label>'+msg('First lane of pair (1, 3, 5…)','Primera pista del par (1, 3, 5…)')+'</label><input class="manual-lane" aria-label="'+msg('First lane','Primera pista')+' '+(i+1)+'" type="number" min="1" max="999" step="2"></div></div>').join('')+'<button class="btn-primary" onclick="saveManualFirstGame()">'+msg('Save game 1 matchups','Guardar partidas del juego 1')+'</button>';
+  [...el.querySelectorAll('.manual-first-row')].forEach((row,i)=>{const m=existing[i];if(m){row.querySelector('.manual-a').value=m.aId;row.querySelector('.manual-b').value=m.bId;row.querySelector('.manual-lane').value=m.laneA;}});
+  el.onchange=()=>{secureFormDirty=true;secureEditEpoch++;};
+}
+async function saveManualFirstGame(){
+  if(!isAdmin||!manualFirstDraft)return;
+  const msg=(en,es)=>currentLang==='es'?es:en,shift=manualFirstDraft.shift;
+  const ids=state.teams.filter(t=>Number(t.shift||1)===shift).map(t=>t.id),used=new Set(),lanes=new Set(),matches=[];
+  for(const row of document.querySelectorAll('.manual-first-row')){
+    const a=row.querySelector('.manual-a').value,b=row.querySelector('.manual-b').value,lane=Number(row.querySelector('.manual-lane').value);
+    if(!ids.includes(a)||!ids.includes(b)||a===b||used.has(a)||used.has(b)){alert(msg('Select each team exactly once, with two different opponents per match.','Selecciona cada equipo exactamente una vez, con dos rivales distintos por partida.'));return;}
+    if(!Number.isInteger(lane)||lane<1||lane>999||lane%2!==1||lanes.has(lane)){alert(msg('Use a different valid lane pair for every match (1–2, 3–4, etc.).','Usa un par de pistas válido y distinto para cada partida (1–2, 3–4, etc.).'));return;}
+    used.add(a);used.add(b);lanes.add(lane);matches.push(buildMatchObj(1,shift,a,b,lane));
+  }
+  if(used.size!==ids.length){alert(msg('Include every team in this shift.','Incluye todos los equipos de este turno.'));return;}
+  let game=state.games.find(g=>g&&g.number===1);
+  if(game?.matches.some(m=>Number(m.shift)===shift&&(m.completed||m.bowlers?.length))||state.games.some(g=>g&&g.number>1&&g.matches?.length)){alert(msg('Scores or later games already exist. Game 1 cannot be replaced.','Ya existen puntuaciones o juegos posteriores. No se puede reemplazar el juego 1.'));return;}
+  if(game?.matches.some(m=>Number(m.shift)===shift)&&!confirm(msg('Replace the unplayed game 1 matchups for this shift?','¿Reemplazar las partidas sin jugar del juego 1 de este turno?')))return;
+  if(!game){game={number:1,day:'Saturday',matches:[]};state.games[0]=game;}
+  game.matches=game.matches.filter(m=>Number(m.shift)!==shift).concat(matches);state.currentGame=1;state.started=true;
+  if(!await save())return;
+  clearManualFirstGame();activateTab('game');document.getElementById('auditGameSelect').value=1;document.getElementById('auditShiftFilter').value=shift;renderGame();
+}
+
 async function generateSpecificGame() {
   if(!isAdmin) return;
   const gameNo = Number(document.getElementById('genGameSelect').value);
@@ -904,6 +941,7 @@ async function generateSpecificGame() {
   const message = (en,es) => currentLang === 'es' ? es : en;
   if(![1,2].includes(shift)||hasLegacyShift()) {alert(t('Resolve legacy shift 3 before continuing.'));return;}
   if(!Number.isInteger(gameNo)||gameNo<1||gameNo>7)return;
+  if(gameNo===1){prepareManualFirstGame(shift);return;}
   let poolStart = Number(document.getElementById('genPoolStart').value) || 1;
   let poolEnd = Number(document.getElementById('genPoolEnd').value) || 30;
   let topSeedLane = Number(document.getElementById('genTopSeedLane').value) || poolStart;
@@ -1401,7 +1439,7 @@ window.onload = async () => {
 const englishText={};
 document.querySelectorAll('[data-i18n]').forEach(el=>{englishText[el.dataset.i18n]=el.innerHTML;});
 Object.assign(tDict, {
-  'Calcutta Payout':'Premiacion Calcutta','Matches':'Partidas','Men':'Hombres',
+  'Prepare Matchups':'Preparar partidas','Calcutta Payout':'Premiacion Calcutta','Matches':'Partidas','Men':'Hombres',
   'Seniors + All Women':'Seniors + Todas las Mujeres','Teams':'Equipos',
   'Purchaser':'Comprador','Cost':'Costo','Paid':'Pagado','Balance owed':'Saldo pendiente',
   'Save':'Guardar','Edit':'Editar','Cancel':'Cancelar','Saved':'Guardado',
