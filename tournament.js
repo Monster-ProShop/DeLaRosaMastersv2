@@ -32,7 +32,7 @@ function playerOrder(team) {
 
 
 function calculateTeamStandings(dayFilter = 'all', upToGameNo = 999, shiftFilter = 'all'){
-  const map=teamMap(), stats=state.teams.map(t=>({id:t.id,name:t.name,shift:t.shift||1,points:0,pinfall:0,highest:0,games:0}));
+  const map=teamMap(), stats=state.teams.map(t=>({id:t.id,name:t.name,shift:t.shift||1,points:0,pinfall:0,netPinfall:0,highest:0,games:0}));
   const sm=Object.fromEntries(stats.map(s=>[s.id,s]));
   for(const g of state.games){
     if(!g) continue;
@@ -50,6 +50,7 @@ function calculateTeamStandings(dayFilter = 'all', upToGameNo = 999, shiftFilter
         const aa=o.a+(as[pos]?.handicap||0), bb=o.b+(bs[pos]?.handicap||0);
         if(aa>bb)ap+=2; else if(aa<bb)bp+=2; else {ap+=1;bp+=1;}
         sa.pinfall+=o.a; sb.pinfall+=o.b;
+        sa.netPinfall+=aa; sb.netPinfall+=bb;
       });
       sa.highest=Math.max(sa.highest,m.teamScoreA); sb.highest=Math.max(sb.highest,m.teamScoreB);
       const ha=m.teamScoreA+teamTotals(A).hdcp, hb=m.teamScoreB+teamTotals(B).hdcp;
@@ -59,7 +60,7 @@ function calculateTeamStandings(dayFilter = 'all', upToGameNo = 999, shiftFilter
   }
   let res = stats;
   if(shiftFilter !== 'all') res = res.filter(s => String(s.shift) === String(shiftFilter));
-  return res.sort((a,b)=>b.points-a.points||b.pinfall-a.pinfall||b.highest-a.highest||a.name.localeCompare(b.name));
+  return res.sort((a,b)=>b.points-a.points||b.netPinfall-a.netPinfall||b.highest-a.highest||a.name.localeCompare(b.name));
 }
 
 function calculatePlayerStandings(dayFilter = 'all', upToGameNo = 999) {
